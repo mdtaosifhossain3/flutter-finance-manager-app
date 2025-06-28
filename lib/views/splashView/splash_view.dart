@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:finance_manager_app/config/routes/routes_name.dart';
-import 'package:finance_manager_app/views/authView/login_view.dart';
+import 'package:finance_manager_app/views/authView/loginView/login_view.dart';
 import 'package:finance_manager_app/views/onboardView/onboard_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

@@ -1,6 +1,8 @@
 import 'package:finance_manager_app/config/routes/routes_name.dart';
-import 'package:finance_manager_app/views/authView/login_view.dart';
-import 'package:finance_manager_app/views/authView/register_view.dart';
+import 'package:finance_manager_app/views/authView/forgetPasswordView/forget_password_view.dart';
+import 'package:finance_manager_app/views/authView/loginView/login_view.dart';
+import 'package:finance_manager_app/views/authView/registerView/register_view.dart';
+import 'package:finance_manager_app/views/authView/resetPasswordView/reset_password_view.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
 import 'package:get/get.dart';
 
@@ -21,16 +23,16 @@ class Routes {
       page: () => const LoginView(),
       transition: Transition.rightToLeft,
     ),
-    // GetPage(
-    //   name: RoutesName.homeView,
-    //   page: () => const HomeView(),
-    //   transition: Transition.rightToLeft,
-    // ),
-    // GetPage(
-    //   name: RoutesName.chatView,
-    //   page: () => ChatView(),
-    //   transition: Transition.rightToLeft,
-    // ),
+    GetPage(
+      name: RoutesName.forgetPasswordView,
+      page: () => const ForgetPasswordView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.resetPasswordView,
+      page: () => ResetPasswordView(),
+      transition: Transition.rightToLeft,
+    ),
     // GetPage(
     //   name: RoutesName.welcomeView,
     //   page: () => const WelcomeView(),
