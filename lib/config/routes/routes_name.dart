@@ -5,7 +5,9 @@ class RoutesName {
   static const forgetPasswordView = "/forgetPasswordView";
   static const resetPasswordView = "/resetPasswordView";
   static const homeView = "/";
-  static const chatView = "/chat_view";
+  static const analysisView = "/analysis_view";
+  static const searchView = "/search_view";
+  static const calenderView = "/calender_view";
   static const welcomeView = "/welcome_view";
   static const profileView = "/profile_view";
   static const contactView = "/contact_view";

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:finance_manager_app/config/myColors/my_colors.dart';
 import 'package:finance_manager_app/config/routes/routes_name.dart';
 import 'package:finance_manager_app/views/authView/loginView/login_view.dart';
 import 'package:finance_manager_app/views/onboardView/onboard_view.dart';
@@ -25,6 +26,9 @@ class _SplashViewState extends State<SplashView> {
   }
   @override
   Widget build(BuildContext context) {
-    return const Placeholder(child: Center(child: Text("Splash View")));
+    return Scaffold(
+      backgroundColor: MyColors.carbbeanGreen,
+      body: Center(child: Image.asset("assets/images/Vector.png",width: 150,color: Colors.white,),),
+    );
   }
 }
