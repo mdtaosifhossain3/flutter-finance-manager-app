@@ -1,5 +1,7 @@
+import 'package:finance_manager_app/config/routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:finance_manager_app/config/myColors/my_colors.dart';
+import 'package:get/route_manager.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -9,7 +11,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  int _selectedIndex = 0;
   String _selectedPeriod = 'Monthly';
 
   List screens = [
@@ -81,15 +82,18 @@ class _HomeViewState extends State<HomeView> {
               ),
             ],
           ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.notifications_outlined,
-              color: Colors.white,
+          GestureDetector(
+            onTap: (){Get.toNamed(RoutesName.notificationView);},
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.notifications_outlined,
+                color: Colors.white,
+              ),
             ),
           ),
         ],

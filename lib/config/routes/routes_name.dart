@@ -8,7 +8,6 @@ class RoutesName {
   static const analysisView = "/analysis_view";
   static const searchView = "/search_view";
   static const calenderView = "/calender_view";
-  static const welcomeView = "/welcome_view";
-  static const profileView = "/profile_view";
-  static const contactView = "/contact_view";
+  static const notificationView = "/notification_view";
+  static const categoryView = "/category_view";
 }

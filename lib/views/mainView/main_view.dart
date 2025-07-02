@@ -1,5 +1,8 @@
 import 'package:finance_manager_app/views/analysisView/analysis_view.dart';
+import 'package:finance_manager_app/views/categoryView/category_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
+import 'package:finance_manager_app/views/profileView/profile_view.dart';
+import 'package:finance_manager_app/views/transactionView/transaction_view.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/myColors/my_colors.dart';
@@ -13,14 +16,13 @@ class MainView extends StatefulWidget {
 
 class _MainViewState extends State<MainView> {
   int _selectedIndex = 0;
-  String _selectedPeriod = 'Monthly';
 
   List screens = [
     HomeView(),
     AnalysisScreen(),
-    Container(),
-    Container(),
-    Container(),
+    TransactionView(),
+    CategoryView(),
+    ProfileView(),
 
   ];
 

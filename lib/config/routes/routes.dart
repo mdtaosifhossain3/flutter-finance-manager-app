@@ -6,6 +6,7 @@ import 'package:finance_manager_app/views/authView/loginView/login_view.dart';
 import 'package:finance_manager_app/views/authView/registerView/register_view.dart';
 import 'package:finance_manager_app/views/authView/resetPasswordView/reset_password_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
+import 'package:finance_manager_app/views/notificationView/notification_view.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
 import 'package:get/get.dart';
 
@@ -51,10 +52,11 @@ class Routes {
       page: () => CalendarScreen(),
       transition: Transition.rightToLeft,
     ),
-    // GetPage(
-    //   name: RoutesName.contactView,
-    //   page: () => ContactView(),
-    //   transition: Transition.rightToLeft,
-    // ),
+        GetPage(
+      name: RoutesName.notificationView,
+      page: () => NotificationView(),
+      transition: Transition.rightToLeft,
+    ),
+
   ];
 }
