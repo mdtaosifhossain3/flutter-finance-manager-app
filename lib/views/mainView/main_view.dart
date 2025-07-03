@@ -23,22 +23,23 @@ class _MainViewState extends State<MainView> {
     TransactionView(),
     CategoryView(),
     ProfileView(),
-
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: screens[_selectedIndex],
-      bottomNavigationBar: _buildBottomNavigationBar(),);
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
   }
+
   Widget _buildBottomNavigationBar() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),

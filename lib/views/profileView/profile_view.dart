@@ -1,4 +1,5 @@
 import 'package:finance_manager_app/views/profileView/widgets/edit_profile_view.dart';
+import 'package:finance_manager_app/views/profileView/widgets/security_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 
@@ -15,7 +16,7 @@ class AppColors {
 }
 
 class ProfileView extends StatelessWidget {
-  const ProfileView({Key? key}) : super(key: key);
+  const ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +30,6 @@ class ProfileView extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
                   const Expanded(
                     child: Text(
                       'Profile',
@@ -59,7 +52,7 @@ class ProfileView extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Content Container
             Expanded(
               child: Container(
@@ -73,20 +66,17 @@ class ProfileView extends StatelessWidget {
                 child: Column(
                   children: [
                     const SizedBox(height: 40),
-                    
+
                     // Profile Picture and Info
                     Container(
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 4,
-                        ),
+                        border: Border.all(color: Colors.white, width: 4),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 5),
                           ),
@@ -99,9 +89,9 @@ class ProfileView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     const Text(
                       'John Smith',
                       style: TextStyle(
@@ -110,19 +100,19 @@ class ProfileView extends StatelessWidget {
                         color: AppColors.cyprus,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 4),
-                    
+
                     Text(
                       '+880 1234567890',
                       style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.cyprus.withOpacity(0.6),
+                        color: AppColors.cyprus.withValues(alpha: 0.6),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 40),
-                    
+
                     // Menu Items
                     Expanded(
                       child: Padding(
@@ -149,7 +139,9 @@ class ProfileView extends StatelessWidget {
                               icon: Icons.settings_outlined,
                               title: 'Setting',
                               color: AppColors.lightBlue,
-                              onTap: () {},
+                              onTap: () {
+                                Get.to(SettingsView());
+                              },
                             ),
                             const SizedBox(height: 16),
                             _buildMenuItem(
@@ -169,7 +161,7 @@ class ProfileView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    
+
                     // Bottom Navigation Placeholder
                     // Container(
                     //   height: 80,
@@ -210,7 +202,7 @@ class ProfileView extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -225,11 +217,7 @@ class ProfileView extends StatelessWidget {
                 color: color,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 20,
-              ),
+              child: Icon(icon, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 16),
             Text(
@@ -243,7 +231,7 @@ class ProfileView extends StatelessWidget {
             const Spacer(),
             Icon(
               Icons.chevron_right,
-              color: AppColors.cyprus.withOpacity(0.5),
+              color: AppColors.cyprus.withValues(alpha: 0.5),
               size: 20,
             ),
           ],
@@ -251,21 +239,4 @@ class ProfileView extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildBottomNavItem(IconData icon, bool isActive) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: isActive ? AppColors.carbbeanGreen : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Icon(
-        icon,
-        color: isActive ? Colors.white : AppColors.cyprus.withOpacity(0.5),
-        size: 24,
-      ),
-    );
-  }
 }
-

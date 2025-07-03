@@ -13,9 +13,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   String _selectedPeriod = 'Monthly';
 
-  List screens = [
-
-  ];
+  List screens = [];
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +48,6 @@ class _HomeViewState extends State<HomeView> {
           ],
         ),
       ),
-
     );
   }
 
@@ -75,7 +72,7 @@ class _HomeViewState extends State<HomeView> {
               Text(
                 '30% Of Your Expenses, Looks Good.',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   fontSize: 14,
                   fontFamily: 'Poppins',
                 ),
@@ -83,11 +80,13 @@ class _HomeViewState extends State<HomeView> {
             ],
           ),
           GestureDetector(
-            onTap: (){Get.toNamed(RoutesName.notificationView);},
+            onTap: () {
+              Get.toNamed(RoutesName.notificationView);
+            },
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
@@ -348,6 +347,4 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
-
-
 }

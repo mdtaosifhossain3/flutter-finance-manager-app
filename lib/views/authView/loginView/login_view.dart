@@ -22,7 +22,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    Theme.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF6FCF9),
       body: SafeArea(
@@ -38,7 +38,7 @@ class _LoginViewState extends State<LoginView> {
                     width: 90,
                     height: 90,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF19D3AE).withOpacity(0.1),
+                      color: const Color(0xFF19D3AE).withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(

@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AnalysisScreen extends StatefulWidget {
+  const AnalysisScreen({super.key});
+
   @override
-  _AnalysisScreenState createState() => _AnalysisScreenState();
+  State<AnalysisScreen> createState() => _AnalysisScreenState();
 }
 
 class _AnalysisScreenState extends State<AnalysisScreen> {
@@ -15,7 +17,15 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
   // Sample data for the chart
   final List<double> weeklyData = [8, 3, 6, 4, 12, 2, 8];
-  final List<String> weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  final List<String> weekDays = [
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    'Sat',
+    'Sun',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +39,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-
-                  InkWell(onTap: (){
-
-                    Get.toNamed(RoutesName.homeView);
-                  },child:   Icon(Icons.arrow_back, color: Colors.white),),
                   Expanded(
                     child: Text(
                       'Analysis',
@@ -84,7 +89,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               child: Container(
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -101,7 +106,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                       child: Container(
                         height: 6,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.3),
+                          color: Colors.white.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(3),
                         ),
                         child: FractionallySizedBox(
@@ -140,10 +145,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                   SizedBox(width: 8),
                   Text(
                     '30% Of Your Expenses, Looks Good.',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 14),
                   ),
                 ],
               ),
@@ -184,16 +186,25 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                               });
                             },
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 10,
+                              ),
                               decoration: BoxDecoration(
-                                color: isSelected ? Color(0xFF00C896) : Colors.transparent,
+                                color: isSelected
+                                    ? Color(0xFF00C896)
+                                    : Colors.transparent,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
                                 period,
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : Colors.grey[600],
-                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.grey[600],
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
                                 ),
                               ),
                             ),
@@ -229,19 +240,23 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                                 Row(
                                   children: [
                                     InkWell(
-                                       child:  Icon(Icons.search,color: Color(0xFF00C896),),
+                                      child: Icon(
+                                        Icons.search,
+                                        color: Color(0xFF00C896),
+                                      ),
 
                                       onTap: () {
-                                         Get.toNamed(RoutesName.searchView);
-                                         },),
+                                        Get.toNamed(RoutesName.searchView);
+                                      },
+                                    ),
 
                                     IconButton(
-                                      icon:  Icon(Icons.calendar_month),
+                                      icon: Icon(Icons.calendar_month),
                                       color: Color(0xFF00C896),
                                       onPressed: () {
                                         Get.toNamed(RoutesName.calenderView);
-                                      },),
-
+                                      },
+                                    ),
                                   ],
                                 ),
                               ],
@@ -287,8 +302,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                                         },
                                       ),
                                     ),
-                                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                    topTitles: AxisTitles(
+                                      sideTitles: SideTitles(showTitles: false),
+                                    ),
+                                    rightTitles: AxisTitles(
+                                      sideTitles: SideTitles(showTitles: false),
+                                    ),
                                   ),
                                   borderData: FlBorderData(show: false),
                                   gridData: FlGridData(
@@ -296,7 +315,9 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                                     drawVerticalLine: false,
                                     horizontalInterval: 5,
                                   ),
-                                  barGroups: weeklyData.asMap().entries.map((entry) {
+                                  barGroups: weeklyData.asMap().entries.map((
+                                    entry,
+                                  ) {
                                     return BarChartGroupData(
                                       x: entry.key,
                                       barRods: [
@@ -304,7 +325,9 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                                           toY: entry.value,
                                           color: Color(0xFF00C896),
                                           width: 20,
-                                          borderRadius: BorderRadius.circular(2),
+                                          borderRadius: BorderRadius.circular(
+                                            2,
+                                          ),
                                         ),
                                       ],
                                     );
@@ -343,8 +366,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                       ),
                     ),
 
-                   SizedBox(height: 16),
-
+                    SizedBox(height: 16),
 
                     // // Bottom Navigation
                     // Container(
@@ -377,7 +399,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     );
   }
 
-  Widget _buildBalanceCard(String title, String amount, Color bgColor, Color textColor) {
+  Widget _buildBalanceCard(
+    String title,
+    String amount,
+    Color bgColor,
+    Color textColor,
+  ) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -390,17 +417,16 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
           Row(
             children: [
               Icon(
-                title.contains('Balance') ? Icons.account_balance_wallet : Icons.receipt_long,
+                title.contains('Balance')
+                    ? Icons.account_balance_wallet
+                    : Icons.receipt_long,
                 size: 16,
                 color: Colors.grey[600],
               ),
               SizedBox(width: 4),
               Text(
                 title,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
             ],
           ),
@@ -418,7 +444,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     );
   }
 
-  Widget _buildSummaryCard(String title, String amount, Color color, IconData icon) {
+  Widget _buildSummaryCard(
+    String title,
+    String amount,
+    Color color,
+    IconData icon,
+  ) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -430,13 +461,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         children: [
           Icon(icon, color: color, size: 24),
           SizedBox(height: 8),
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14,
-            ),
-          ),
+          Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
           SizedBox(height: 4),
           Text(
             amount,
@@ -447,21 +472,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, bool isActive) {
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isActive ? Color(0xFF00C896) : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Icon(
-        icon,
-        color: isActive ? Colors.white : Colors.grey[600],
-        size: 24,
       ),
     );
   }

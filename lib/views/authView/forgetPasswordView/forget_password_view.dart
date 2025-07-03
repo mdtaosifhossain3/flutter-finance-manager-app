@@ -25,14 +25,12 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
     setState(() {
       otpSent = true;
     });
-    // TODO: Implement OTP sending logic
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('OTP sent to your email!')));
   }
 
   void verifyOtp() {
-    // TODO: Implement OTP verification logic
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('OTP verified!')));
@@ -55,7 +53,7 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
                     width: 90,
                     height: 90,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF19D3AE).withOpacity(0.1),
+                      color: const Color(0xFF19D3AE).withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(

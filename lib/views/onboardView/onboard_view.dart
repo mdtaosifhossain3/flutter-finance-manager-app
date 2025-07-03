@@ -25,7 +25,6 @@ class _OnboardViewState extends State<OnboardView> {
             padding: const EdgeInsets.all(24.0),
             child: Column(
               children: [
-
                 Expanded(
                   child: PageView(
                     controller: OnboardViewModel.pageController,
@@ -54,7 +53,7 @@ class _OnboardViewState extends State<OnboardView> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton(
-                      onPressed: () => Get.offAllNamed(RoutesName.registerView),
+                      onPressed: () => Get.offAllNamed(RoutesName.loginView),
                       child: Text(
                         "Skip",
                         style: TextStyle(

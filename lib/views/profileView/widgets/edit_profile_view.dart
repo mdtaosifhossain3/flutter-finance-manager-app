@@ -13,16 +13,22 @@ class AppColors {
 }
 
 class EditProfileView extends StatefulWidget {
-  const EditProfileView({Key? key}) : super(key: key);
+  const EditProfileView({super.key});
 
   @override
   State<EditProfileView> createState() => _EditProfileViewState();
 }
 
 class _EditProfileViewState extends State<EditProfileView> {
-  final TextEditingController _usernameController = TextEditingController(text: 'john smith');
-  final TextEditingController _phoneController = TextEditingController(text: '+44 555 6555 50');
-  final TextEditingController _emailController = TextEditingController(text: 'johnsmith@support@gmail.com');
+  final TextEditingController _usernameController = TextEditingController(
+    text: 'john smith',
+  );
+  final TextEditingController _phoneController = TextEditingController(
+    text: '+44 555 6555 50',
+  );
+  final TextEditingController _emailController = TextEditingController(
+    text: 'johnsmith@support@gmail.com',
+  );
 
   @override
   void dispose() {
@@ -74,7 +80,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                 ],
               ),
             ),
-            
+
             // Content Container
             Expanded(
               child: Container(
@@ -90,7 +96,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                   child: Column(
                     children: [
                       const SizedBox(height: 20),
-                      
+
                       // Profile Picture
                       Stack(
                         children: [
@@ -99,13 +105,10 @@ class _EditProfileViewState extends State<EditProfileView> {
                             height: 100,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 4,
-                              ),
+                              border: Border.all(color: Colors.white, width: 4),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 10,
                                   offset: const Offset(0, 5),
                                 ),
@@ -141,9 +144,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                           ),
                         ],
                       ),
-                      
+
                       const SizedBox(height: 16),
-                      
+
                       const Text(
                         'John Smith',
                         style: TextStyle(
@@ -152,19 +155,19 @@ class _EditProfileViewState extends State<EditProfileView> {
                           color: AppColors.cyprus,
                         ),
                       ),
-                      
+
                       const SizedBox(height: 4),
-                      
+
                       Text(
                         'ID: 26012024',
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.cyprus.withOpacity(0.6),
+                          color: AppColors.cyprus.withValues(alpha: 0.6),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 40),
-                      
+
                       // Account Settings Section
                       Align(
                         alignment: Alignment.centerLeft,
@@ -177,33 +180,33 @@ class _EditProfileViewState extends State<EditProfileView> {
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Username Field
                       _buildInputField(
                         label: 'Username',
                         controller: _usernameController,
                       ),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Phone Field
                       _buildInputField(
                         label: 'Phone',
                         controller: _phoneController,
                       ),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Email Field
                       _buildInputField(
                         label: 'Email Address',
                         controller: _emailController,
                       ),
-                      
+
                       const SizedBox(height: 40),
-                      
+
                       // Update Profile Button
                       SizedBox(
                         width: double.infinity,
@@ -235,7 +238,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -268,17 +271,11 @@ class _EditProfileViewState extends State<EditProfileView> {
           decoration: BoxDecoration(
             color: AppColors.lightGreen,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.transparent,
-              width: 1,
-            ),
+            border: Border.all(color: Colors.transparent, width: 1),
           ),
           child: TextFormField(
             controller: controller,
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.cyprus,
-            ),
+            style: TextStyle(fontSize: 16, color: AppColors.cyprus),
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
@@ -286,7 +283,7 @@ class _EditProfileViewState extends State<EditProfileView> {
               ),
               border: InputBorder.none,
               hintStyle: TextStyle(
-                color: AppColors.cyprus.withOpacity(0.5),
+                color: AppColors.cyprus.withValues(alpha: 0.5),
               ),
             ),
           ),
@@ -295,4 +292,3 @@ class _EditProfileViewState extends State<EditProfileView> {
     );
   }
 }
-

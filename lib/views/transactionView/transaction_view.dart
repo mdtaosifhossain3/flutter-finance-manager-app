@@ -24,7 +24,7 @@ class TransactionView extends StatefulWidget {
 class _TransactionViewState extends State<TransactionView> {
   bool isIncomeSelected = false; // false = All, true = Income, null = Expense
   bool isExpenseSelected = false;
-  
+
   // Sample transaction data
   final List<TransactionItem> allTransactions = [
     // Income transactions
@@ -88,7 +88,7 @@ class _TransactionViewState extends State<TransactionView> {
       icon: Icons.computer,
       color: AppColors.lightBlue,
     ),
-    
+
     // Expense transactions
     TransactionItem(
       title: 'Groceries',
@@ -176,7 +176,7 @@ class _TransactionViewState extends State<TransactionView> {
   @override
   Widget build(BuildContext context) {
     final filteredTransactions = getFilteredTransactions();
-    
+
     return Scaffold(
       backgroundColor: AppColors.carbbeanGreen,
       body: SafeArea(
@@ -191,14 +191,6 @@ class _TransactionViewState extends State<TransactionView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
                       const Text(
                         'Transaction',
                         style: TextStyle(
@@ -210,7 +202,7 @@ class _TransactionViewState extends State<TransactionView> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
@@ -222,7 +214,7 @@ class _TransactionViewState extends State<TransactionView> {
                     ],
                   ),
                   const SizedBox(height: 30),
-                  
+
                   // Total Balance Card
                   Container(
                     width: double.infinity,
@@ -253,7 +245,7 @@ class _TransactionViewState extends State<TransactionView> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Income/Expense Toggle Buttons
                   Row(
                     children: [
@@ -268,7 +260,7 @@ class _TransactionViewState extends State<TransactionView> {
                           child: Container(
                             padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
-                              color: isIncomeSelected 
+                              color: isIncomeSelected
                                   ? AppColors.vividBlue
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(12),
@@ -280,8 +272,8 @@ class _TransactionViewState extends State<TransactionView> {
                                   children: [
                                     Icon(
                                       Icons.trending_up,
-                                      color: isIncomeSelected 
-                                          ? Colors.white 
+                                      color: isIncomeSelected
+                                          ? Colors.white
                                           : AppColors.vividBlue,
                                       size: 20,
                                     ),
@@ -289,8 +281,8 @@ class _TransactionViewState extends State<TransactionView> {
                                     Text(
                                       'Income',
                                       style: TextStyle(
-                                        color: isIncomeSelected 
-                                            ? Colors.white 
+                                        color: isIncomeSelected
+                                            ? Colors.white
                                             : AppColors.cyprus,
                                         fontSize: 12,
                                       ),
@@ -301,8 +293,8 @@ class _TransactionViewState extends State<TransactionView> {
                                 Text(
                                   '\$${getTotalIncome().toStringAsFixed(2)}',
                                   style: TextStyle(
-                                    color: isIncomeSelected 
-                                        ? Colors.white 
+                                    color: isIncomeSelected
+                                        ? Colors.white
                                         : AppColors.cyprus,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -325,7 +317,7 @@ class _TransactionViewState extends State<TransactionView> {
                           child: Container(
                             padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
-                              color: isExpenseSelected 
+                              color: isExpenseSelected
                                   ? AppColors.vividBlue
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(12),
@@ -337,8 +329,8 @@ class _TransactionViewState extends State<TransactionView> {
                                   children: [
                                     Icon(
                                       Icons.trending_down,
-                                      color: isExpenseSelected 
-                                          ? Colors.white 
+                                      color: isExpenseSelected
+                                          ? Colors.white
                                           : AppColors.vividBlue,
                                       size: 20,
                                     ),
@@ -346,8 +338,8 @@ class _TransactionViewState extends State<TransactionView> {
                                     Text(
                                       'Expense',
                                       style: TextStyle(
-                                        color: isExpenseSelected 
-                                            ? Colors.white 
+                                        color: isExpenseSelected
+                                            ? Colors.white
                                             : AppColors.cyprus,
                                         fontSize: 12,
                                       ),
@@ -358,8 +350,8 @@ class _TransactionViewState extends State<TransactionView> {
                                 Text(
                                   '\$${getTotalExpense().toStringAsFixed(2)}',
                                   style: TextStyle(
-                                    color: isExpenseSelected 
-                                        ? Colors.white 
+                                    color: isExpenseSelected
+                                        ? Colors.white
                                         : AppColors.cyprus,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -375,7 +367,7 @@ class _TransactionViewState extends State<TransactionView> {
                 ],
               ),
             ),
-            
+
             // Transactions List Section
             Expanded(
               child: Container(
@@ -400,7 +392,7 @@ class _TransactionViewState extends State<TransactionView> {
 
   List<Widget> _buildTransactionsList(List<TransactionItem> transactions) {
     Map<String, List<TransactionItem>> groupedTransactions = {};
-    
+
     for (var transaction in transactions) {
       if (!groupedTransactions.containsKey(transaction.month)) {
         groupedTransactions[transaction.month] = [];
@@ -409,7 +401,7 @@ class _TransactionViewState extends State<TransactionView> {
     }
 
     List<Widget> widgets = [];
-    
+
     groupedTransactions.forEach((month, transactionList) {
       // Add month header
       widgets.add(
@@ -442,7 +434,7 @@ class _TransactionViewState extends State<TransactionView> {
           ),
         ),
       );
-      
+
       // Add transaction items
       for (var transaction in transactionList) {
         widgets.add(_buildTransactionItem(transaction));
@@ -468,11 +460,7 @@ class _TransactionViewState extends State<TransactionView> {
               color: transaction.color,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              transaction.icon,
-              color: Colors.white,
-              size: 24,
-            ),
+            child: Icon(transaction.icon, color: Colors.white, size: 24),
           ),
           const SizedBox(width: 15),
           Expanded(
@@ -492,7 +480,7 @@ class _TransactionViewState extends State<TransactionView> {
                   '${transaction.time} • ${transaction.date}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.cyprus.withOpacity(0.7),
+                    color: AppColors.cyprus.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -502,15 +490,13 @@ class _TransactionViewState extends State<TransactionView> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                transaction.isIncome 
+                transaction.isIncome
                     ? '+\$${transaction.amount.toStringAsFixed(2)}'
                     : '-\$${transaction.amount.toStringAsFixed(2)}',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: transaction.isIncome 
-                      ? Colors.green 
-                      : AppColors.cyprus,
+                  color: transaction.isIncome ? Colors.green : AppColors.cyprus,
                 ),
               ),
               const SizedBox(height: 2),
@@ -518,7 +504,7 @@ class _TransactionViewState extends State<TransactionView> {
                 transaction.type,
                 style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.cyprus.withOpacity(0.7),
+                  color: AppColors.cyprus.withValues(alpha: 0.7),
                 ),
               ),
             ],

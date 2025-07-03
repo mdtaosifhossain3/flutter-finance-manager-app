@@ -25,7 +25,7 @@ class NotificationView extends StatefulWidget {
   const NotificationView({super.key});
 
   @override
-  _NotificationViewState createState() => _NotificationViewState();
+  State<NotificationView> createState() => _NotificationViewState();
 }
 
 class _NotificationViewState extends State<NotificationView> {
@@ -51,7 +51,8 @@ class _NotificationViewState extends State<NotificationView> {
     NotificationItem(
       id: '3',
       title: 'Transactions',
-      description: 'A new transaction has been registered\nGroceries | Pantry | -\$100.00',
+      description:
+          'A new transaction has been registered\nGroceries | Pantry | -\$100.00',
       time: '17:00 - April 24',
       category: 'Yesterday',
       icon: Icons.monetization_on,
@@ -78,7 +79,8 @@ class _NotificationViewState extends State<NotificationView> {
     NotificationItem(
       id: '6',
       title: 'Transactions',
-      description: 'A new transaction has been registered\nFood | Dinner | -\$70.40',
+      description:
+          'A new transaction has been registered\nFood | Dinner | -\$70.40',
       time: '17:00 - April 24',
       category: 'This Weekend',
       icon: Icons.monetization_on,
@@ -111,10 +113,7 @@ class _NotificationViewState extends State<NotificationView> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
+              child: Text('Cancel', style: TextStyle(color: Colors.grey[600])),
             ),
             TextButton(
               onPressed: () {
@@ -162,12 +161,11 @@ class _NotificationViewState extends State<NotificationView> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  InkWell(onTap: (){
-                    Get.back();
-                  }, child: 
-                  
-                  
-                  Icon(Icons.arrow_back, color: Colors.white),
+                  InkWell(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: Icon(Icons.arrow_back, color: Colors.white),
                   ),
                   Expanded(
                     child: Text(
@@ -181,21 +179,26 @@ class _NotificationViewState extends State<NotificationView> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: notifications.isNotEmpty ? _clearAllNotifications : null,
+                    onTap: notifications.isNotEmpty
+                        ? _clearAllNotifications
+                        : null,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
-                        color: notifications.isNotEmpty 
-                          ? Colors.white.withOpacity(0.2) 
-                          : Colors.transparent,
+                        color: notifications.isNotEmpty
+                            ? Colors.white.withValues(alpha: 0.2)
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Text(
                         'Clear All',
                         style: TextStyle(
-                          color: notifications.isNotEmpty 
-                            ? Colors.white 
-                            : Colors.white.withOpacity(0.5),
+                          color: notifications.isNotEmpty
+                              ? Colors.white
+                              : Colors.white.withValues(alpha: 0.5),
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
@@ -205,7 +208,7 @@ class _NotificationViewState extends State<NotificationView> {
                 ],
               ),
             ),
-            
+
             // Main Content Area
             Expanded(
               child: Container(
@@ -252,19 +255,18 @@ class _NotificationViewState extends State<NotificationView> {
           SizedBox(height: 8),
           Text(
             'You\'re all caught up!',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[500],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[500]),
           ),
         ],
       ),
     );
   }
 
-  List<Widget> _buildNotificationList(Map<String, List<NotificationItem>> groupedNotifications) {
+  List<Widget> _buildNotificationList(
+    Map<String, List<NotificationItem>> groupedNotifications,
+  ) {
     List<Widget> widgets = [];
-    
+
     groupedNotifications.forEach((category, notifications) {
       // Add category header
       widgets.add(
@@ -280,19 +282,19 @@ class _NotificationViewState extends State<NotificationView> {
           ),
         ),
       );
-      
+
       // Add notifications for this category
       for (var notification in notifications) {
         widgets.add(_buildNotificationCard(notification));
         widgets.add(SizedBox(height: 12));
       }
     });
-    
+
     // Remove the last SizedBox
     if (widgets.isNotEmpty) {
       widgets.removeLast();
     }
-    
+
     return widgets;
   }
 
@@ -307,11 +309,7 @@ class _NotificationViewState extends State<NotificationView> {
           color: Colors.red,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Icon(
-          Icons.delete,
-          color: Colors.white,
-          size: 28,
-        ),
+        child: Icon(Icons.delete, color: Colors.white, size: 28),
       ),
       onDismissed: (direction) {
         _removeNotification(notification.id);
@@ -323,7 +321,7 @@ class _NotificationViewState extends State<NotificationView> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: Offset(0, 2),
             ),
@@ -336,7 +334,7 @@ class _NotificationViewState extends State<NotificationView> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: notification.iconColor.withOpacity(0.1),
+                color: notification.iconColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(

@@ -1,4 +1,7 @@
+import 'package:finance_manager_app/views/mainView/main_view.dart';
 import 'package:flutter/material.dart';
+import 'package:get/instance_manager.dart';
+import 'package:get/route_manager.dart';
 
 class LoginViewModel {
   final TextEditingController emailController = TextEditingController();
@@ -10,15 +13,12 @@ class LoginViewModel {
   }
 
   void login(BuildContext context) {
-    // TODO: Add your DB or API login logic here
     final email = emailController.text.trim();
     final password = passwordController.text;
-    // Example: print login data
-    print('Login with: email=$email, password=$password');
-    // Show a snackbar for demonstration
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Login pressed for $email')));
+    // ScaffoldMessenger.of(
+    //   context,
+    // ).showSnackBar(SnackBar(content: Text('Login pressed for $email')));
+    Get.to(MainView());
   }
 
   void dispose() {

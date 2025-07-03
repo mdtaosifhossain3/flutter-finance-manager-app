@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
+
   @override
-  _SearchScreenState createState() => _SearchScreenState();
+  State<SearchScreen> createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
@@ -21,7 +23,7 @@ class _SearchScreenState extends State<SearchScreen> {
     'Healthcare',
     'Education',
     'Travel',
-    'Others'
+    'Others',
   ];
 
   @override
@@ -36,10 +38,12 @@ class _SearchScreenState extends State<SearchScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-
-                  InkWell(onTap: (){
-                    Get.back();
-                    },child:   Icon(Icons.arrow_back, color: Colors.white),),
+                  InkWell(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: Icon(Icons.arrow_back, color: Colors.white),
+                  ),
                   Expanded(
                     child: Text(
                       'Search',
@@ -67,14 +71,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Search...',
-                    hintStyle: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 16,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: Colors.grey[500],
-                    ),
+                    hintStyle: TextStyle(color: Colors.grey[500], fontSize: 16),
+                    prefixIcon: Icon(Icons.search, color: Colors.grey[500]),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 20,
@@ -192,12 +190,16 @@ class _SearchScreenState extends State<SearchScreen> {
                           );
                           if (picked != null) {
                             setState(() {
-                              selectedDate = '${picked.day} /${picked.month < 10 ? '0' : ''}${_getMonthName(picked.month)}/${picked.year}';
+                              selectedDate =
+                                  '${picked.day} /${picked.month < 10 ? '0' : ''}${_getMonthName(picked.month)}/${picked.year}';
                             });
                           }
                         },
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
                           decoration: BoxDecoration(
                             color: Color(0xFFE8F5F2),
                             borderRadius: BorderRadius.circular(12),
@@ -255,7 +257,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
                       // Search Button
                       Center(
-                        child: Container(
+                        child: SizedBox(
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
@@ -312,23 +314,20 @@ class _SearchScreenState extends State<SearchScreen> {
             height: 20,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(
-                color: Color(0xFF00C896),
-                width: 2,
-              ),
+              border: Border.all(color: Color(0xFF00C896), width: 2),
               color: isSelected ? Color(0xFF00C896) : Colors.transparent,
             ),
             child: isSelected
                 ? Center(
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                ),
-              ),
-            )
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
                 : null,
           ),
           SizedBox(width: 8),
@@ -347,8 +346,19 @@ class _SearchScreenState extends State<SearchScreen> {
 
   String _getMonthName(int month) {
     const months = [
-      '', 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-      'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
+      '',
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC',
     ];
     return months[month];
   }

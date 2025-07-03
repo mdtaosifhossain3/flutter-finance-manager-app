@@ -37,7 +37,7 @@ class _RegisterViewState extends State<RegisterView> {
                     width: 90,
                     height: 90,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF19D3AE).withOpacity(0.1),
+                      color: const Color(0xFF19D3AE).withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(

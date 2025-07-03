@@ -50,7 +50,7 @@ class CategoryView extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
@@ -62,7 +62,7 @@ class CategoryView extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 30),
-                  
+
                   // Balance Cards
                   Row(
                     children: [
@@ -84,7 +84,7 @@ class CategoryView extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Progress Bar
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,24 +113,23 @@ class CategoryView extends StatelessWidget {
                       const SizedBox(height: 8),
                       LinearProgressIndicator(
                         value: 0.3,
-                        backgroundColor: Colors.white.withOpacity(0.3),
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                        backgroundColor: Colors.white.withValues(alpha: 0.3),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Colors.white,
+                        ),
                         minHeight: 6,
                       ),
                       const SizedBox(height: 8),
                       const Text(
                         '30% of Your Expenses, Looks Good.',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            
+
             // Categories Section
             Expanded(
               child: Container(
@@ -226,7 +225,7 @@ class CategoryView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
@@ -234,18 +233,11 @@ class CategoryView extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                icon,
-                color: Colors.white,
-                size: 16,
-              ),
+              Icon(icon, color: Colors.white, size: 16),
               const SizedBox(width: 5),
               Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: Colors.white, fontSize: 12),
               ),
             ],
           ),
@@ -274,7 +266,7 @@ class CategoryView extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -286,11 +278,7 @@ class CategoryView extends StatelessWidget {
                 color: color,
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 28,
-              ),
+              child: Icon(icon, color: Colors.white, size: 28),
             ),
             const SizedBox(height: 12),
             Text(
@@ -336,26 +324,16 @@ class CategoryDetailScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.category,
-              size: 80,
-              color: const Color(0xff00D09E),
-            ),
+            Icon(Icons.category, size: 80, color: const Color(0xff00D09E)),
             const SizedBox(height: 20),
             Text(
               'Welcome to $categoryName',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             Text(
               'This is the $categoryName category page.',
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
           ],
         ),

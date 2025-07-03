@@ -1,11 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class CalendarScreen extends StatefulWidget {
+  const CalendarScreen({super.key});
+
   @override
-  _CalendarScreenState createState() => _CalendarScreenState();
+  State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
@@ -15,13 +16,31 @@ class _CalendarScreenState extends State<CalendarScreen> {
   int selectedDate = 30;
 
   final List<String> months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   final List<String> years = ['2021', '2022', '2023', '2024', '2025'];
 
-  final List<String> weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  final List<String> weekDays = [
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    'Sat',
+    'Sun',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +54,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-
-                  InkWell(onTap: (){
-                    Get.back();
-                  },child:   Icon(Icons.arrow_back, color: Colors.white),),
+                  InkWell(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: Icon(Icons.arrow_back, color: Colors.white),
+                  ),
                   Expanded(
                     child: Text(
                       'Calendar',
@@ -135,7 +156,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: weekDays.map((day) {
-                              return Container(
+                              return SizedBox(
                                 width: 35,
                                 child: Text(
                                   day,
@@ -180,14 +201,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               child: Container(
                                 padding: EdgeInsets.symmetric(vertical: 12),
                                 decoration: BoxDecoration(
-                                  color: !showCategories ? Color(0xFF00C896) : Colors.transparent,
+                                  color: !showCategories
+                                      ? Color(0xFF00C896)
+                                      : Colors.transparent,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
                                   'Spends',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: !showCategories ? Colors.white : Colors.grey[600],
+                                    color: !showCategories
+                                        ? Colors.white
+                                        : Colors.grey[600],
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -204,14 +229,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               child: Container(
                                 padding: EdgeInsets.symmetric(vertical: 12),
                                 decoration: BoxDecoration(
-                                  color: showCategories ? Color(0xFF00C896) : Colors.transparent,
+                                  color: showCategories
+                                      ? Color(0xFF00C896)
+                                      : Colors.transparent,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
                                   'Categories',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: showCategories ? Colors.white : Colors.grey[600],
+                                    color: showCategories
+                                        ? Colors.white
+                                        : Colors.grey[600],
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -228,7 +257,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     Expanded(
                       child: Container(
                         margin: EdgeInsets.symmetric(horizontal: 20),
-                        child: showCategories ? _buildCategoriesView() : _buildSpendsView(),
+                        child: showCategories
+                            ? _buildCategoriesView()
+                            : _buildSpendsView(),
                       ),
                     ),
 
@@ -332,7 +363,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  Widget _buildSpendItem(IconData icon, String title, String time, String category, String amount, Color iconColor) {
+  Widget _buildSpendItem(
+    IconData icon,
+    String title,
+    String time,
+    String category,
+    String amount,
+    Color iconColor,
+  ) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -345,14 +383,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
+              color: iconColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              icon,
-              color: iconColor,
-              size: 24,
-            ),
+            child: Icon(icon, color: iconColor, size: 24),
           ),
           SizedBox(width: 16),
           Expanded(
@@ -370,10 +404,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 SizedBox(height: 4),
                 Text(
                   time,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -383,10 +414,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             children: [
               Text(
                 category,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
               SizedBox(height: 4),
               Text(
@@ -475,19 +503,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         SizedBox(width: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.black87,
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 14, color: Colors.black87)),
       ],
     );
   }
@@ -500,7 +519,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Container(
+        return SizedBox(
           height: 300,
           child: Column(
             children: [
@@ -515,10 +534,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
               Text(
                 'Select Month',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               Expanded(
                 child: ListView.builder(
@@ -551,7 +567,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Container(
+        return SizedBox(
           height: 300,
           child: Column(
             children: [
@@ -566,10 +582,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
               Text(
                 'Select Year',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               Expanded(
                 child: ListView.builder(

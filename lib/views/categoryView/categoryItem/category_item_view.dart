@@ -16,7 +16,7 @@ class AppColors {
 // Category View Screen (Food Category)
 class CategoryItemView extends StatefulWidget {
   final String categoryName;
-  
+
   const CategoryItemView({super.key, required this.categoryName});
 
   @override
@@ -97,7 +97,7 @@ class _CategoryItemViewState extends State<CategoryItemView> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
@@ -109,7 +109,7 @@ class _CategoryItemViewState extends State<CategoryItemView> {
                     ],
                   ),
                   const SizedBox(height: 30),
-                  
+
                   // Balance Cards
                   Row(
                     children: [
@@ -131,7 +131,7 @@ class _CategoryItemViewState extends State<CategoryItemView> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Progress Bar
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,24 +160,23 @@ class _CategoryItemViewState extends State<CategoryItemView> {
                       const SizedBox(height: 8),
                       LinearProgressIndicator(
                         value: 0.3,
-                        backgroundColor: Colors.white.withOpacity(0.3),
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                        backgroundColor: Colors.white.withValues(alpha: 0.3),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Colors.white,
+                        ),
                         minHeight: 6,
                       ),
                       const SizedBox(height: 8),
                       const Text(
                         '30% of Your Expenses, Looks Good.',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            
+
             // Expenses List Section
             Expanded(
               child: Container(
@@ -244,7 +243,7 @@ class _CategoryItemViewState extends State<CategoryItemView> {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
@@ -252,18 +251,11 @@ class _CategoryItemViewState extends State<CategoryItemView> {
         children: [
           Row(
             children: [
-              Icon(
-                icon,
-                color: Colors.white,
-                size: 16,
-              ),
+              Icon(icon, color: Colors.white, size: 16),
               const SizedBox(width: 5),
               Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: Colors.white, fontSize: 12),
               ),
             ],
           ),
@@ -283,7 +275,7 @@ class _CategoryItemViewState extends State<CategoryItemView> {
 
   List<Widget> _buildExpensesList() {
     Map<String, List<ExpenseItem>> groupedExpenses = {};
-    
+
     for (var expense in expenses) {
       if (!groupedExpenses.containsKey(expense.month)) {
         groupedExpenses[expense.month] = [];
@@ -292,7 +284,7 @@ class _CategoryItemViewState extends State<CategoryItemView> {
     }
 
     List<Widget> widgets = [];
-    
+
     groupedExpenses.forEach((month, expenseList) {
       // Add month header
       widgets.add(
@@ -325,7 +317,7 @@ class _CategoryItemViewState extends State<CategoryItemView> {
           ),
         ),
       );
-      
+
       // Add expense items
       for (var expense in expenseList) {
         widgets.add(_buildExpenseItem(expense));
@@ -351,11 +343,7 @@ class _CategoryItemViewState extends State<CategoryItemView> {
               color: AppColors.lightBlue,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Icons.restaurant,
-              color: Colors.white,
-              size: 24,
-            ),
+            child: const Icon(Icons.restaurant, color: Colors.white, size: 24),
           ),
           const SizedBox(width: 15),
           Expanded(
@@ -375,7 +363,7 @@ class _CategoryItemViewState extends State<CategoryItemView> {
                   '${expense.time} • ${expense.date}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.cyprus.withOpacity(0.7),
+                    color: AppColors.cyprus.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -398,7 +386,7 @@ class _CategoryItemViewState extends State<CategoryItemView> {
 // Add Expense Screen
 class AddExpenseScreen extends StatefulWidget {
   final String categoryName;
-  
+
   const AddExpenseScreen({super.key, required this.categoryName});
 
   @override
@@ -409,13 +397,19 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
-  
+
   String selectedDate = 'April 30, 2024';
   String selectedCategory = '';
-  
+
   List<String> categories = [
-    'Food', 'Transport', 'Medicine', 'Groceries', 
-    'Rent', 'Gifts', 'Savings', 'Entertainment'
+    'Food',
+    'Transport',
+    'Medicine',
+    'Groceries',
+    'Rent',
+    'Gifts',
+    'Savings',
+    'Entertainment',
   ];
 
   @override
@@ -458,7 +452,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
@@ -470,7 +464,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 ],
               ),
             ),
-            
+
             // Form Section
             Expanded(
               child: Container(
@@ -497,7 +491,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       ),
                       const SizedBox(height: 10),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.lightGreen,
                           borderRadius: BorderRadius.circular(12),
@@ -528,7 +525,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      
+
                       // Category Field
                       const Text(
                         'Category',
@@ -540,7 +537,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       ),
                       const SizedBox(height: 10),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.lightGreen,
                           borderRadius: BorderRadius.circular(12),
@@ -566,7 +566,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      
+
                       // Amount Field
                       const Text(
                         'Amount',
@@ -593,7 +593,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      
+
                       // Expense Title Field
                       const Text(
                         'Expense Title',
@@ -619,10 +619,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      
+
                       // Message Field
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.lightGreen,
                           borderRadius: BorderRadius.circular(12),
@@ -640,9 +643,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           ),
                         ),
                       ),
-                      
+
                       const Spacer(),
-                      
+
                       // Save Button
                       SizedBox(
                         width: double.infinity,
