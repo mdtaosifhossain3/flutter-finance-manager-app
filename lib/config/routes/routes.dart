@@ -7,6 +7,7 @@ import 'package:finance_manager_app/views/authView/registerView/register_view.da
 import 'package:finance_manager_app/views/authView/resetPasswordView/reset_password_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
 import 'package:finance_manager_app/views/notificationView/notification_view.dart';
+import 'package:finance_manager_app/views/profileSetupView/profile_setup_view.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
 import 'package:get/get.dart';
 
@@ -44,7 +45,7 @@ class Routes {
     ),
     GetPage(
       name: RoutesName.searchView,
-      page: () =>  SearchScreen(),
+      page: () => SearchScreen(),
       transition: Transition.rightToLeft,
     ),
     GetPage(
@@ -52,11 +53,15 @@ class Routes {
       page: () => CalendarScreen(),
       transition: Transition.rightToLeft,
     ),
-        GetPage(
+    GetPage(
       name: RoutesName.notificationView,
       page: () => NotificationView(),
       transition: Transition.rightToLeft,
     ),
-
+    GetPage(
+      name: RoutesName.profileSetupView,
+      page: () => ProfileSetupView(),
+      transition: Transition.rightToLeft,
+    ),
   ];
 }

@@ -12,4 +12,6 @@ class MyColors {
   static const Color lightBlue = Color(0xff6DB6FE);
   static const Color vividBlue = Color(0xff3299FF);
   static const Color oceanBlue = Color(0xff0068FF);
+
+
 }

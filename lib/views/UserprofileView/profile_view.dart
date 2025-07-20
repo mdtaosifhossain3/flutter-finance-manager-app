@@ -1,5 +1,5 @@
-import 'package:finance_manager_app/views/profileView/widgets/edit_profile_view.dart';
-import 'package:finance_manager_app/views/profileView/widgets/security_view.dart';
+import 'package:finance_manager_app/views/UserprofileView/widgets/edit_profile_view.dart';
+import 'package:finance_manager_app/views/UserprofileView/widgets/security_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 
@@ -117,7 +117,7 @@ class ProfileView extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
+                        child: ListView(
                           children: [
                             _buildMenuItem(
                               icon: Icons.person_outline,

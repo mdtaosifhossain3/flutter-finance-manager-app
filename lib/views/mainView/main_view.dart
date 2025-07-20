@@ -1,9 +1,10 @@
 import 'package:finance_manager_app/views/analysisView/analysis_view.dart';
 import 'package:finance_manager_app/views/categoryView/category_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
-import 'package:finance_manager_app/views/profileView/profile_view.dart';
+import 'package:finance_manager_app/views/UserprofileView/profile_view.dart';
 import 'package:finance_manager_app/views/transactionView/transaction_view.dart';
 import 'package:flutter/material.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 import '../../config/myColors/my_colors.dart';
 
@@ -29,7 +30,39 @@ class _MainViewState extends State<MainView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: screens[_selectedIndex],
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: SalomonBottomBar(
+        currentIndex: _selectedIndex,
+        onTap: (i) => setState(() => _selectedIndex = i),
+        items: [
+          /// Home
+          SalomonBottomBarItem(
+            icon: Icon(Icons.home),
+            title: Text("Home"),
+            selectedColor: Colors.purple,
+          ),
+
+          /// Likes
+          SalomonBottomBarItem(
+            icon: Icon(Icons.analytics),
+            title: Text("Analysis"),
+            selectedColor: Colors.pink,
+          ),
+
+          /// Search
+          SalomonBottomBarItem(
+            icon: Icon(Icons.search),
+            title: Text("Search"),
+            selectedColor: Colors.orange,
+          ),
+
+          /// Profile
+          SalomonBottomBarItem(
+            icon: Icon(Icons.swap_horiz),
+            title: Text("Transfer"),
+            selectedColor: Colors.teal,
+          ),
+        ],
+      ),
     );
   }
 

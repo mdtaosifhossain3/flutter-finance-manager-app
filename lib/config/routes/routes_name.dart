@@ -10,4 +10,5 @@ class RoutesName {
   static const calenderView = "/calender_view";
   static const notificationView = "/notification_view";
   static const categoryView = "/category_view";
+  static const profileSetupView = "/profile_setup_view";
 }
