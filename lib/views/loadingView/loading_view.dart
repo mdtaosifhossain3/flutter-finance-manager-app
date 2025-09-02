@@ -1,10 +1,7 @@
 import 'package:finance_manager_app/config/myColors/my_colors.dart';
-import 'package:finance_manager_app/views/categoryView/categoryItem/category_item_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
-import 'package:finance_manager_app/views/onboardView/onboard_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:lottie/lottie.dart';
 
 class LoadingView extends StatefulWidget {

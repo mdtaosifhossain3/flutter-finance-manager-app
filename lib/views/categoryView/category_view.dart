@@ -1,24 +1,19 @@
-import 'package:finance_manager_app/views/categoryView/categoryItem/category_item_view.dart';
+import 'package:finance_manager_app/config/myColors/my_colors.dart';
+import 'package:finance_manager_app/globalWidgets/balance_expense_card_widget.dart';
+import 'package:finance_manager_app/globalWidgets/progress_bar_widget.dart';
+import 'package:finance_manager_app/views/categoryView/pages/categoryItemView/category_item_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/expense_provider.dart';
 
 class CategoryView extends StatelessWidget {
   const CategoryView({super.key});
 
-  // Color constants
-  static const Color honeyDew = Color(0xffF1FFF3);
-  static const Color lightGreen = Color(0xffDFF7E2);
-  static const Color carbbeanGreen = Color(0xff00D09E);
-  static const Color cyprus = Color(0xff0E3E3E);
-  static const Color fencGreen = Color(0xff052224);
-  static const Color voidB = Color(0xff031314);
-  static const Color lightBlue = Color(0xff6DB6FE);
-  static const Color vividBlue = Color(0xff3299FF);
-  static const Color oceanBlue = Color(0xff0068FF);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: carbbeanGreen,
+      backgroundColor: MyColors.carbbeanGreen,
       body: SafeArea(
         child: Column(
           children: [
@@ -64,68 +59,52 @@ class CategoryView extends StatelessWidget {
                   const SizedBox(height: 30),
 
                   // Balance Cards
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildBalanceCard(
-                          'Total Balance',
-                          '\$7,783.00',
-                          Icons.account_balance_wallet_outlined,
-                        ),
-                      ),
-                      const SizedBox(width: 15),
-                      Expanded(
-                        child: _buildBalanceCard(
-                          'Total Expense',
-                          '\$1,187.40',
-                          Icons.trending_up,
-                        ),
-                      ),
-                    ],
-                  ),
+                 BalanceExpenseCardWidget(),
                   const SizedBox(height: 20),
 
+                  ProgressBarWidget(),
+
                   // Progress Bar
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            '30%',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const Text(
-                            '\$20,000.00',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      LinearProgressIndicator(
-                        value: 0.3,
-                        backgroundColor: Colors.white.withValues(alpha: 0.3),
-                        valueColor: const AlwaysStoppedAnimation<Color>(
-                          Colors.white,
-                        ),
-                        minHeight: 6,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        '30% of Your Expenses, Looks Good.',
-                        style: TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                    ],
-                  ),
+                  // Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Row(
+                  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //       children: [
+                  //         const Text(
+                  //           '30%',
+                  //           style: TextStyle(
+                  //             color: Colors.white,
+                  //             fontSize: 14,
+                  //             fontWeight: FontWeight.w500,
+                  //           ),
+                  //         ),
+                  //         const Text(
+                  //           '\$20,000.00',
+                  //           style: TextStyle(
+                  //             color: Colors.white,
+                  //             fontSize: 14,
+                  //             fontWeight: FontWeight.w500,
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //     const SizedBox(height: 8),
+                  //     LinearProgressIndicator(
+                  //       value: 0.3,
+                  //       backgroundColor: Colors.white.withValues(alpha: 0.3),
+                  //       valueColor: const AlwaysStoppedAnimation<Color>(
+                  //         Colors.white,
+                  //       ),
+                  //       minHeight: 6,
+                  //     ),
+                  //     const SizedBox(height: 8),
+                  //     const Text(
+                  //       '30% of Your Expenses, Looks Good.',
+                  //       style: TextStyle(color: Colors.white, fontSize: 12),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),
@@ -147,68 +126,69 @@ class CategoryView extends StatelessWidget {
                     crossAxisSpacing: 20,
                     mainAxisSpacing: 20,
                     children: [
+
                       _buildCategoryItem(
                         context,
                         'Food',
                         Icons.restaurant,
-                        lightBlue,
-                        () => _navigateToCategory(context, 'Food'),
+                        MyColors.lightBlue,
+                        () => _navigateToCategory(context, 'Food',Icons.restaurant),
                       ),
                       _buildCategoryItem(
                         context,
                         'Transport',
                         Icons.directions_bus,
-                        vividBlue,
-                        () => _navigateToCategory(context, 'Transport'),
+                        MyColors.vividBlue,
+                        () => _navigateToCategory(context, 'Transport', Icons.directions_bus),
                       ),
                       _buildCategoryItem(
                         context,
                         'Medicine',
                         Icons.medical_services,
-                        oceanBlue,
-                        () => _navigateToCategory(context, 'Medicine'),
+                        MyColors.oceanBlue,
+                        () => _navigateToCategory(context, 'Medicine', Icons.medical_services),
                       ),
                       _buildCategoryItem(
                         context,
                         'Groceries',
                         Icons.shopping_bag,
-                        lightBlue,
-                        () => _navigateToCategory(context, 'Groceries'),
+                        MyColors.lightBlue,
+                        () => _navigateToCategory(context, 'Groceries',Icons.shopping_bag),
                       ),
                       _buildCategoryItem(
                         context,
                         'Rent',
                         Icons.handshake,
-                        vividBlue,
-                        () => _navigateToCategory(context, 'Rent'),
+                        MyColors.vividBlue,
+                        () => _navigateToCategory(context, 'Rent',  Icons.handshake),
                       ),
                       _buildCategoryItem(
                         context,
                         'Gifts',
                         Icons.card_giftcard,
-                        oceanBlue,
-                        () => _navigateToCategory(context, 'Gifts'),
+                        MyColors.oceanBlue,
+                        () => _navigateToCategory(context, 'Gifts',  Icons.card_giftcard),
                       ),
                       _buildCategoryItem(
                         context,
                         'Savings',
                         Icons.savings,
-                        lightBlue,
-                        () => _navigateToCategory(context, 'Savings'),
+                        MyColors.lightBlue,
+                        () => _navigateToCategory(context, 'Savings', Icons.savings),
                       ),
                       _buildCategoryItem(
                         context,
                         'Entertainment',
                         Icons.movie,
-                        vividBlue,
-                        () => _navigateToCategory(context, 'Entertainment'),
+                        MyColors.vividBlue,
+                        () => _navigateToCategory(context, 'Entertainment',Icons.movie),
                       ),
                       _buildCategoryItem(
                         context,
                         'More',
                         Icons.add,
-                        oceanBlue,
-                        () => _navigateToCategory(context, 'More'),
+                        MyColors.oceanBlue,
+                        () => _navigateToCategory(context, 'More',Icons.add),
                       ),
                     ],
                   ),
@@ -221,39 +201,7 @@ class CategoryView extends StatelessWidget {
     );
   }
 
-  Widget _buildBalanceCard(String title, String amount, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: Colors.white, size: 16),
-              const SizedBox(width: 5),
-              Text(
-                title,
-                style: const TextStyle(color: Colors.white, fontSize: 12),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            amount,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildCategoryItem(
     BuildContext context,
@@ -284,7 +232,7 @@ class CategoryView extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                color: cyprus,
+                color: MyColors.cyprus,
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
@@ -295,48 +243,13 @@ class CategoryView extends StatelessWidget {
     );
   }
 
-  void _navigateToCategory(BuildContext context, String categoryName) {
+  void _navigateToCategory(BuildContext context, String categoryName,icon) {
+    context.read<AddExpenseProvider>().setCategoryIcon(icon);
     // Navigate to category detail page
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CategoryItemView(categoryName: categoryName),
-      ),
-    );
-  }
-}
-
-// Example Category Detail Screen
-class CategoryDetailScreen extends StatelessWidget {
-  final String categoryName;
-
-  const CategoryDetailScreen({super.key, required this.categoryName});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('$categoryName Details'),
-        backgroundColor: const Color(0xff00D09E),
-        foregroundColor: Colors.white,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.category, size: 80, color: const Color(0xff00D09E)),
-            const SizedBox(height: 20),
-            Text(
-              'Welcome to $categoryName',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'This is the $categoryName category page.',
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-          ],
-        ),
+        builder: (context) => CategoryItemView(categoryName: categoryName,),
       ),
     );
   }

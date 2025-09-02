@@ -2,7 +2,6 @@ import 'package:finance_manager_app/views/loadingView/loading_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 
 // Color palette
 class AppColors {
@@ -21,63 +20,70 @@ class AppColors {
 class ProfileSetupViewModel {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController moneyController = TextEditingController();
-  final TextEditingController countryController = TextEditingController();
+  // final TextEditingController countryController = TextEditingController();
   String selectedCountryCode = '';
 
   final List<Map<String, String>> countries = [
-    {'name': 'Afghanistan', 'code': 'AF'},
-    {'name': 'Albania', 'code': 'AL'},
-    {'name': 'Algeria', 'code': 'DZ'},
-    {'name': 'Argentina', 'code': 'AR'},
-    {'name': 'Australia', 'code': 'AU'},
-    {'name': 'Austria', 'code': 'AT'},
-    {'name': 'Bangladesh', 'code': 'BD'},
-    {'name': 'Belgium', 'code': 'BE'},
-    {'name': 'Brazil', 'code': 'BR'},
-    {'name': 'Canada', 'code': 'CA'},
-    {'name': 'China', 'code': 'CN'},
-    {'name': 'Denmark', 'code': 'DK'},
-    {'name': 'Egypt', 'code': 'EG'},
-    {'name': 'Finland', 'code': 'FI'},
-    {'name': 'France', 'code': 'FR'},
-    {'name': 'Germany', 'code': 'DE'},
-    {'name': 'Greece', 'code': 'GR'},
-    {'name': 'India', 'code': 'IN'},
-    {'name': 'Indonesia', 'code': 'ID'},
-    {'name': 'Iran', 'code': 'IR'},
-    {'name': 'Iraq', 'code': 'IQ'},
-    {'name': 'Ireland', 'code': 'IE'},
-    {'name': 'Italy', 'code': 'IT'},
-    {'name': 'Japan', 'code': 'JP'},
-    {'name': 'Malaysia', 'code': 'MY'},
-    {'name': 'Mexico', 'code': 'MX'},
-    {'name': 'Netherlands', 'code': 'NL'},
-    {'name': 'Norway', 'code': 'NO'},
-    {'name': 'Pakistan', 'code': 'PK'},
-    {'name': 'Philippines', 'code': 'PH'},
-    {'name': 'Poland', 'code': 'PL'},
-    {'name': 'Russia', 'code': 'RU'},
-    {'name': 'Saudi Arabia', 'code': 'SA'},
-    {'name': 'Singapore', 'code': 'SG'},
-    {'name': 'South Africa', 'code': 'ZA'},
-    {'name': 'South Korea', 'code': 'KR'},
-    {'name': 'Spain', 'code': 'ES'},
-    {'name': 'Sweden', 'code': 'SE'},
-    {'name': 'Switzerland', 'code': 'CH'},
-    {'name': 'Thailand', 'code': 'TH'},
-    {'name': 'Turkey', 'code': 'TR'},
-    {'name': 'United Arab Emirates', 'code': 'AE'},
-    {'name': 'United Kingdom', 'code': 'GB'},
-    {'name': 'United States', 'code': 'US'},
-    {'name': 'Vietnam', 'code': 'VN'},
+    {'name': 'Afghanistan', 'code': 'AF', 'currency': '؋'},
+    {'name': 'Albania', 'code': 'AL', 'currency': 'L'},
+    {'name': 'Algeria', 'code': 'DZ', 'currency': 'د.ج'},
+    {'name': 'Argentina', 'code': 'AR', 'currency': '\$'},
+    {'name': 'Australia', 'code': 'AU', 'currency': '\$'},
+    {'name': 'Austria', 'code': 'AT', 'currency': '€'},
+    {'name': 'Bangladesh', 'code': 'BD', 'currency': '৳'},
+    {'name': 'Belgium', 'code': 'BE', 'currency': '€'},
+    {'name': 'Brazil', 'code': 'BR', 'currency': 'R\$'},
+    {'name': 'Canada', 'code': 'CA', 'currency': '\$'},
+    {'name': 'China', 'code': 'CN', 'currency': '¥'},
+    {'name': 'Denmark', 'code': 'DK', 'currency': 'kr'},
+    {'name': 'Egypt', 'code': 'EG', 'currency': '£'},
+    {'name': 'Finland', 'code': 'FI', 'currency': '€'},
+    {'name': 'France', 'code': 'FR', 'currency': '€'},
+    {'name': 'Germany', 'code': 'DE', 'currency': '€'},
+    {'name': 'Greece', 'code': 'GR', 'currency': '€'},
+    {'name': 'India', 'code': 'IN', 'currency': '₹'},
+    {'name': 'Indonesia', 'code': 'ID', 'currency': 'Rp'},
+    {'name': 'Iran', 'code': 'IR', 'currency': '﷼'},
+    {'name': 'Iraq', 'code': 'IQ', 'currency': 'ع.د'},
+    {'name': 'Ireland', 'code': 'IE', 'currency': '€'},
+    {'name': 'Italy', 'code': 'IT', 'currency': '€'},
+    {'name': 'Japan', 'code': 'JP', 'currency': '¥'},
+    {'name': 'Malaysia', 'code': 'MY', 'currency': 'RM'},
+    {'name': 'Mexico', 'code': 'MX', 'currency': '\$'},
+    {'name': 'Netherlands', 'code': 'NL', 'currency': '€'},
+    {'name': 'Norway', 'code': 'NO', 'currency': 'kr'},
+    {'name': 'Pakistan', 'code': 'PK', 'currency': '₨'},
+    {'name': 'Philippines', 'code': 'PH', 'currency': '₱'},
+    {'name': 'Poland', 'code': 'PL', 'currency': 'zł'},
+    {'name': 'Russia', 'code': 'RU', 'currency': '₽'},
+    {'name': 'Saudi Arabia', 'code': 'SA', 'currency': '﷼'},
+    {'name': 'Singapore', 'code': 'SG', 'currency': '\$'},
+    {'name': 'South Africa', 'code': 'ZA', 'currency': 'R'},
+    {'name': 'South Korea', 'code': 'KR', 'currency': '₩'},
+    {'name': 'Spain', 'code': 'ES', 'currency': '€'},
+    {'name': 'Sweden', 'code': 'SE', 'currency': 'kr'},
+    {'name': 'Switzerland', 'code': 'CH', 'currency': 'CHF'},
+    {'name': 'Thailand', 'code': 'TH', 'currency': '฿'},
+    {'name': 'Turkey', 'code': 'TR', 'currency': '₺'},
+    {'name': 'United Arab Emirates', 'code': 'AE', 'currency': 'د.إ'},
+    {'name': 'United Kingdom', 'code': 'GB', 'currency': '£'},
+    {'name': 'United States', 'code': 'US', 'currency': '\$'},
+    {'name': 'Vietnam', 'code': 'VN', 'currency': '₫'},
   ];
 
   void setupProfile(BuildContext context) {
     if (_validateInputs()) {
+      // Map<String, String> selectedCountry = countries.firstWhere(
+      //       (country) => country['name'] == countryController.text,
+      //   orElse: () => {'name': '', 'code': '', 'currency': ''},
+      // );
+
+      // Get the currency symbol
+      // String currencySymbol = selectedCountry['currency'] ?? '';
       // Navigate to main view
       Get.to(LoadingView());
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Profile setup completed!'),
           backgroundColor: AppColors.carbbeanGreen,
         ),
@@ -93,15 +99,14 @@ class ProfileSetupViewModel {
   }
 
   bool _validateInputs() {
-    return nameController.text.isNotEmpty &&
-        moneyController.text.isNotEmpty &&
-        countryController.text.isNotEmpty;
+    return nameController.text.isNotEmpty && moneyController.text.isNotEmpty;
+    // countryController.text.isNotEmpty;
   }
 
   void dispose() {
     nameController.dispose();
     moneyController.dispose();
-    countryController.dispose();
+    //  countryController.dispose();
   }
 }
 
@@ -142,8 +147,8 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
                   _buildNameField(),
                   const SizedBox(height: 20),
                   _buildIncomeField(),
-                  const SizedBox(height: 20),
-                  _buildCountryField(context),
+                  // const SizedBox(height: 20),
+                  // _buildCountryField(context),
                   const SizedBox(height: 40),
                   // Submit button
                   _buildSubmitButton(),
@@ -167,8 +172,8 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                AppColors.carbbeanGreen.withOpacity(0.2),
-                AppColors.lightGreen.withOpacity(0.3),
+                AppColors.carbbeanGreen.withValues(alpha: 0.2),
+                AppColors.lightGreen.withValues(alpha: 0.3),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -176,7 +181,7 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: AppColors.carbbeanGreen.withOpacity(0.2),
+                color: AppColors.carbbeanGreen.withValues(alpha: 0.2),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -207,7 +212,7 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
           style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 14,
-            color: AppColors.cyprus.withOpacity(0.7),
+            color: AppColors.cyprus.withValues(alpha: 0.7),
             height: 1.4,
           ),
         ),
@@ -221,7 +226,7 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -237,13 +242,13 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
         decoration: InputDecoration(
           hintText: 'Enter your full name',
           hintStyle: TextStyle(
-            color: AppColors.cyprus.withOpacity(0.5),
+            color: AppColors.cyprus.withValues(alpha: 0.5),
             fontSize: 16,
           ),
           prefixIcon: Container(
             margin: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.carbbeanGreen.withOpacity(0.1),
+              color: AppColors.carbbeanGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(
@@ -290,7 +295,7 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -308,13 +313,13 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
         decoration: InputDecoration(
           hintText: 'Enter your monthly income',
           hintStyle: TextStyle(
-            color: AppColors.cyprus.withOpacity(0.5),
+            color: AppColors.cyprus.withValues(alpha: 0.5),
             fontSize: 16,
           ),
           prefixIcon: Container(
             margin: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.carbbeanGreen.withOpacity(0.1),
+              color: AppColors.carbbeanGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(
@@ -355,80 +360,80 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
     );
   }
 
-  Widget _buildCountryField(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: TextFormField(
-        controller: _viewModel.countryController,
-        readOnly: true,
-        onTap: () => _showCountryPicker(context),
-        style: const TextStyle(
-          color: AppColors.cyprus,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-        decoration: InputDecoration(
-          hintText: 'Select your country',
-          hintStyle: TextStyle(
-            color: AppColors.cyprus.withOpacity(0.5),
-            fontSize: 16,
-          ),
-          prefixIcon: Container(
-            margin: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.carbbeanGreen.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(
-              Icons.public,
-              color: AppColors.carbbeanGreen,
-              size: 20,
-            ),
-          ),
-          suffixIcon: const Icon(
-            Icons.keyboard_arrow_down,
-            color: AppColors.carbbeanGreen,
-          ),
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(
-              color: AppColors.carbbeanGreen,
-              width: 2,
-            ),
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
-          ),
-        ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please select your country';
-          }
-          return null;
-        },
-      ),
-    );
-  }
+  // Widget _buildCountryField(BuildContext context) {
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       borderRadius: BorderRadius.circular(16),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.black.withValues(alpha:0.05),
+  //           blurRadius: 10,
+  //           offset: const Offset(0, 5),
+  //         ),
+  //       ],
+  //     ),
+  //     child: TextFormField(
+  //       controller: _viewModel.countryController,
+  //       readOnly: true,
+  //       onTap: () => _showCountryPicker(context),
+  //       style: const TextStyle(
+  //         color: AppColors.cyprus,
+  //         fontSize: 16,
+  //         fontWeight: FontWeight.w500,
+  //       ),
+  //       decoration: InputDecoration(
+  //         hintText: 'Select your country',
+  //         hintStyle: TextStyle(
+  //           color: AppColors.cyprus.withValues(alpha:0.5),
+  //           fontSize: 16,
+  //         ),
+  //         prefixIcon: Container(
+  //           margin: const EdgeInsets.all(12),
+  //           decoration: BoxDecoration(
+  //             color: AppColors.carbbeanGreen.withValues(alpha:0.1),
+  //             borderRadius: BorderRadius.circular(8),
+  //           ),
+  //           child: const Icon(
+  //             Icons.public,
+  //             color: AppColors.carbbeanGreen,
+  //             size: 20,
+  //           ),
+  //         ),
+  //         suffixIcon: const Icon(
+  //           Icons.keyboard_arrow_down,
+  //           color: AppColors.carbbeanGreen,
+  //         ),
+  //         filled: true,
+  //         fillColor: Colors.white,
+  //         border: OutlineInputBorder(
+  //           borderRadius: BorderRadius.circular(16),
+  //           borderSide: BorderSide.none,
+  //         ),
+  //         enabledBorder: OutlineInputBorder(
+  //           borderRadius: BorderRadius.circular(16),
+  //           borderSide: BorderSide.none,
+  //         ),
+  //         focusedBorder: OutlineInputBorder(
+  //           borderRadius: BorderRadius.circular(16),
+  //           borderSide: const BorderSide(
+  //             color: AppColors.carbbeanGreen,
+  //             width: 2,
+  //           ),
+  //         ),
+  //         contentPadding: const EdgeInsets.symmetric(
+  //           horizontal: 16,
+  //           vertical: 16,
+  //         ),
+  //       ),
+  //       validator: (value) {
+  //         if (value == null || value.isEmpty) {
+  //           return 'Please select your country';
+  //         }
+  //         return null;
+  //       },
+  //     ),
+  //   );
+  // }
 
   Widget _buildSubmitButton() {
     return Container(
@@ -443,7 +448,7 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: AppColors.carbbeanGreen.withOpacity(0.3),
+            color: AppColors.carbbeanGreen.withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -475,97 +480,97 @@ class _ProfileSetupViewState extends State<ProfileSetupView> {
     );
   }
 
-  void _showCountryPicker(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          children: [
-            // Handle bar
-            Container(
-              margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Select Country',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.cyprus,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                    color: AppColors.cyprus,
-                  ),
-                ],
-              ),
-            ),
-            // Countries list
-            Expanded(
-              child: ListView.builder(
-                itemCount: _viewModel.countries.length,
-                itemBuilder: (context, index) {
-                  final country = _viewModel.countries[index];
-                  return ListTile(
-                    leading: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: AppColors.lightGreen,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: Text(
-                          country['code']!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.cyprus,
-                          ),
-                        ),
-                      ),
-                    ),
-                    title: Text(
-                      country['name']!,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.cyprus,
-                      ),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _viewModel.countryController.text = country['name']!;
-                        _viewModel.selectedCountryCode = country['code']!;
-                      });
-                      Navigator.pop(context);
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // void _showCountryPicker(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (context) => Container(
+  //       height: MediaQuery.of(context).size.height * 0.7,
+  //       decoration: const BoxDecoration(
+  //         color: Colors.white,
+  //         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //       ),
+  //       child: Column(
+  //         children: [
+  //           // Handle bar
+  //           Container(
+  //             margin: const EdgeInsets.only(top: 12),
+  //             width: 40,
+  //             height: 4,
+  //             decoration: BoxDecoration(
+  //               color: Colors.grey[300],
+  //               borderRadius: BorderRadius.circular(2),
+  //             ),
+  //           ),
+  //           // Header
+  //           Padding(
+  //             padding: const EdgeInsets.all(20),
+  //             child: Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               children: [
+  //                 const Text(
+  //                   'Select Country',
+  //                   style: TextStyle(
+  //                     fontSize: 20,
+  //                     fontWeight: FontWeight.bold,
+  //                     color: AppColors.cyprus,
+  //                   ),
+  //                 ),
+  //                 IconButton(
+  //                   onPressed: () => Navigator.pop(context),
+  //                   icon: const Icon(Icons.close),
+  //                   color: AppColors.cyprus,
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //           // Countries list
+  //           Expanded(
+  //             child: ListView.builder(
+  //               itemCount: _viewModel.countries.length,
+  //               itemBuilder: (context, index) {
+  //                 final country = _viewModel.countries[index];
+  //                 return ListTile(
+  //                   leading: Container(
+  //                     width: 40,
+  //                     height: 40,
+  //                     decoration: BoxDecoration(
+  //                       color: AppColors.lightGreen,
+  //                       borderRadius: BorderRadius.circular(20),
+  //                     ),
+  //                     child: Center(
+  //                       child: Text(
+  //                         country['code']!,
+  //                         style: const TextStyle(
+  //                           fontWeight: FontWeight.bold,
+  //                           color: AppColors.cyprus,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                   title: Text(
+  //                     country['name']!,
+  //                     style: const TextStyle(
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.w500,
+  //                       color: AppColors.cyprus,
+  //                     ),
+  //                   ),
+  //                   onTap: () {
+  //                     setState(() {
+  //                       _viewModel.countryController.text = country['name']!;
+  //                       _viewModel.selectedCountryCode = country['code']!;
+  //                     });
+  //                     Navigator.pop(context);
+  //                   },
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 }

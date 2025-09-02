@@ -1,6 +1,5 @@
 import 'package:finance_manager_app/views/mainView/main_view.dart';
 import 'package:flutter/material.dart';
-import 'package:get/instance_manager.dart';
 import 'package:get/route_manager.dart';
 
 class LoginViewModel {
@@ -13,8 +12,7 @@ class LoginViewModel {
   }
 
   void login(BuildContext context) {
-    final email = emailController.text.trim();
-    final password = passwordController.text;
+
     // ScaffoldMessenger.of(
     //   context,
     // ).showSnackBar(SnackBar(content: Text('Login pressed for $email')));

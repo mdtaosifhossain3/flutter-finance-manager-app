@@ -22,7 +22,6 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   }
 
   void resetPassword() {
-    // TODO: Implement password reset logic
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Password reset successful!')));

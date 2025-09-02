@@ -234,7 +234,7 @@ class _TransactionViewState extends State<TransactionView> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '\$7,783.00',
+                          '৳ 7,783.00',
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,

@@ -52,7 +52,7 @@ class _NotificationViewState extends State<NotificationView> {
       id: '3',
       title: 'Transactions',
       description:
-          'A new transaction has been registered\nGroceries | Pantry | -\$100.00',
+          'A new transaction has been registered\nGroceries | Pantry | -৳ 100.00',
       time: '17:00 - April 24',
       category: 'Yesterday',
       icon: Icons.monetization_on,
@@ -80,7 +80,7 @@ class _NotificationViewState extends State<NotificationView> {
       id: '6',
       title: 'Transactions',
       description:
-          'A new transaction has been registered\nFood | Dinner | -\$70.40',
+          'A new transaction has been registered\nFood | Dinner | - ৳ 70.40',
       time: '17:00 - April 24',
       category: 'This Weekend',
       icon: Icons.monetization_on,

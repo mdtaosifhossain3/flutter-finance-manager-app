@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class SlamonNavView extends StatefulWidget {
-   SlamonNavView({super.key});
+   const SlamonNavView({super.key});
 
   @override
   State<SlamonNavView> createState() => _SlamonNavViewState();

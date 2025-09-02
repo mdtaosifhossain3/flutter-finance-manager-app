@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AppColors {
@@ -16,8 +17,7 @@ class EndSessionPopup extends StatelessWidget {
   final VoidCallback? onEndSession;
   final VoidCallback? onCancel;
 
-  const EndSessionPopup({Key? key, this.onEndSession, this.onCancel})
-    : super(key: key);
+  const EndSessionPopup({super.key, this.onEndSession, this.onCancel});
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +122,8 @@ class EndSessionPopup extends StatelessWidget {
 
 // Example usage in your main widget
 class ExampleUsage extends StatelessWidget {
+  const ExampleUsage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,11 +139,15 @@ class ExampleUsage extends StatelessWidget {
             final result = await EndSessionPopup.show(context);
             if (result == true) {
               // User confirmed to end session
-              print('Session ended');
+              if (kDebugMode) {
+                print('Session ended');
+              }
               // Add your logout logic here
             } else {
               // User cancelled
-              print('Session continues');
+              if (kDebugMode) {
+                print('Session continues');
+              }
             }
           },
           style: ElevatedButton.styleFrom(

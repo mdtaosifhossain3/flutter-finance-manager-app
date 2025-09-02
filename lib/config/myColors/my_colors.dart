@@ -12,6 +12,12 @@ class MyColors {
   static const Color lightBlue = Color(0xff6DB6FE);
   static const Color vividBlue = Color(0xff3299FF);
   static const Color oceanBlue = Color(0xff0068FF);
+  static const Color vividRed = Color(0xffFF3B3B);
+  static const Color darkRed = Color(0xffE50000);
+
+  //Progress Bar Colors
+  static  Color bgProgressBar = Colors.black.withValues(alpha: 0.2);
+  static  Color bgProgressBarIndicator = Colors.white.withValues(alpha: 0.3);
 
 
 }

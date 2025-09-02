@@ -1,19 +1,8 @@
+import 'package:finance_manager_app/config/myColors/my_colors.dart';
 import 'package:finance_manager_app/views/UserprofileView/widgets/edit_profile_view.dart';
 import 'package:finance_manager_app/views/UserprofileView/widgets/security_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-
-class AppColors {
-  static const Color honeyDew = Color(0xffF1FFF3);
-  static const Color lightGreen = Color(0xffDFF7E2);
-  static const Color carbbeanGreen = Color(0xff00D09E);
-  static const Color cyprus = Color(0xff0E3E3E);
-  static const Color fencGreen = Color(0xff052224);
-  static const Color voidB = Color(0xff031314);
-  static const Color lightBlue = Color(0xff6DB6FE);
-  static const Color vividBlue = Color(0xff3299FF);
-  static const Color oceanBlue = Color(0xff0068FF);
-}
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -21,7 +10,7 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.carbbeanGreen,
+      backgroundColor: MyColors.carbbeanGreen,
       body: SafeArea(
         child: Column(
           children: [
@@ -57,7 +46,7 @@ class ProfileView extends StatelessWidget {
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
-                  color: AppColors.honeyDew,
+                  color: MyColors.honeyDew,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -97,7 +86,7 @@ class ProfileView extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.cyprus,
+                        color: MyColors.cyprus,
                       ),
                     ),
 
@@ -107,7 +96,7 @@ class ProfileView extends StatelessWidget {
                       '+880 1234567890',
                       style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.cyprus.withValues(alpha: 0.6),
+                        color: MyColors.cyprus.withValues(alpha: 0.6),
                       ),
                     ),
 
@@ -122,7 +111,7 @@ class ProfileView extends StatelessWidget {
                             _buildMenuItem(
                               icon: Icons.person_outline,
                               title: 'Edit Profile',
-                              color: AppColors.lightBlue,
+                              color: MyColors.lightBlue,
                               onTap: () {
                                 Get.to(EditProfileView());
                               },
@@ -131,14 +120,14 @@ class ProfileView extends StatelessWidget {
                             _buildMenuItem(
                               icon: Icons.verified_user_outlined,
                               title: 'Security',
-                              color: AppColors.vividBlue,
+                              color: MyColors.vividBlue,
                               onTap: () {},
                             ),
                             const SizedBox(height: 16),
                             _buildMenuItem(
                               icon: Icons.settings_outlined,
                               title: 'Setting',
-                              color: AppColors.lightBlue,
+                              color: MyColors.lightBlue,
                               onTap: () {
                                 Get.to(SettingsView());
                               },
@@ -147,14 +136,14 @@ class ProfileView extends StatelessWidget {
                             _buildMenuItem(
                               icon: Icons.help_outline,
                               title: 'Help',
-                              color: AppColors.vividBlue,
+                              color: MyColors.vividBlue,
                               onTap: () {},
                             ),
                             const SizedBox(height: 16),
                             _buildMenuItem(
                               icon: Icons.logout_outlined,
                               title: 'Logout',
-                              color: AppColors.lightBlue,
+                              color: MyColors.lightBlue,
                               onTap: () {},
                             ),
                           ],
@@ -225,13 +214,13 @@ class ProfileView extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: AppColors.cyprus,
+                color: MyColors.cyprus,
               ),
             ),
             const Spacer(),
             Icon(
               Icons.chevron_right,
-              color: AppColors.cyprus.withValues(alpha: 0.5),
+              color: MyColors.cyprus.withValues(alpha: 0.5),
               size: 20,
             ),
           ],

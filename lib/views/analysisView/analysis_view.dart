@@ -1,4 +1,8 @@
+import 'package:finance_manager_app/config/myColors/my_colors.dart';
 import 'package:finance_manager_app/config/routes/routes_name.dart';
+import 'package:finance_manager_app/globalWidgets/balance_expense_card_widget.dart';
+import 'package:finance_manager_app/globalWidgets/notification_widget.dart';
+import 'package:finance_manager_app/globalWidgets/progress_bar_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,122 +46,57 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                   Expanded(
                     child: Text(
                       'Analysis',
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.left,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: MyColors.honeyDew,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                  Icon(Icons.notifications_outlined, color: Colors.white),
+                  NotificationWidget(),
                 ],
               ),
             ),
-
             // Balance and Expense Cards
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _buildBalanceCard(
-                      'Total Balance',
-                      '\$7,783.00',
-                      Colors.white,
-                      Colors.black,
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: _buildBalanceCard(
-                      'Total Expense',
-                      '-\$1,187.40',
-                      Colors.white,
-                      Colors.red,
-                    ),
-                  ),
-                ],
+              child: BalanceExpenseCardWidget(
+                bgColor: MyColors.honeyDew,
+                totalBTColor: Colors.black,
+                totalETColor: Colors.red,
+                textColor: Colors.grey[600],
+                iconColor: Colors.grey[600],
               ),
             ),
-
             SizedBox(height: 16),
-
             // Progress Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      '30%',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Container(
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                        child: FractionallySizedBox(
-                          alignment: Alignment.centerLeft,
-                          widthFactor: 0.3,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(3),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      '\$20,000.00',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: ProgressBarWidget(),
             ),
-
             SizedBox(height: 8),
-
             // Status Message
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 children: [
-                  Icon(Icons.check_circle, color: Colors.white, size: 16),
+                  Icon(Icons.check_circle, color: MyColors.honeyDew, size: 16),
                   SizedBox(width: 8),
                   Text(
                     '30% Of Your Expenses, Looks Good.',
-                    style: TextStyle(color: Colors.white, fontSize: 14),
+                    style: TextStyle(color: MyColors.honeyDew, fontSize: 14),
                   ),
                 ],
               ),
             ),
 
             SizedBox(height: 20),
-
             // Main Content Area
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: MyColors.honeyDew,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -200,7 +139,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                                 period,
                                 style: TextStyle(
                                   color: isSelected
-                                      ? Colors.white
+                                      ? MyColors.honeyDew
                                       : Colors.grey[600],
                                   fontWeight: isSelected
                                       ? FontWeight.w600
@@ -348,7 +287,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                           Expanded(
                             child: _buildSummaryCard(
                               'Income',
-                              '\$4,120.00',
+                              '৳ 4,120.00',
                               Color(0xFF00C896),
                               Icons.trending_up,
                             ),
@@ -357,7 +296,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                           Expanded(
                             child: _buildSummaryCard(
                               'Expense',
-                              '\$1,187.40',
+                              '৳ 1,187.40',
                               Colors.blue,
                               Icons.trending_down,
                             ),
@@ -399,51 +338,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     );
   }
 
-  Widget _buildBalanceCard(
-    String title,
-    String amount,
-    Color bgColor,
-    Color textColor,
-  ) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                title.contains('Balance')
-                    ? Icons.account_balance_wallet
-                    : Icons.receipt_long,
-                size: 16,
-                color: Colors.grey[600],
-              ),
-              SizedBox(width: 4),
-              Text(
-                title,
-                style: TextStyle(color: Colors.grey[600], fontSize: 12),
-              ),
-            ],
-          ),
-          SizedBox(height: 8),
-          Text(
-            amount,
-            style: TextStyle(
-              color: textColor,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSummaryCard(
     String title,
     String amount,
@@ -453,7 +347,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: MyColors.honeyDew,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey[200]!),
       ),
