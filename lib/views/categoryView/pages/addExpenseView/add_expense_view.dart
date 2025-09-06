@@ -5,12 +5,9 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import '../../../../config/db/local/local_db_helper.dart';
 import '../../../../config/myColors/my_colors.dart';
-import '../../../../globalWidgets/popup_dailogue_widget.dart';
 
 class AddExpenseScreen extends StatefulWidget {
-  final String categoryName;
-
-  const AddExpenseScreen({super.key, required this.categoryName});
+  const AddExpenseScreen({super.key});
 
   @override
   State<AddExpenseScreen> createState() => _AddExpenseScreenState();
@@ -33,7 +30,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   void initState() {
     super.initState();
-    AddExpenseViewModel.selectedCategory = widget.categoryName;
+    AddExpenseViewModel.selectedCategory = "Food";
     AddExpenseViewModel.amountController.text = '';
     AddExpenseViewModel.titleController.text = '';
     AddExpenseViewModel.messageController.text = '';
@@ -42,7 +39,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.carbbeanGreen,
+      backgroundColor: MyColors.carbbeanGreen,
       body: SafeArea(
         child: Column(
           children: [
@@ -105,35 +102,41 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.cyprus,
+                          color: MyColors.cyprus,
                         ),
                       ),
                       const SizedBox(height: 10),
                       GestureDetector(
-                        onTap: () => context.read<AddExpenseProvider>().selectDate(context,AddExpenseViewModel.currentDate),
+                        onTap: () =>
+                            context.read<AddExpenseProvider>().selectDate(
+                              context,
+                              AddExpenseViewModel.currentDate,
+                            ),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 15,
                             vertical: 12,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.lightGreen,
+                            color: MyColors.lightGreen,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                AddExpenseViewModel.formatDate(AddExpenseViewModel.currentDate),
+                                AddExpenseViewModel.formatDate(
+                                  AddExpenseViewModel.currentDate,
+                                ),
                                 style: const TextStyle(
                                   fontSize: 14,
-                                  color: AppColors.cyprus,
+                                  color: MyColors.cyprus,
                                 ),
                               ),
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: AppColors.carbbeanGreen,
+                                  color: MyColors.carbbeanGreen,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: const Icon(
@@ -153,7 +156,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.cyprus,
+                          color: MyColors.cyprus,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -163,7 +166,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.lightGreen,
+                          color: MyColors.lightGreen,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: DropdownButtonHideUnderline(
@@ -180,7 +183,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                             }).toList(),
                             onChanged: (String? newValue) {
                               setState(() {
-                                AddExpenseViewModel.selectedCategory = newValue!;
+                                AddExpenseViewModel.selectedCategory =
+                                    newValue!;
                               });
                             },
                           ),
@@ -193,14 +197,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.cyprus,
+                          color: MyColors.cyprus,
                         ),
                       ),
                       const SizedBox(height: 10),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         decoration: BoxDecoration(
-                          color: AppColors.lightGreen,
+                          color: MyColors.lightGreen,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: TextField(
@@ -219,14 +223,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.cyprus,
+                          color: MyColors.cyprus,
                         ),
                       ),
                       const SizedBox(height: 10),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         decoration: BoxDecoration(
-                          color: AppColors.lightGreen,
+                          color: MyColors.lightGreen,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: TextField(
@@ -245,7 +249,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.lightGreen,
+                          color: MyColors.lightGreen,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: TextField(
@@ -255,7 +259,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                             border: InputBorder.none,
                             hintText: 'Enter Message',
                             hintStyle: TextStyle(
-                              color: AppColors.carbbeanGreen,
+                              color: MyColors.carbbeanGreen,
                               fontSize: 14,
                             ),
                           ),
@@ -268,8 +272,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         child: ElevatedButton(
                           onPressed: () async {
                             FocusScope.of(context).unfocus();
-                            if (AddExpenseViewModel.amountController.text.isEmpty ||
-                                AddExpenseViewModel.titleController.text.isEmpty) {
+                            if (AddExpenseViewModel
+                                    .amountController
+                                    .text
+                                    .isEmpty ||
+                                AddExpenseViewModel
+                                    .titleController
+                                    .text
+                                    .isEmpty) {
                               Get.snackbar(
                                 'Error!',
                                 "Please fill all the fields.",
@@ -299,15 +309,20 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                               await context
                                   .read<AddExpenseProvider>()
                                   .addExpense(
-                                    selectedDate: AddExpenseViewModel.currentDate,
-                                    titleController: AddExpenseViewModel.titleController,
-                                    amountController: AddExpenseViewModel.amountController,
-                                    selectedCategory: AddExpenseViewModel.selectedCategory,
-                                    messageController: AddExpenseViewModel.messageController,
+                                    selectedDate:
+                                        AddExpenseViewModel.currentDate,
+                                    titleController:
+                                        AddExpenseViewModel.titleController,
+                                    amountController:
+                                        AddExpenseViewModel.amountController,
+                                    selectedCategory:
+                                        AddExpenseViewModel.selectedCategory,
+                                    messageController:
+                                        AddExpenseViewModel.messageController,
                                   );
                               AddExpenseViewModel.titleController.clear();
-                            AddExpenseViewModel.amountController.clear();
-                            AddExpenseViewModel.messageController.clear();
+                              AddExpenseViewModel.amountController.clear();
+                              AddExpenseViewModel.messageController.clear();
 
                               // Show success message
                               Get.snackbar(
@@ -355,7 +370,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.carbbeanGreen,
+                            backgroundColor: MyColors.carbbeanGreen,
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),

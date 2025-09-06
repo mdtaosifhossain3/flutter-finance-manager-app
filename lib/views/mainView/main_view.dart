@@ -1,5 +1,5 @@
 import 'package:finance_manager_app/views/analysisView/analysis_view.dart';
-import 'package:finance_manager_app/views/categoryView/category_view.dart';
+import 'package:finance_manager_app/views/categoryView/category_selection_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
 import 'package:finance_manager_app/views/UserprofileView/profile_view.dart';
 import 'package:finance_manager_app/views/transactionView/transaction_view.dart';
@@ -20,7 +20,7 @@ class _MainViewState extends State<MainView> {
     HomeView(),
     AnalysisScreen(),
     TransactionView(),
-    CategoryView(),
+    CategorySelectionView(),
     ProfileView(),
   ];
 
@@ -63,5 +63,4 @@ class _MainViewState extends State<MainView> {
       ),
     );
   }
-
 }

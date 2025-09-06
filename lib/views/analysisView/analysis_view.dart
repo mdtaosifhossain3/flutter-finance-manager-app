@@ -34,7 +34,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF00C896),
+      backgroundColor: MyColors.analysisBackground,
       body: SafeArea(
         child: Column(
           children: [
@@ -63,10 +63,10 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: BalanceExpenseCardWidget(
                 bgColor: MyColors.honeyDew,
-                totalBTColor: Colors.black,
-                totalETColor: Colors.red,
-                textColor: Colors.grey[600],
-                iconColor: Colors.grey[600],
+                totalBTColor: MyColors.textPrimary,
+                totalETColor: MyColors.errorColor,
+                textColor: MyColors.textHint,
+                iconColor: MyColors.textHint,
               ),
             ),
             SizedBox(height: 16),
@@ -111,7 +111,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                       margin: EdgeInsets.symmetric(horizontal: 16),
                       padding: EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: MyColors.surfaceBackground,
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: Row(
@@ -131,7 +131,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                               ),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? Color(0xFF00C896)
+                                    ? MyColors.analysisChartGreen
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -160,7 +160,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                         margin: EdgeInsets.all(16),
                         padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Color(0xFFF0F9F7),
+                          color: MyColors.analysisPeriodBg,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Column(

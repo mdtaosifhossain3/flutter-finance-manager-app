@@ -89,7 +89,7 @@ class TransactionListWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: MyColors.whiteColor,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
@@ -100,7 +100,7 @@ class TransactionListWidget extends StatelessWidget {
               color: MyColors.lightBlue,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(getCategoryIcon(), color: Colors.white, size: 22),
+            child: Icon(getCategoryIcon(), color: MyColors.whiteColor, size: 22),
           ),
           const SizedBox(width: 15),
           Expanded(

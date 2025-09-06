@@ -1,17 +1,7 @@
+import 'package:finance_manager_app/config/myColors/my_colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class AppColors {
-  static const Color honeyDew = Color(0xffF1FFF3);
-  static const Color lightGreen = Color(0xffDFF7E2);
-  static const Color carbbeanGreen = Color(0xff00D09E);
-  static const Color cyprus = Color(0xff0E3E3E);
-  static const Color fencGreen = Color(0xff052224);
-  static const Color voidB = Color(0xff031314);
-  static const Color lightBlue = Color(0xff6DB6FE);
-  static const Color vividBlue = Color(0xff3299FF);
-  static const Color oceanBlue = Color(0xff0068FF);
-}
 
 class EndSessionPopup extends StatelessWidget {
   final VoidCallback? onEndSession;
@@ -22,11 +12,11 @@ class EndSessionPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.transparent,
+      backgroundColor: MyColors.popupBg,
       child: Container(
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: MyColors.whiteColor,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
@@ -37,7 +27,7 @@ class EndSessionPopup extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: AppColors.cyprus,
+                color: MyColors.cyprus,
               ),
             ),
             const SizedBox(height: 16),
@@ -45,7 +35,7 @@ class EndSessionPopup extends StatelessWidget {
               'Are you sure you want to log out?',
               style: TextStyle(
                 fontSize: 16,
-                color: AppColors.cyprus,
+                color: MyColors.cyprus,
                 fontWeight: FontWeight.w400,
               ),
               textAlign: TextAlign.center,
@@ -61,8 +51,8 @@ class EndSessionPopup extends StatelessWidget {
                     onPressed:
                         onEndSession ?? () => Navigator.of(context).pop(true),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.carbbeanGreen,
-                      foregroundColor: Colors.white,
+                      backgroundColor: MyColors.carbbeanGreen,
+                      foregroundColor: MyColors.whiteColor,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(28),
@@ -86,8 +76,8 @@ class EndSessionPopup extends StatelessWidget {
                     onPressed:
                         onCancel ?? () => Navigator.of(context).pop(false),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.lightGreen,
-                      foregroundColor: AppColors.cyprus,
+                      backgroundColor: MyColors.lightGreen,
+                      foregroundColor: MyColors.cyprus,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(28),
@@ -127,11 +117,11 @@ class ExampleUsage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.voidB,
+      backgroundColor: MyColors.voidB,
       appBar: AppBar(
         title: const Text('End Session Example'),
-        backgroundColor: AppColors.cyprus,
-        foregroundColor: Colors.white,
+        backgroundColor: MyColors.cyprus,
+        foregroundColor: MyColors.whiteColor,
       ),
       body: Center(
         child: ElevatedButton(
@@ -151,8 +141,8 @@ class ExampleUsage extends StatelessWidget {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.carbbeanGreen,
-            foregroundColor: Colors.white,
+            backgroundColor: MyColors.carbbeanGreen,
+            foregroundColor: MyColors.whiteColor,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),

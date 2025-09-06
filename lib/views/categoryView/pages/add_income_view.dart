@@ -1,4 +1,5 @@
 import 'package:finance_manager_app/config/myColors/my_colors.dart';
+import 'package:finance_manager_app/data/add_income_data.dart';
 import 'package:finance_manager_app/globalWidgets/balance_expense_card_widget.dart';
 import 'package:finance_manager_app/globalWidgets/progress_bar_widget.dart';
 import 'package:finance_manager_app/views/categoryView/pages/categoryItemView/category_item_view.dart';
@@ -7,9 +8,8 @@ import 'package:provider/provider.dart';
 
 import '../../../providers/expense_provider.dart';
 
-
-class AddExpenseView extends StatelessWidget {
-  const AddExpenseView({super.key});
+class AddIncomeView extends StatelessWidget {
+  const AddIncomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +31,14 @@ class AddExpenseView extends StatelessWidget {
                         onPressed: () => Navigator.pop(context),
                         icon: const Icon(
                           Icons.arrow_back,
-                          color: Colors.white,
+                          color: MyColors.whiteColor,
                           size: 24,
                         ),
                       ),
                       const Text(
                         'Categories',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: MyColors.whiteColor,
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
                         ),
@@ -46,12 +46,12 @@ class AddExpenseView extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: MyColors.whiteWithAlpha20,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
                           Icons.lock_outline,
-                          color: Colors.white,
+                          color: MyColors.whiteColor,
                           size: 20,
                         ),
                       ),
@@ -60,12 +60,10 @@ class AddExpenseView extends StatelessWidget {
                   const SizedBox(height: 30),
 
                   // Balance Cards
-                 BalanceExpenseCardWidget(),
+                  BalanceExpenseCardWidget(),
                   const SizedBox(height: 20),
 
                   ProgressBarWidget(),
-
-
                 ],
               ),
             ),
@@ -74,7 +72,7 @@ class AddExpenseView extends StatelessWidget {
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
-                  color: Colors.white,
+                  color: MyColors.whiteColor,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -82,76 +80,27 @@ class AddExpenseView extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(25),
-                  child: GridView.count(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
-                    children: [
-
-                      _buildCategoryItem(
+                  child: GridView.builder(
+                    itemCount: addIncomeData.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 20,
+                          mainAxisSpacing: 20,
+                        ),
+                    itemBuilder: (BuildContext context, int index) {
+                      return _buildCategoryItem(
                         context,
-                        'Food',
-                        Icons.restaurant,
-                        MyColors.lightBlue,
-                        () => _navigateToCategory(context, 'Food',Icons.restaurant),
-                      ),
-                      _buildCategoryItem(
-                        context,
-                        'Transport',
-                        Icons.directions_bus,
-                        MyColors.vividBlue,
-                        () => _navigateToCategory(context, 'Transport', Icons.directions_bus),
-                      ),
-                      _buildCategoryItem(
-                        context,
-                        'Medicine',
-                        Icons.medical_services,
-                        MyColors.oceanBlue,
-                        () => _navigateToCategory(context, 'Medicine', Icons.medical_services),
-                      ),
-                      _buildCategoryItem(
-                        context,
-                        'Groceries',
-                        Icons.shopping_bag,
-                        MyColors.lightBlue,
-                        () => _navigateToCategory(context, 'Groceries',Icons.shopping_bag),
-                      ),
-                      _buildCategoryItem(
-                        context,
-                        'Rent',
-                        Icons.handshake,
-                        MyColors.vividBlue,
-                        () => _navigateToCategory(context, 'Rent',  Icons.handshake),
-                      ),
-                      _buildCategoryItem(
-                        context,
-                        'Gifts',
-                        Icons.card_giftcard,
-                        MyColors.oceanBlue,
-                        () => _navigateToCategory(context, 'Gifts',  Icons.card_giftcard),
-                      ),
-                      _buildCategoryItem(
-                        context,
-                        'Savings',
-                        Icons.savings,
-                        MyColors.lightBlue,
-                        () => _navigateToCategory(context, 'Savings', Icons.savings),
-                      ),
-                      _buildCategoryItem(
-                        context,
-                        'Entertainment',
-                        Icons.movie,
-                        MyColors.vividBlue,
-                        () => _navigateToCategory(context, 'Entertainment',Icons.movie),
-                      ),
-                      _buildCategoryItem(
-                        context,
-                        'More',
-                        Icons.add,
-                        MyColors.oceanBlue,
-                        () => _navigateToCategory(context, 'More',Icons.add),
-                      ),
-                    ],
+                        addIncomeData[index],
+                        Icons.category,
+                        MyColors.carbbeanGreen,
+                        () => _navigateToCategory(
+                          context,
+                          addIncomeData[index],
+                          Icons.category,
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -161,8 +110,6 @@ class AddExpenseView extends StatelessWidget {
       ),
     );
   }
-
-
 
   Widget _buildCategoryItem(
     BuildContext context,
@@ -187,7 +134,7 @@ class AddExpenseView extends StatelessWidget {
                 color: color,
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: Icon(icon, color: Colors.white, size: 28),
+              child: Icon(icon, color: MyColors.whiteColor, size: 28),
             ),
             const SizedBox(height: 12),
             Text(
@@ -197,6 +144,7 @@ class AddExpenseView extends StatelessWidget {
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -204,13 +152,13 @@ class AddExpenseView extends StatelessWidget {
     );
   }
 
-  void _navigateToCategory(BuildContext context, String categoryName,icon) {
+  void _navigateToCategory(BuildContext context, String categoryName, icon) {
     context.read<AddExpenseProvider>().setCategoryIcon(icon);
     // Navigate to category detail page
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CategoryItemView(categoryName: categoryName,),
+        builder: (context) => CategoryItemView(categoryName: categoryName),
       ),
     );
   }

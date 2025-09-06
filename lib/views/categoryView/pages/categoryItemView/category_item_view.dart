@@ -157,7 +157,7 @@ class CategoryItemView extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => AddExpenseScreen(
-                                  categoryName: categoryName,
+
                                 ),
                               ),
                             );

@@ -1,3 +1,4 @@
+import 'package:finance_manager_app/config/myColors/my_colors.dart';
 import 'package:finance_manager_app/globalWidgets/notification_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -14,16 +15,16 @@ class HeaderWidget extends StatelessWidget {
         if (showBackButton)
           IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(
+            icon:  Icon(
               Icons.arrow_back,
-              color: Colors.white,
+              color: MyColors.whiteColor,
               size: 24,
             ),
           ),
          Text(
           categoryName,
           style: const TextStyle(
-            color: Colors.white,
+            color: MyColors.whiteColor,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),

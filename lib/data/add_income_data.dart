@@ -1,0 +1,23 @@
+const addIncomeData = [
+  'Salary',
+  'Freelance',
+  'Commissions',
+  'Bonuses',
+  'Tips',
+  'Overtime Pay',
+  'Dividends',
+  'Interest',
+  'Rental Income',
+  'Royalties',
+  'Capital Gains',
+  'Investment Funds',
+  'Pension',
+  'Gifts',
+  'Refunds',
+  'Tax Refund',
+  'Social Security',
+  'Cash Back Rewards',
+  'Selling an Item',
+  'Other',
+];
+

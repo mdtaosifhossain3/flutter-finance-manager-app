@@ -72,7 +72,7 @@ class BalanceCardWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
               value: 0.3,
-              backgroundColor: Colors.white,
+              backgroundColor: MyColors.whiteColor,
               color: MyColors.carbbeanGreen,
               minHeight: 8,
             ),
