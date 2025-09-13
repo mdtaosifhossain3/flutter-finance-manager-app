@@ -1,16 +1,18 @@
+
 import 'package:flutter/material.dart';
 
-class ProfileView extends StatelessWidget {
-  const ProfileView({super.key});
+
+class CategoryView extends StatelessWidget {
+  const CategoryView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       body: SafeArea(
-        child: Center(child: Text("Profile View"),),
+        child: Text("Category View"),
       ),
     );
   }
-
 
 }

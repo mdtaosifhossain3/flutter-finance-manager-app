@@ -1,4 +1,3 @@
-import 'package:finance_manager_app/config/myColors/my_colors.dart';
 import 'package:finance_manager_app/config/routes/routes_name.dart';
 import 'package:finance_manager_app/views/onboardView/onboard_view_model.dart';
 import 'package:finance_manager_app/views/onboardView/widgets/onboard_view_first.dart';
@@ -38,7 +37,7 @@ class _OnboardViewState extends State<OnboardView> {
                 SizedBox(height: 5.0),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: MyColors.carbbeanGreen,
+
                     foregroundColor: Colors.white,
                     minimumSize: Size(MediaQuery.of(context).size.width, 44),
                     shape: RoundedRectangleBorder(
@@ -59,7 +58,7 @@ class _OnboardViewState extends State<OnboardView> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: MyColors.carbbeanGreen,
+                        //  color: MyColors.carbbeanGreen,
                         ),
                       ),
                     ),
@@ -68,7 +67,7 @@ class _OnboardViewState extends State<OnboardView> {
                       count: 3,
                       effect: const WormEffect(
                         dotColor: Colors.grey,
-                        activeDotColor: MyColors.carbbeanGreen,
+                       // activeDotColor: MyColors.carbbeanGreen,
                       ),
                     ),
                     TextButton(
@@ -78,7 +77,7 @@ class _OnboardViewState extends State<OnboardView> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: MyColors.carbbeanGreen,
+                        //  color: MyColors.carbbeanGreen,
                         ),
                       ),
                     ),

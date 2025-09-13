@@ -1,4 +1,3 @@
-import 'package:finance_manager_app/config/myColors/my_colors.dart';
 import 'package:finance_manager_app/views/splashView/splash_view_model.dart';
 import 'package:flutter/material.dart';
 
@@ -19,12 +18,12 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyColors.carbbeanGreen,
+
       body: Center(
         child: Image.asset(
           "assets/images/Vector.png",
           width: 99,
-          color: MyColors.honeyDew,
+
         ),
       ),
     );

@@ -1,4 +1,3 @@
-import 'package:finance_manager_app/config/myColors/my_colors.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,7 +22,7 @@ class _LoadingViewState extends State<LoadingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyColors.honeyDew,
+
       body: Center(
         child: Lottie.asset(
           'assets/animations/MoneyBag.json',

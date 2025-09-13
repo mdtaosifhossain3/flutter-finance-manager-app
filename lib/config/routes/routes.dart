@@ -1,6 +1,4 @@
 import 'package:finance_manager_app/config/routes/routes_name.dart';
-import 'package:finance_manager_app/views/analysisView/calenderView/calender_view.dart';
-import 'package:finance_manager_app/views/analysisView/searchView/search_view.dart';
 import 'package:finance_manager_app/views/authView/forgetPasswordView/forget_password_view.dart';
 import 'package:finance_manager_app/views/authView/loginView/login_view.dart';
 import 'package:finance_manager_app/views/authView/registerView/register_view.dart';
@@ -42,16 +40,8 @@ class Routes {
       page: () => const HomeView(),
       transition: Transition.rightToLeft,
     ),
-    GetPage(
-      name: RoutesName.searchView,
-      page: () => SearchScreen(),
-      transition: Transition.rightToLeft,
-    ),
-    GetPage(
-      name: RoutesName.calenderView,
-      page: () => CalendarScreen(),
-      transition: Transition.rightToLeft,
-    ),
+
+
     GetPage(
       name: RoutesName.notificationView,
       page: () => NotificationView(),
