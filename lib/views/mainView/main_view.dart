@@ -1,3 +1,5 @@
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:finance_manager_app/views/categoryView/category_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
@@ -38,45 +40,25 @@ class _MainViewState extends State<MainView> {
       ]
       ,),
       body: screens[_selectedIndex],
-      bottomNavigationBar: SalomonBottomBar(
-        currentIndex: _selectedIndex,
-        onTap: (i) => setState(() => _selectedIndex = i),
-        items: [
-          /// Home
-          SalomonBottomBarItem(
-            icon: Icon(Icons.home),
-            title: Text("Home"),
-            selectedColor: Colors.purple,
-          ),
 
-          /// Report
-          SalomonBottomBarItem(
-            icon: Icon(Icons.analytics),
-            title: Text("Report"),
-            selectedColor: Colors.pink,
-          ),
-
-          /// Budget
-          SalomonBottomBarItem(
-            icon: Icon(Icons.search),
-            title: Text("Budget"),
-            selectedColor: Colors.orange,
-          ),
-
-          /// Profile
-          SalomonBottomBarItem(
-            icon: Icon(Icons.swap_horiz),
-            title: Text("Categories"),
-            selectedColor: Colors.teal,
-          ),
-
-          /// Add Transaction
-          SalomonBottomBarItem(
-            icon: Icon(Icons.swap_horiz),
-            title: Text("Add Transaction"),
-            selectedColor: Colors.teal,
-          ),
+      bottomNavigationBar: CurvedNavigationBar(
+        backgroundColor: AppColors.darkCardBackground,
+        color: AppColors.primaryBlue,
+        height: 70,
+        index: _selectedIndex,
+        items: <Widget>[
+          Icon(Icons.home, size: 30),
+          Icon(Icons.analytics, size: 30),
+          Icon(Icons.add, size: 30),
+          Icon(Icons.category, size: 30),
+          Icon(Icons.person, size: 30),
         ],
+        onTap: (index) {
+          //Handle button tap
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
       ),
     );
   }

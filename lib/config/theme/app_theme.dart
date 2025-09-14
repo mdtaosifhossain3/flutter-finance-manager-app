@@ -74,6 +74,8 @@ class AppThemes {
           fontFamily: 'Poppins',
           fontWeight: FontWeight.w400,
         ),
+
+
       )
   );
 

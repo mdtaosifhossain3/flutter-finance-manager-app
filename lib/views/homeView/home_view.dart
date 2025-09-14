@@ -1,8 +1,9 @@
-import 'package:finance_manager_app/providers/theme_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/expense_provider.dart';
+import '../../providers/theme_provider.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -28,8 +29,9 @@ class _HomeViewState extends State<HomeView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
           Text("Home View",style: Theme.of(context).textTheme.bodyLarge,)
-
-
+            ,ElevatedButton(onPressed: (){
+              context.read<ThemeProvider>().toggleTheme();
+            }, child: Text("Change Theme",style:Theme.of(context).textTheme.bodyMedium ,))
         ],),),
       ),
     );
