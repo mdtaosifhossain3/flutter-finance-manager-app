@@ -43,7 +43,7 @@ class _MainViewState extends State<MainView> {
 
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: AppColors.darkCardBackground,
-        color: AppColors.primaryBlue,
+        color: AppColors.darkSecondaryBackground,
         height: 70,
         index: _selectedIndex,
         items: <Widget>[

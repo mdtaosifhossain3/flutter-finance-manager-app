@@ -30,7 +30,7 @@ class AppThemes {
         //------------------------ 20 24 30 ------------------------
         headlineSmall: TextStyle(
           fontSize: 20,
-          color: AppColors.textMuted,
+          color: AppColors.textPrimary,
           fontFamily: 'Poppins',
           fontWeight: FontWeight.w600,
         ),
@@ -68,13 +68,18 @@ class AppThemes {
         ),
 
         //------------------------ 16 ------------------------
-        bodyMedium: TextStyle(
+        bodySmall: TextStyle(
           fontSize: 16,
-          color: AppColors.textSecondary,
+          color: AppColors.textPrimary,
           fontFamily: 'Poppins',
           fontWeight: FontWeight.w400,
         ),
-
+        bodyMedium: TextStyle(
+          fontSize: 18,
+          color: AppColors.textSecondary,
+          fontFamily: 'Poppins',
+          fontWeight: FontWeight.w500,
+        ),
 
       )
   );
