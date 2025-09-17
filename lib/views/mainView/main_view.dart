@@ -79,6 +79,9 @@ class _HomeScreenState extends State<MainView> {
       body: screens[_page],
 
       bottomNavigationBar: CurvedNavigationBar(
+
+        backgroundColor: AppColors.darkCardBackground,
+        color: AppColors.darkSecondaryBackground,
         height: 70,
         index: _page,
         items: items,
