@@ -25,6 +25,7 @@ dependencies:
   provider: ^6.1.5+1
   month_picker_dialog: ^6.5.0
   curved_navigation_bar: ^1.0.6
+  percent_indicator: ^4.2.5
 
 dev_dependencies:
   flutter_test:
