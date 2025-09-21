@@ -3,7 +3,7 @@ import 'package:finance_manager_app/providers/category_item_provider.dart';
 import 'package:finance_manager_app/providers/expense_provider.dart';
 import 'package:finance_manager_app/providers/home_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
-import 'package:finance_manager_app/views/splashView/splash_view.dart';
+import 'package:finance_manager_app/views/mainView/main_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
 
       theme: themeProvider.theme,
       getPages: Routes.views,
-      home: SplashView(),
+      home: MainView(),
     );
   }
 }

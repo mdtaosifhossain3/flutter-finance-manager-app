@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '';
+
 import '../myColors/app_colors.dart';
 
 class AppThemes {
@@ -76,7 +76,7 @@ class AppThemes {
         ),
         bodyMedium: TextStyle(
           fontSize: 18,
-          color: AppColors.textSecondary,
+          color: AppColors.textPrimary,
           fontFamily: 'Poppins',
           fontWeight: FontWeight.w500,
         ),
@@ -137,7 +137,7 @@ class AppThemes {
       ),
       labelMedium: TextStyle(
         fontSize: 14,
-        color:  AppColors.lightTextSecondary,
+        color:  AppColors.textPrimary,
         fontFamily: 'Poppins',
         fontWeight: FontWeight.w400,
       ),
@@ -150,8 +150,14 @@ class AppThemes {
 
       // -------------------------  16 -------------------------
       bodyMedium: TextStyle(
+        fontSize: 18,
+        color:  AppColors.lightTextPrimary,
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.w400,
+      ),
+      bodySmall: TextStyle(
         fontSize: 16,
-        color:  AppColors.lightTextSecondary,
+        color:  AppColors.lightTextPrimary,
         fontFamily: 'Poppins',
         fontWeight: FontWeight.w400,
       ),

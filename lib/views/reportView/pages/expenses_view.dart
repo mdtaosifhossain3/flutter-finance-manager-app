@@ -137,7 +137,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).iconTheme.color),
           onPressed: () {
             Get.back();
           },
@@ -174,7 +174,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       margin: EdgeInsets.all(16),
       padding: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColors.darkSecondaryBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
@@ -247,7 +247,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.darkCardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -270,11 +270,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   children: [
                     Text(
                       '\$${totalAmount.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.headlineSmall
                     ),
                     Text(
                       'Total',
@@ -357,7 +353,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.darkCardBackground,
+        color:Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

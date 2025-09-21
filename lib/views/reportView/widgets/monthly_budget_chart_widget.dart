@@ -14,7 +14,7 @@ List<BudgetData>  monthlyData;
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:context.watch<ThemeProvider>().isDark ? AppColors.darkSecondaryBackground : AppColors.lightCardBackground,
+        color:context.watch<ThemeProvider>().isDark ? AppColors.darkCardBackground : AppColors.lightCardBackground,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

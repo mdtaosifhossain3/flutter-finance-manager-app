@@ -38,7 +38,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
       margin: EdgeInsets.all(20),
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.darkSecondaryBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -49,7 +49,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
                 padding: EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.primaryBlue, AppColors.secondaryBlue],
+                    colors: [Theme.of(context).primaryColor, Theme.of(context).colorScheme.secondary],
                   ),
                   shape: BoxShape.circle,
                 ),
@@ -66,7 +66,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
                 child: Container(
                   padding: EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: AppColors.darkMainBackground,
+                    color: Theme.of(context).cardColor,
                     shape: BoxShape.circle,
                   ),
                   child: Container(
@@ -93,11 +93,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
               children: [
                 Text(
                   'Daniel Travis',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.headlineMedium
                 ),
                 SizedBox(height: 4),
                 Text(
@@ -151,15 +147,11 @@ class _ProfessionalDashboardState extends State<ProfileView> {
             children: [
               Text(
                 'Financial Overview',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium
               ),
               Text(
                 'This Month',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                style: Theme.of(context).textTheme.labelMedium,
               ),
             ],
           ),
@@ -177,7 +169,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
                 '\$12,450.00',
                 '+2.5%',
                 Icons.account_balance,
-                Colors.blue,
+                AppColors.primaryBlue,
                 true,
               ),
               _buildAdvancedCard(
@@ -185,7 +177,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
                 '\$3,891.50',
                 '-12%',
                 Icons.trending_down,
-                Colors.red,
+                AppColors.error,
                 false,
               ),
               _buildAdvancedCard(
@@ -193,7 +185,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
                 '\$5,000.00',
                 '78% Used',
                 Icons.savings,
-                Colors.green,
+                AppColors.warning,
                 true,
               ),
               _buildAdvancedCard(
@@ -201,7 +193,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
                 '\$8,750.25',
                 '+15.2%',
                 Icons.trending_up,
-                Colors.purple,
+                AppColors.secondaryBlue,
                 true,
               ),
             ],
@@ -222,7 +214,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.darkCardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -249,20 +241,12 @@ class _ProfessionalDashboardState extends State<ProfileView> {
           Spacer(),
           Text(
             amount,
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall
           ),
           SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(context).textTheme.labelSmall,
           ),
           Text(
             change,
@@ -282,7 +266,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
       margin: EdgeInsets.symmetric(horizontal: 20),
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.darkCardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -290,11 +274,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
         children: [
           Text(
             'Spending This Week',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.headlineMedium
           ),
           SizedBox(height: 16),
           Row(
@@ -305,18 +285,12 @@ class _ProfessionalDashboardState extends State<ProfileView> {
                   children: [
                     Text(
                       '\$1,247.50',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:Theme.of(context).textTheme.headlineMedium
                     ),
+                    SizedBox(height: 4),
                     Text(
                       'of \$2,500 budget',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.6),
-                        fontSize: 14,
-                      ),
+                      style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
                 ),
@@ -324,20 +298,16 @@ class _ProfessionalDashboardState extends State<ProfileView> {
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.2),
+                  color: AppColors.primaryBlue.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   children: [
-                    Icon(Icons.trending_up, color: Colors.blue, size: 24),
+                    Icon(Icons.trending_up, color:  AppColors.primaryBlue, size: 24),
                     SizedBox(height: 4),
                     Text(
                       '50%',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.primaryBlue, fontWeight: FontWeight.bold)
                     ),
                   ],
                 ),
@@ -348,7 +318,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
           Container(
             height: 8,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: AppColors.textSecondary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(4),
             ),
             child: FractionallySizedBox(
@@ -357,7 +327,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.blue, Colors.purple],
+                    colors: [Theme.of(context).primaryColor, AppColors.purpleGradientEnd],
                   ),
                   borderRadius: BorderRadius.circular(4),
                 ),
@@ -387,8 +357,9 @@ class _ProfessionalDashboardState extends State<ProfileView> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.amber.withOpacity(0.1),
-            Colors.orange.withOpacity(0.1),
+            Colors.amber.withOpacity(0.2),
+            Colors.orange.withOpacity(0.2),
+
           ],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -420,11 +391,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
                 SizedBox(height: 4),
                 Text(
                   'You spent 15% less on dining this month compared to last month. Keep it up!',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 14,
-                    height: 1.4,
-                  ),
+                  style: Theme.of(context).textTheme.labelMedium
                 ),
               ],
             ),
@@ -477,26 +444,20 @@ class _ProfessionalDashboardState extends State<ProfileView> {
           SizedBox(height: 16),
           Text(
             'Unlock advanced analytics, custom budgets, investment tracking, and priority support.',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.8),
-              fontSize: 14,
-              height: 1.4,
-            ),
+            style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textMuted)
           ),
           SizedBox(height: 16),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: AppColors.primaryBlue,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               'Upgrade for \$9.99/month',
-              style: TextStyle(
+              style: Theme.of(context).textTheme.labelMedium!.copyWith(
                 color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
+                fontWeight: FontWeight.bold,)
             ),
           ),
         ],
@@ -504,118 +465,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
     );
   }
 
-  Widget _buildRecentTransactions() {
-    final transactions = [
-      {
-        'name': 'Starbucks Coffee',
-        'amount': '-\$4.50',
-        'icon': Icons.coffee,
-        'color': Colors.brown,
-      },
-      {
-        'name': 'Salary Deposit',
-        'amount': '+\$3,200',
-        'icon': Icons.work,
-        'color': Colors.green,
-      },
-      {
-        'name': 'Netflix Subscription',
-        'amount': '-\$15.99',
-        'icon': Icons.movie,
-        'color': Colors.red,
-      },
-      {
-        'name': 'Investment Return',
-        'amount': '+\$125.00',
-        'icon': Icons.trending_up,
-        'color': Colors.blue,
-      },
-    ];
 
-    return Container(
-      margin: EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Recent Transactions',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                'View All',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          ...transactions
-              .map(
-                (transaction) => Container(
-                  margin: EdgeInsets.only(bottom: 12),
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withOpacity(0.1)),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: (transaction['color'] as Color).withOpacity(
-                            0.2,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          transaction['icon'] as IconData,
-                          color: transaction['color'] as Color,
-                          size: 20,
-                        ),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          transaction['name'] as String,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        transaction['amount'] as String,
-                        style: TextStyle(
-                          color:
-                              (transaction['amount'] as String).startsWith('+')
-                              ? Colors.green
-                              : Colors.red,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              .toList(),
-        ],
-      ),
-    );
-  }
 
   Widget _buildAchievements() {
     return Container(
@@ -635,20 +485,12 @@ class _ProfessionalDashboardState extends State<ProfileView> {
         children: [
           Text(
             'September Achievements',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.headlineMedium
           ),
           SizedBox(height: 16),
           Text(
             'You earned 450 points this month! Complete 2 more goals to unlock the "Budget Master" achievement and earn bonus rewards.',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.8),
-              fontSize: 14,
-              height: 1.5,
-            ),
+            style: Theme.of(context).textTheme.labelMedium
           ),
           SizedBox(height: 16),
           Row(

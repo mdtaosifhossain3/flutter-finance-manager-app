@@ -37,7 +37,7 @@ class Routes {
     ),
     GetPage(
       name: RoutesName.homeView,
-      page: () => const HomeView(),
+      page: () =>  HomeView(),
       transition: Transition.rightToLeft,
     ),
 

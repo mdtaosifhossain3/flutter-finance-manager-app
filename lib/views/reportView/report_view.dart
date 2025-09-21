@@ -63,26 +63,90 @@ class _ReportViewState extends State<ReportView> {
   Widget build(BuildContext context) {
     return Scaffold(
 
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSpentIndicator(),
-            SizedBox(height: 24),
-            ExpenseChartWidget(expenseCategories:expenseCategories ,),
-            SizedBox(height: 24),
-            MonthlyBudgetChartWidget(monthlyData:monthlyData),
-            SizedBox(height: 24),
-            LastFiveDaysPeriodChartWidget(periodData:periodData),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
 
-
-          ],
+              _buildSpentIndicator(),
+              SizedBox(height: 24),
+              ExpenseChartWidget(expenseCategories:expenseCategories ,),
+              SizedBox(height: 24),
+              MonthlyBudgetChartWidget(monthlyData:monthlyData),
+              SizedBox(height: 24),
+              LastFiveDaysPeriodChartWidget(periodData:periodData),
+              SizedBox(height: 120),
+        
+            ],
+          ),
         ),
       ),
     );
   }
+  Widget _buildHeader() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
 
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Wednesday',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                  '17 September',
+                  textAlign: TextAlign.center,
+                  style:Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold)
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  context.read<ThemeProvider>().toggleTheme();
+                },
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color:context.read<ThemeProvider>().isDark ? AppColors.darkSecondaryBackground : AppColors.lightCardBackground,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    context.read<ThemeProvider>().isDark ? Icons.dark_mode : Icons.light_mode,
+                    color:context.read<ThemeProvider>().isDark ?  AppColors.textPrimary :AppColors.primaryBlue,
+                    size: 20,
+                  ),
+                ),
+              ),
+              SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {},
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: context.read<ThemeProvider>().isDark ? AppColors.darkSecondaryBackground : AppColors.lightCardBackground,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.notifications,
+                    color: context.read<ThemeProvider>().isDark ?  AppColors.textPrimary :AppColors.primaryBlue,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
   Widget _buildSpentIndicator() {
     double percentage = (spentAmount / totalBudget) * 100;
 
