@@ -10,11 +10,14 @@ import '../../../providers/theme_provider.dart';
 
 class ExpenseChartWidget extends StatelessWidget {
   List<ExpenseCategoryModel> expenseCategories;
-   ExpenseChartWidget({super.key, required this.expenseCategories});
+  ExpenseChartWidget({super.key, required this.expenseCategories});
 
   @override
   Widget build(BuildContext context) {
-    double total = expenseCategories.fold(0, (sum, category) => sum + category.amount);
+    double total = expenseCategories.fold(
+      0,
+      (sum, category) => sum + category.amount,
+    );
 
     return GestureDetector(
       onTap: () {
@@ -24,16 +27,13 @@ class ExpenseChartWidget extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: context.watch<ThemeProvider>().isDark ? AppColors.darkCardBackground : AppColors.lightCardBackground,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Expenses',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
+            Text('Expenses', style: Theme.of(context).textTheme.headlineSmall),
             SizedBox(height: 16),
             Row(
               children: [
@@ -50,7 +50,11 @@ class ExpenseChartWidget extends StatelessWidget {
                             value: percentage,
                             title: '${percentage.toStringAsFixed(0)}%',
                             radius: 60,
-                            titleStyle: TextStyle(fontSize: 12,color: AppColors.textPrimary,fontWeight: FontWeight.w600)
+                            titleStyle: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
                           );
                         }).toList(),
                         sectionsSpace: 2,

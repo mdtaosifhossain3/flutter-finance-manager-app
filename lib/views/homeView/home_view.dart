@@ -4,9 +4,10 @@ import 'package:provider/provider.dart';
 import 'dart:math' as math;
 
 import '../../providers/theme_provider.dart';
-import 'widgets/segmented_progress_bar_widget.dart';
 
 class HomeView extends StatefulWidget {
+  const HomeView({super.key});
+
   @override
   _StatisticsHomeScreenState createState() => _StatisticsHomeScreenState();
 }
@@ -32,34 +33,34 @@ class _StatisticsHomeScreenState extends State<HomeView>
   final Map<String, PeriodData> periodData = {
     'W': PeriodData(
       expenses: 600.50,
-      budget: 600.0,
+      budget: 600,
       title: 'This Week',
       transactions: [
         TransactionData(
           'Coffee Shop',
           'Today, 9:15 AM',
-          4.50,
+          4,
           Icons.coffee,
           Colors.brown,
         ),
         TransactionData(
           'Uber Ride',
           'Yesterday, 6:30 PM',
-          12.80,
+          12,
           Icons.local_taxi,
           Colors.black,
         ),
         TransactionData(
           'Grocery Store',
           'Yesterday, 2:10 PM',
-          45.20,
+          45,
           Icons.shopping_cart,
           Colors.green,
         ),
         TransactionData(
           'Netflix',
           '16 Dec, 8:00 PM',
-          15.99,
+          15,
           Icons.movie,
           Colors.red,
         ),
@@ -73,84 +74,84 @@ class _StatisticsHomeScreenState extends State<HomeView>
       ],
     ),
     'M': PeriodData(
-      expenses: 6500.0,
-      budget: 9050.0,
+      expenses: 6500,
+      budget: 9050,
       title: 'This Month',
       transactions: [
         TransactionData(
           'Apple Pay',
           '15 Dec, 8:00 PM',
-          149.00,
+          149,
           Icons.apple,
           Colors.white,
         ),
         TransactionData(
           'Spotify Premium',
           '14 Dec, 4:30 PM',
-          46.50,
+          46,
           Icons.library_music,
           Colors.green,
         ),
         TransactionData(
           'John Abraham',
           '14 Dec, 2:10 PM',
-          92.00,
+          92,
           Icons.person,
           Colors.green,
         ),
         TransactionData(
           'Shopping',
           '14 Dec, 2:10 PM',
-          225.50,
+          225,
           Icons.shopping_bag,
           Colors.green,
         ),
         TransactionData(
           'Electricity Bill',
           '12 Dec, 10:00 AM',
-          156.80,
+          156,
           Icons.flash_on,
           Colors.yellow,
         ),
       ],
     ),
     'Y': PeriodData(
-      expenses: 78400.0,
-      budget: 108000.0,
+      expenses: 78400,
+      budget: 108000,
       title: 'This Year',
       transactions: [
         TransactionData(
           'Annual Insurance',
           '01 Dec, 9:00 AM',
-          2400.00,
+          2400,
           Icons.security,
           Colors.blue,
         ),
         TransactionData(
           'Car Payment',
           '28 Nov, 3:00 PM',
-          850.00,
+          850,
           Icons.directions_car,
           Colors.grey,
         ),
         TransactionData(
           'Vacation Trip',
           '15 Nov, 6:00 PM',
-          3200.00,
+          3200,
           Icons.flight,
           Colors.purple,
         ),
         TransactionData(
           'Home Renovation',
           '10 Nov, 11:00 AM',
-          4500.00,
+          4500,
           Icons.home,
           Colors.orange,
         ),
         TransactionData(
           'Investment',
           '05 Nov, 2:30 PM',
-          5000.00,
+          5000,
           Icons.trending_up,
           Colors.green,
         ),
@@ -231,6 +232,7 @@ class _StatisticsHomeScreenState extends State<HomeView>
 
                     SizedBox(height: 16),
                     _buildTransactionHistory(),
+                    SizedBox(height: 100),
                   ],
                 ),
               ),
@@ -251,61 +253,36 @@ class _StatisticsHomeScreenState extends State<HomeView>
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Wednesday', style: Theme.of(context).textTheme.bodySmall),
+              Text("wednesday", style: Theme.of(context).textTheme.labelSmall),
               Text(
                 '17 September',
                 textAlign: TextAlign.center,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ],
           ),
           Row(
             children: [
-              GestureDetector(
-                onTap: () {
-                  context.read<ThemeProvider>().toggleTheme();
-                },
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: context.read<ThemeProvider>().isDark
-                        ? AppColors.darkSecondaryBackground
-                        : AppColors.lightCardBackground,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    context.read<ThemeProvider>().isDark
-                        ? Icons.dark_mode
-                        : Icons.light_mode,
-                    color: context.read<ThemeProvider>().isDark
-                        ? AppColors.textPrimary
-                        : AppColors.primaryBlue,
-                    size: 20,
-                  ),
-                ),
-              ),
-              SizedBox(width: 10),
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: context.read<ThemeProvider>().isDark
-                        ? AppColors.darkSecondaryBackground
-                        : AppColors.lightCardBackground,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.notifications,
-                    color: context.read<ThemeProvider>().isDark
-                        ? AppColors.textPrimary
-                        : AppColors.primaryBlue,
-                    size: 20,
-                  ),
-                ),
-              ),
+              // SizedBox(width: 10),
+              // GestureDetector(
+              //   onTap: () {},
+              //   child: Container(
+              //     padding: EdgeInsets.all(8),
+              //     decoration: BoxDecoration(
+              //       color: context.read<ThemeProvider>().isDark
+              //           ? AppColors.darkSecondaryBackground
+              //           : AppColors.lightCardBackground,
+              //       borderRadius: BorderRadius.circular(8),
+              //     ),
+              //     child: Icon(
+              //       Icons.notifications,
+              //       color: context.read<ThemeProvider>().isDark
+              //           ? AppColors.textPrimary
+              //           : AppColors.primaryBlue,
+              //       size: 20,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ],
@@ -337,9 +314,7 @@ class _StatisticsHomeScreenState extends State<HomeView>
                     painter: CircularProgressPainter(
                       progress: _progressAnimation.value,
                       strokeWidth: 20,
-                      backgroundColor: context.watch<ThemeProvider>().isDark
-                          ? AppColors.darkSecondaryBackground
-                          : AppColors.lightSecondaryBackground,
+                      backgroundColor: Theme.of(context).dividerColor,
                       segmentColors: [
                         AppColors.primaryBlue,
                         AppColors.success,
@@ -357,17 +332,17 @@ class _StatisticsHomeScreenState extends State<HomeView>
                 children: [
                   Text(
                     'Expenses',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '£${_formatCurrency(currentExpenses)}',
+                    '৳${_formatCurrency(currentExpenses)}',
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'Out of £${_formatCurrency(currentBudget)}',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    'Out of ৳${_formatCurrency(currentBudget)}',
+                    style: Theme.of(context).textTheme.labelMedium,
                   ),
                 ],
               ),
@@ -386,9 +361,7 @@ class _StatisticsHomeScreenState extends State<HomeView>
     return Container(
       padding: EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: context.watch<ThemeProvider>().isDark
-            ? AppColors.darkSecondaryBackground
-            : AppColors.lightSecondaryBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(25),
       ),
       child: Row(
@@ -402,22 +375,18 @@ class _StatisticsHomeScreenState extends State<HomeView>
               curve: Curves.easeInOut,
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               decoration: BoxDecoration(
-                color: context.watch<ThemeProvider>().isDark
-                    ? isSelected
-                          ? AppColors.primaryBlue
-                          : Colors.transparent
-                    : isSelected
-                    ? AppColors.textPrimary
-                    : Colors.transparent,
+                color: Theme.of(
+                  context,
+                ).colorScheme.surface.withOpacity(isSelected ? .97 : 0.0),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 period,
-                style: TextStyle(
-                  color: isSelected ? Colors.black : Colors.grey[400],
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: isSelected
+                    ? Theme.of(context).textTheme.titleMedium
+                    : Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textMuted,
+                      ),
               ),
             ),
           );
@@ -433,34 +402,20 @@ class _StatisticsHomeScreenState extends State<HomeView>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              "Today's History",
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                backgroundColor: context.watch<ThemeProvider>().isDark
-                    ? Colors.transparent
-                    : AppColors.lightSecondaryBackground,
-                foregroundColor: AppColors.textPrimary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-              ),
+            Text("History", style: Theme.of(context).textTheme.headlineSmall),
+            TextButton(
+
               onPressed: () {},
               child: Text(
                 "See All",
-                style: TextStyle(
-                  color: AppColors.primaryBlue,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelMedium?.copyWith(color: AppColors.primaryBlue),
               ),
             ),
           ],
         ),
-        // SizedBox(height: 20),
+        SizedBox(height: 14),
         ...currentTransactions.map(
           (transaction) => _buildTransactionItem(transaction),
         ),
@@ -471,12 +426,11 @@ class _StatisticsHomeScreenState extends State<HomeView>
   Widget _buildTransactionItem(TransactionData transaction) {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: context.watch<ThemeProvider>().isDark
-            ? AppColors.darkSecondaryBackground
-            : AppColors.lightSecondaryBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         children: [
@@ -504,7 +458,7 @@ class _StatisticsHomeScreenState extends State<HomeView>
               children: [
                 Text(
                   transaction.title,
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 SizedBox(height: 4),
                 Text(
@@ -515,8 +469,8 @@ class _StatisticsHomeScreenState extends State<HomeView>
             ),
           ),
           Text(
-            '£${transaction.amount.toStringAsFixed(2)}',
-            style: Theme.of(context).textTheme.bodyMedium,
+            '৳${transaction.amount}',
+            style: Theme.of(context).textTheme.titleLarge,
           ),
         ],
       ),

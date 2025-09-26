@@ -1,3 +1,4 @@
+import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -12,6 +13,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: customAppBar(title: 'Profile'),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
@@ -32,7 +34,6 @@ class _ProfessionalDashboardState extends State<ProfileView> {
     );
   }
 
-
   Widget _buildProfessionalProfile() {
     return Container(
       margin: EdgeInsets.all(20),
@@ -49,7 +50,10 @@ class _ProfessionalDashboardState extends State<ProfileView> {
                 padding: EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Theme.of(context).primaryColor, Theme.of(context).colorScheme.secondary],
+                    colors: [
+                      Theme.of(context).primaryColor,
+                      Theme.of(context).colorScheme.secondary,
+                    ],
                   ),
                   shape: BoxShape.circle,
                 ),
@@ -93,7 +97,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
               children: [
                 Text(
                   'Daniel Travis',
-                  style: Theme.of(context).textTheme.headlineMedium
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 SizedBox(height: 4),
                 Text(
@@ -147,7 +151,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
             children: [
               Text(
                 'Financial Overview',
-                style: Theme.of(context).textTheme.headlineMedium
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
               Text(
                 'This Month',
@@ -166,7 +170,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
             children: [
               _buildAdvancedCard(
                 'Total Balance',
-                '\$12,450.00',
+                '৳12,450.00',
                 '+2.5%',
                 Icons.account_balance,
                 AppColors.primaryBlue,
@@ -174,7 +178,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
               ),
               _buildAdvancedCard(
                 'Total Expenses',
-                '\$3,891.50',
+                '৳3,891.50',
                 '-12%',
                 Icons.trending_down,
                 AppColors.error,
@@ -182,7 +186,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
               ),
               _buildAdvancedCard(
                 'Monthly Budget',
-                '\$5,000.00',
+                '৳5,000.00',
                 '78% Used',
                 Icons.savings,
                 AppColors.warning,
@@ -190,7 +194,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
               ),
               _buildAdvancedCard(
                 'Investments',
-                '\$8,750.25',
+                '৳8,750.25',
                 '+15.2%',
                 Icons.trending_up,
                 AppColors.secondaryBlue,
@@ -239,15 +243,9 @@ class _ProfessionalDashboardState extends State<ProfileView> {
             ],
           ),
           Spacer(),
-          Text(
-            amount,
-            style: Theme.of(context).textTheme.headlineSmall
-          ),
+          Text(amount, style: Theme.of(context).textTheme.headlineSmall),
           SizedBox(height: 4),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.labelSmall,
-          ),
+          Text(title, style: Theme.of(context).textTheme.labelSmall),
           Text(
             change,
             style: TextStyle(
@@ -274,7 +272,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
         children: [
           Text(
             'Spending This Week',
-            style: Theme.of(context).textTheme.headlineMedium
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
           SizedBox(height: 16),
           Row(
@@ -284,12 +282,12 @@ class _ProfessionalDashboardState extends State<ProfileView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '\$1,247.50',
-                      style:Theme.of(context).textTheme.headlineMedium
+                      '৳1,247.50',
+                      style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'of \$2,500 budget',
+                      'of ৳2,500 budget',
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
@@ -298,16 +296,23 @@ class _ProfessionalDashboardState extends State<ProfileView> {
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryBlue.withValues(alpha:0.1),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   children: [
-                    Icon(Icons.trending_up, color:  AppColors.primaryBlue, size: 24),
+                    Icon(
+                      Icons.trending_up,
+                      color: AppColors.primaryBlue,
+                      size: 24,
+                    ),
                     SizedBox(height: 4),
                     Text(
                       '50%',
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.primaryBlue, fontWeight: FontWeight.bold)
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        color: AppColors.primaryBlue,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -327,7 +332,10 @@ class _ProfessionalDashboardState extends State<ProfileView> {
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Theme.of(context).primaryColor, AppColors.purpleGradientEnd],
+                    colors: [
+                      Theme.of(context).primaryColor,
+                      AppColors.purpleGradientEnd,
+                    ],
                   ),
                   borderRadius: BorderRadius.circular(4),
                 ),
@@ -359,7 +367,6 @@ class _ProfessionalDashboardState extends State<ProfileView> {
           colors: [
             Colors.amber.withOpacity(0.2),
             Colors.orange.withOpacity(0.2),
-
           ],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -391,7 +398,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
                 SizedBox(height: 4),
                 Text(
                   'You spent 15% less on dining this month compared to last month. Keep it up!',
-                  style: Theme.of(context).textTheme.labelMedium
+                  style: Theme.of(context).textTheme.labelMedium,
                 ),
               ],
             ),
@@ -444,7 +451,9 @@ class _ProfessionalDashboardState extends State<ProfileView> {
           SizedBox(height: 16),
           Text(
             'Unlock advanced analytics, custom budgets, investment tracking, and priority support.',
-            style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textMuted)
+            style: Theme.of(
+              context,
+            ).textTheme.labelMedium!.copyWith(color: AppColors.textMuted),
           ),
           SizedBox(height: 16),
           Container(
@@ -454,18 +463,17 @@ class _ProfessionalDashboardState extends State<ProfileView> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              'Upgrade for \$9.99/month',
+              'Upgrade for ৳9.99/month',
               style: Theme.of(context).textTheme.labelMedium!.copyWith(
                 color: Colors.white,
-                fontWeight: FontWeight.bold,)
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
       ),
     );
   }
-
-
 
   Widget _buildAchievements() {
     return Container(
@@ -485,12 +493,12 @@ class _ProfessionalDashboardState extends State<ProfileView> {
         children: [
           Text(
             'September Achievements',
-            style: Theme.of(context).textTheme.headlineMedium
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
           SizedBox(height: 16),
           Text(
             'You earned 450 points this month! Complete 2 more goals to unlock the "Budget Master" achievement and earn bonus rewards.',
-            style: Theme.of(context).textTheme.labelMedium
+            style: Theme.of(context).textTheme.labelMedium,
           ),
           SizedBox(height: 16),
           Row(

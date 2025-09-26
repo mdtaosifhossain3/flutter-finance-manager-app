@@ -3,19 +3,16 @@ import 'package:finance_manager_app/views/reportView/widgets/expense_chart_widge
 import 'package:finance_manager_app/views/reportView/widgets/last_five_days_period_chart_widget.dart';
 import 'package:finance_manager_app/views/reportView/widgets/monthly_budget_chart_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../models/budget_data_model.dart';
 import '../../models/expense_category_model.dart';
 import '../../models/period_data_model.dart';
-import '../../providers/theme_provider.dart';
-
 
 class ReportView extends StatefulWidget {
   const ReportView({super.key});
 
   @override
-State<ReportView> createState() => _ReportViewState();
+  State<ReportView> createState() => _ReportViewState();
 }
 
 class _ReportViewState extends State<ReportView> {
@@ -47,7 +44,6 @@ class _ReportViewState extends State<ReportView> {
     PeriodData('Apr', 1700, 0, 0), // within
     PeriodData('May', 1600, 0, 0), // within
     PeriodData('June', 1800, 0, 0), // within
-
   ];
 
   // Expenses breakdown
@@ -62,98 +58,39 @@ class _ReportViewState extends State<ReportView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
+              Text(
+                'Financial Report',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              SizedBox(height: 20),
               _buildSpentIndicator(),
               SizedBox(height: 24),
-              ExpenseChartWidget(expenseCategories:expenseCategories ,),
+              ExpenseChartWidget(expenseCategories: expenseCategories),
               SizedBox(height: 24),
-              MonthlyBudgetChartWidget(monthlyData:monthlyData),
+              MonthlyBudgetChartWidget(monthlyData: monthlyData),
               SizedBox(height: 24),
-              LastFiveDaysPeriodChartWidget(periodData:periodData),
+              LastFiveDaysPeriodChartWidget(periodData: periodData),
               SizedBox(height: 120),
-        
             ],
           ),
         ),
       ),
     );
   }
-  Widget _buildHeader() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
 
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Wednesday',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              Text(
-                  '17 September',
-                  textAlign: TextAlign.center,
-                  style:Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold)
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  context.read<ThemeProvider>().toggleTheme();
-                },
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color:context.read<ThemeProvider>().isDark ? AppColors.darkSecondaryBackground : AppColors.lightCardBackground,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    context.read<ThemeProvider>().isDark ? Icons.dark_mode : Icons.light_mode,
-                    color:context.read<ThemeProvider>().isDark ?  AppColors.textPrimary :AppColors.primaryBlue,
-                    size: 20,
-                  ),
-                ),
-              ),
-              SizedBox(width: 10),
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: context.read<ThemeProvider>().isDark ? AppColors.darkSecondaryBackground : AppColors.lightCardBackground,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.notifications,
-                    color: context.read<ThemeProvider>().isDark ?  AppColors.textPrimary :AppColors.primaryBlue,
-                    size: 20,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
   Widget _buildSpentIndicator() {
     double percentage = (spentAmount / totalBudget) * 100;
 
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: context.watch<ThemeProvider>().isDark ? AppColors.darkCardBackground : AppColors.lightCardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -163,12 +100,18 @@ class _ReportViewState extends State<ReportView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Spent: \$${spentAmount.toStringAsFixed(0)} / \$${totalBudget.toStringAsFixed(0)}',
-                style: Theme.of(context).textTheme.labelMedium,
+                'Spent: ৳${spentAmount.toStringAsFixed(0)} / ৳${totalBudget.toStringAsFixed(0)}',
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               Text(
                 '${percentage.toStringAsFixed(0)}%',
-                style:Theme.of(context).textTheme.labelMedium,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: percentage > 90
+                      ? AppColors.error
+                      : percentage > 75
+                      ? AppColors.warning
+                      : AppColors.primaryBlue,
+                ),
               ),
             ],
           ),
@@ -183,11 +126,4 @@ class _ReportViewState extends State<ReportView> {
       ),
     );
   }
-
-
-
 }
-
-
-
-

@@ -4,9 +4,10 @@ import 'package:finance_manager_app/views/authView/loginView/login_view.dart';
 import 'package:finance_manager_app/views/authView/registerView/register_view.dart';
 import 'package:finance_manager_app/views/authView/resetPasswordView/reset_password_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
-import 'package:finance_manager_app/views/notificationView/notification_view.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
 import 'package:get/get.dart';
+
+import '../../globalWidgets/notificationView/notification_view.dart';
 
 class Routes {
   static var views = [

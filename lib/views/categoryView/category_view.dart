@@ -1,5 +1,13 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
+import 'package:finance_manager_app/providers/theme_provider.dart';
+import 'package:finance_manager_app/views/categoryView/pages/category_item_view.dart';
+import 'package:finance_manager_app/views/categoryView/pages/custom_add_category_view.dart';
+import 'package:finance_manager_app/views/categoryView/pages/transaction_form_view.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:provider/provider.dart';
 
 class CategoryView extends StatefulWidget {
   @override
@@ -201,6 +209,11 @@ class _CategorySelectionPageState extends State<CategoryView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: customAppBar(title: 'Categories', actions: [
+
+
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -212,89 +225,33 @@ class _CategorySelectionPageState extends State<CategoryView>
           ],
         ),
       ),
-      floatingActionButton: Container(
-        margin: const EdgeInsets.only(bottom: 110, left: 0), // move up
-        width: MediaQuery.of(context).size.width * 0.36,
-
-        child: FloatingActionButton(
-          backgroundColor: Theme.of(context).primaryColor,
-          onPressed: () {},
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add, size: 25, color: AppColors.textPrimary),
-              SizedBox(width: 6),
-              Text(
-                'Add Category',
-                style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
+      floatingActionButton: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            bottom: 110.0,
+          ), // keeps safe from nav bar
+          child: SizedBox(
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                Get.to(CreateCategoryPage());
+              },
+              backgroundColor: Theme.of(context).primaryColor,
+              icon: Icon(Icons.add, size: 22, color: AppColors.textPrimary),
+              label: FittedBox(
+                // ensures text scales down if needed
+                child: Text(
+                  'Add Category',
+                  style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () {},
-            child: Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              'Select Category',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {},
-            child: Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Icon(Icons.search, color: Colors.black, size: 20),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -469,6 +426,13 @@ class _CategorySelectionPageState extends State<CategoryView>
       onTap: () {
         // Handle category selection
         print('Selected: ${category.name}');
+        Get.to(
+          () => CategoryTransactionView(
+            categoryName: "Food",
+            categoryIcon: Icons.food_bank,
+            categoryColor: Colors.teal,
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(),
@@ -494,39 +458,6 @@ class _CategorySelectionPageState extends State<CategoryView>
                 fontSize: 12,
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddButton() {
-    return Container(
-      margin: EdgeInsets.all(20),
-      child: ElevatedButton(
-        onPressed: () {
-          // Handle add new category
-          print('Add new category');
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
-          ),
-          elevation: 4,
-          shadowColor: Colors.blue.withOpacity(0.3),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.add, size: 20),
-            SizedBox(width: 8),
-            Text(
-              'Add Category',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ],
         ),

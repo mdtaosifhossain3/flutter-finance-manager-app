@@ -137,7 +137,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).iconTheme.color),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
             Get.back();
           },
@@ -179,10 +182,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       ),
       child: TextField(
         controller: searchController,
-        style: TextStyle(color: Colors.white),
+        style: Theme.of(context).textTheme.bodyLarge,
         decoration: InputDecoration(
           hintText: 'Super AI search',
-          hintStyle: TextStyle(color: AppColors.textMuted),
+          hintStyle: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
           prefixIcon: Icon(Icons.search, color: AppColors.textMuted),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(vertical: 16),
@@ -225,15 +230,14 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 child: Text(
                   period,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: isSelected
-                        ? AppColors.secondaryBlue
-                        : AppColors.textMuted,
-                    fontSize: 16,
-                    fontWeight: isSelected
-                        ? FontWeight.w600
-                        : FontWeight.normal,
-                  ),
+                  style: isSelected
+                      ? Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: AppColors.secondaryBlue,
+                          fontWeight: FontWeight.w600,
+                        )
+                      : Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textMuted,
+                        ),
                 ),
               ),
             ),
@@ -269,12 +273,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '\$${totalAmount.toStringAsFixed(2)}',
-                      style: Theme.of(context).textTheme.headlineSmall
+                      '৳${totalAmount.toStringAsFixed(2)}',
+                      style: Theme.of(context).textTheme.headlineLarge,
                     ),
+                    SizedBox(height: 4),
                     Text(
                       'Total',
-                      style: Theme.of(context).textTheme.labelMedium,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -319,7 +326,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             SizedBox(width: 6),
             Text(
               expense.category,
-              style: Theme.of(context).textTheme.labelSmall,
+              style: Theme.of(context).textTheme.labelMedium,
             ),
           ],
         );
@@ -353,7 +360,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:Theme.of(context).cardColor,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -371,15 +378,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           Expanded(
             child: Text(
               expense.category,
-              style: Theme.of(context).textTheme.labelLarge,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '\$${expense.amount.toStringAsFixed(2)}',
-                style: Theme.of(context).textTheme.labelLarge,
+                '৳${expense.amount.toStringAsFixed(2)}',
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               SizedBox(height: 2),
               Row(
@@ -387,10 +394,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 children: [
                   Text(
                     '${expense.percentage}%',
-                    style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: expense.isIncreasing
                           ? AppColors.error
                           : AppColors.success,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   SizedBox(width: 4),

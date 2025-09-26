@@ -7,7 +7,7 @@ import '../../../config/myColors/app_colors.dart';
 import '../../../providers/theme_provider.dart';
 
 class LastFiveDaysPeriodChartWidget extends StatelessWidget {
- List<PeriodData> periodData;
+  List<PeriodData> periodData;
   LastFiveDaysPeriodChartWidget({super.key, required this.periodData});
 
   @override
@@ -15,7 +15,7 @@ class LastFiveDaysPeriodChartWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: context.watch<ThemeProvider>().isDark ? AppColors.darkCardBackground : AppColors.lightCardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -53,15 +53,22 @@ class LastFiveDaysPeriodChartWidget extends StatelessWidget {
                         if (value.toInt() < periodData.length) {
                           return Text(
                             periodData[value.toInt()].period,
-                            style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                            style: TextStyle(
+                              color: AppColors.textMuted,
+                              fontSize: 12,
+                            ),
                           );
                         }
                         return Text('');
                       },
                     ),
                   ),
-                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                 ),
                 borderData: FlBorderData(show: false),
                 barGroups: periodData.asMap().entries.map((entry) {
@@ -70,7 +77,7 @@ class LastFiveDaysPeriodChartWidget extends StatelessWidget {
                   double barValue = data.within;
 
                   if (data.overspending > 0) {
-                    barColor =  AppColors.warning;
+                    barColor = AppColors.warning;
                     barValue = data.overspending;
                   } else if (data.risk > 0) {
                     barColor = AppColors.error;
@@ -107,22 +114,17 @@ class LastFiveDaysPeriodChartWidget extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildLegendItem(String label, Color color) {
     return Row(
       children: [
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         SizedBox(width: 6),
-        Text(
-          label,
-          style: TextStyle(color:  AppColors.textMuted, fontSize: 12),
-        ),
+        Text(label, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
       ],
     );
   }

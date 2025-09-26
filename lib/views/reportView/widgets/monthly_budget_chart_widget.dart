@@ -3,18 +3,19 @@ import 'package:finance_manager_app/models/budget_data_model.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class MonthlyBudgetChartWidget extends StatelessWidget {
-List<BudgetData>  monthlyData;
-   MonthlyBudgetChartWidget({super.key, required this.monthlyData});
+  List<BudgetData> monthlyData;
+  MonthlyBudgetChartWidget({super.key, required this.monthlyData});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:context.watch<ThemeProvider>().isDark ? AppColors.darkCardBackground : AppColors.lightCardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -50,15 +51,22 @@ List<BudgetData>  monthlyData;
                         if (value.toInt() < monthlyData.length) {
                           return Text(
                             monthlyData[value.toInt()].month,
-                            style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                            style: TextStyle(
+                              color: AppColors.textMuted,
+                              fontSize: 12,
+                            ),
                           );
                         }
                         return Text('');
                       },
                     ),
                   ),
-                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                 ),
                 borderData: FlBorderData(show: false),
                 lineBarsData: [
@@ -68,7 +76,7 @@ List<BudgetData>  monthlyData;
                       return FlSpot(entry.key.toDouble(), entry.value.budget);
                     }).toList(),
                     isCurved: true,
-                    color:AppColors.primaryBlue,
+                    color: AppColors.primaryBlue,
                     barWidth: 3,
                     dotData: FlDotData(show: true),
                   ),
@@ -118,23 +126,18 @@ List<BudgetData>  monthlyData;
       ),
     );
   }
-Widget _buildLegendItem(String label, Color color) {
-  return Row(
-    children: [
-      Container(
-        width: 12,
-        height: 12,
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
+
+  Widget _buildLegendItem(String label, Color color) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
-      ),
-      SizedBox(width: 6),
-      Text(
-        label,
-        style: TextStyle(color: AppColors.textMuted, fontSize: 12),
-      ),
-    ],
-  );
-}
+        SizedBox(width: 6),
+        Text(label, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+      ],
+    );
+  }
 }
