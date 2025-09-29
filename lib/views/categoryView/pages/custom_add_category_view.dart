@@ -134,7 +134,7 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
 
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 20),
                 child: Form(
                   key: _formKey,
                   child: Column(

@@ -31,7 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.03,
+                  horizontal: MediaQuery.of(context).size.width * 0.04,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,4 +1,5 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/models/expense_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -135,29 +136,14 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: Theme.of(context).iconTheme.color,
-          ),
-          onPressed: () {
-            Get.back();
-          },
-        ),
-        title: Text(
-          'Expenses',
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
-        centerTitle: false,
-      ),
+      appBar: customAppBar(title: "Expenses"),
       body: Column(
         children: [
           _buildSearchBar(),
           _buildPeriodTabs(),
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
               child: Column(
                 children: [
                   _buildDonutChart(),
@@ -174,7 +160,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
   Widget _buildSearchBar() {
     return Container(
-      margin: EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04,vertical: 16),
       padding: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -204,7 +190,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     final periods = ['Daily', 'Weekly', 'Monthly', 'Yearly'];
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
       child: Row(
         children: periods.map((period) {
           final isSelected = selectedPeriod == period;

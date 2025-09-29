@@ -28,6 +28,7 @@ class AppThemes {
       surface: AppColors.darkSecondaryBackground,
       onPrimary: AppColors.textPrimary,
       onSecondary: AppColors.textSecondary,
+      onTertiary: AppColors.textMuted,
       onSurface: AppColors.textSecondary,
       error: AppColors.error,
       outline: AppColors.border,

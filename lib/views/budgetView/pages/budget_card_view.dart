@@ -1,3 +1,5 @@
+import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/views/budgetView/pages/add_budget_view.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -45,22 +47,14 @@ class _BudgetCardViewState extends State<BudgetCardView>  {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: Text('Budget Overview', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0,
-        centerTitle: true,
-      ),
+      appBar: customAppBar(title: "Budget Overview"),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Period Filter Buttons
-            _buildPeriodFilter(),
-            SizedBox(height: 24),
+
 
             // Budget Summary Card
             _buildBudgetSummaryCard(),
@@ -79,63 +73,34 @@ class _BudgetCardViewState extends State<BudgetCardView>  {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Get.to(AddBudgetView()),
-        backgroundColor: Colors.blue[600],
-        icon: Icon(Icons.add),
-        label: Text('Add Expense'),
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () => Get.to(AddBudgetView()),
+      //   backgroundColor: AppColors.primaryBlue,
+      //   foregroundColor: AppColors.textPrimary,
+      //   icon: Icon(Icons.add),
+      //   label: Text('Add Expense'),
+      // ),
     );
   }
 
-  Widget _buildPeriodFilter() {
-    return Container(
-      height: 45,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: ['Day', 'Week', 'Month'].map((period) {
-          bool isSelected = selectedPeriod == period;
-          return Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: FilterChip(
-              label: Text(period),
-              selected: isSelected,
-              onSelected: (selected) {
-                setState(() {
-                  selectedPeriod = period;
-                });
-              },
-              backgroundColor: Colors.white,
-              selectedColor: Colors.blue[100],
-              checkmarkColor: Colors.blue[800],
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.blue[800] : Colors.grey[700],
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
 
   Widget _buildBudgetSummaryCard() {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blue[600]!, Colors.blue[800]!],
+          colors: [Theme.of(context).primaryColor,Theme.of(context).colorScheme.secondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.blue.withOpacity(0.3),
+        //     blurRadius: 10,
+        //     offset: Offset(0, 4),
+        //   ),
+        // ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,18 +161,14 @@ class _BudgetCardViewState extends State<BudgetCardView>  {
           children: [
             Text(
               'Budget Progress',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
-              ),
+              style: Theme.of(context).textTheme.labelLarge
             ),
             Text(
               '${(progressPercentage * 100).toInt()}%',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: progressPercentage > 0.8 ? Colors.red[600] : Colors.blue[600],
+                color: progressPercentage > 0.8 ? AppColors.error: AppColors.primaryBlue,
               ),
             ),
           ],
@@ -240,29 +201,25 @@ class _BudgetCardViewState extends State<BudgetCardView>  {
 
   Widget _buildChartSection() {
     return Container(
-      height: 250,
+      height: 280,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.grey.withOpacity(0.1),
+        //     blurRadius: 10,
+        //     offset: Offset(0, 2),
+        //   ),
+        // ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Spending Breakdown',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
-            ),
+            style: Theme.of(context).textTheme.titleLarge
           ),
           SizedBox(height: 16),
           Expanded(
@@ -279,7 +236,7 @@ class _BudgetCardViewState extends State<BudgetCardView>  {
                     titleStyle: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                     ),
                   );
                 }).toList(),
@@ -295,11 +252,11 @@ class _BudgetCardViewState extends State<BudgetCardView>  {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: AppColors.primaryBlue.withOpacity(0.1),
             blurRadius: 10,
             offset: Offset(0, 2),
           ),
@@ -310,11 +267,7 @@ class _BudgetCardViewState extends State<BudgetCardView>  {
         children: [
           Text(
             'Categories',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
-            ),
+            style: Theme.of(context).textTheme.titleLarge
           ),
           SizedBox(height: 16),
           ...expenses.map((expense) => _buildExpenseItem(expense)),
@@ -348,11 +301,7 @@ class _BudgetCardViewState extends State<BudgetCardView>  {
                   SizedBox(width: 12),
                   Text(
                     expense.name,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[800],
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium
                   ),
                 ],
               ),
@@ -361,16 +310,16 @@ class _BudgetCardViewState extends State<BudgetCardView>  {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: isOverBudget ? Colors.red[600] : Colors.grey[600],
+                  color: isOverBudget ? AppColors.error : AppColors.textMuted,
                 ),
               ),
             ],
           ),
           SizedBox(height: 8),
           Container(
-            height: 6,
+            height: 10,
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: AppColors.textMuted,
               borderRadius: BorderRadius.circular(3),
             ),
             child: FractionallySizedBox(
@@ -378,7 +327,7 @@ class _BudgetCardViewState extends State<BudgetCardView>  {
               widthFactor: progress > 1.0 ? 1.0 : progress,
               child: Container(
                 decoration: BoxDecoration(
-                  color: isOverBudget ? Colors.red[500] : expense.color,
+                  color: isOverBudget ? AppColors.error : expense.color,
                   borderRadius: BorderRadius.circular(3),
                 ),
               ),
@@ -389,70 +338,6 @@ class _BudgetCardViewState extends State<BudgetCardView>  {
     );
   }
 
-  void _showAddExpenseDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        String selectedCategory = expenses[0].name;
-        TextEditingController amountController = TextEditingController();
-
-        return AlertDialog(
-          title: Text('Add Expense'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButtonFormField<String>(
-                value: selectedCategory,
-                decoration: InputDecoration(
-                  labelText: 'Category',
-                  border: OutlineInputBorder(),
-                ),
-                items: expenses.map((expense) {
-                  return DropdownMenuItem(
-                    value: expense.name,
-                    child: Text(expense.name),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  selectedCategory = value!;
-                },
-              ),
-              SizedBox(height: 16),
-              TextField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Amount',
-                  prefixText: '\$',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                double amount = double.tryParse(amountController.text) ?? 0;
-                if (amount > 0) {
-                  setState(() {
-                    int index = expenses.indexWhere((e) => e.name == selectedCategory);
-                    expenses[index].spent += amount;
-                    totalSpent += amount;
-                  });
-                  Navigator.pop(context);
-                }
-              },
-              child: Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
 
 class ExpenseItem {

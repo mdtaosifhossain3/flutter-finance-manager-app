@@ -1,4 +1,5 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/views/reportView/widgets/expense_chart_widget.dart';
 import 'package:finance_manager_app/views/reportView/widgets/last_five_days_period_chart_widget.dart';
 import 'package:finance_manager_app/views/reportView/widgets/monthly_budget_chart_widget.dart';
@@ -58,17 +59,14 @@ class _ReportViewState extends State<ReportView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: customAppBar(title: "Report"),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Financial Report',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              SizedBox(height: 20),
+
               _buildSpentIndicator(),
               SizedBox(height: 24),
               ExpenseChartWidget(expenseCategories: expenseCategories),

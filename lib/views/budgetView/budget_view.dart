@@ -1,6 +1,7 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
+import 'package:finance_manager_app/views/budgetView/pages/add_budget_view.dart';
 import 'package:finance_manager_app/views/budgetView/pages/budget_card_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,7 +25,7 @@ class _BudgetViewScreenState extends State<BudgetViewScreen>
       title: 'Vacation',
       spent: 1247.50,
       budget: 2500.00,
-      color: Colors.blue,
+      color: Colors.red,
     ),
     BudgetCard(
       title: 'Food & Dining',
@@ -124,7 +125,9 @@ class _BudgetViewScreenState extends State<BudgetViewScreen>
                 ),
                 elevation: 1,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Get.to(AddBudgetView());
+              },
               icon: Icon(Icons.add),
             ),
           ),
@@ -133,11 +136,10 @@ class _BudgetViewScreenState extends State<BudgetViewScreen>
       body: SafeArea(
         child: Column(
           children: [
-            //  _buildHeader(),
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.05,
+                  horizontal: MediaQuery.of(context).size.width * 0.04,
                   vertical: 10,
                 ),
                 physics: BouncingScrollPhysics(),
@@ -164,45 +166,6 @@ class _BudgetViewScreenState extends State<BudgetViewScreen>
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () {},
-            child: Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              'Budget Overview',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ),
-          GestureDetector(
-            onTap: () {},
-            child: Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(Icons.add, color: Colors.white, size: 20),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildBudgetCard(BudgetCard budget, int index) {
     final double percentage = (budget.spent / budget.budget).clamp(0.0, 1.0);
     final bool isOverspent = budget.spent > budget.budget;
@@ -210,7 +173,7 @@ class _BudgetViewScreenState extends State<BudgetViewScreen>
     final double overspent = budget.spent - budget.budget;
 
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         Get.to(BudgetCardView());
       },
       child: Container(
@@ -360,7 +323,9 @@ class _BudgetViewScreenState extends State<BudgetViewScreen>
                           ? 'You\'re close to your budget limit. Spend carefully.'
                           : 'You\'re doing great! Keep it up.',
                       style: TextStyle(
-                        color: isOverspent ? AppColors.error : AppColors.success,
+                        color: isOverspent
+                            ? AppColors.error
+                            : AppColors.success,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),

@@ -7,4 +7,10 @@ class HelperFunctions {
     final DateFormat formatter = DateFormat('MMMM d');
     return formatter.format(date);
   }
+
+ static String getFormattedDateTime(date) {
+
+    final formatter = DateFormat("dd MMM, h:mm a");
+    return formatter.format(date);
+  }
 }

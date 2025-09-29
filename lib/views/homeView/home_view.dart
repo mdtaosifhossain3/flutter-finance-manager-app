@@ -1,33 +1,34 @@
+import 'package:finance_manager_app/config/enums/enums.dart';
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/models/tempm/categoryModel/transaction_model.dart';
+import 'package:finance_manager_app/utils/helper_functions.dart';
+import 'package:finance_manager_app/views/homeView/home_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'dart:math' as math;
 
-import '../../providers/theme_provider.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
   @override
-  _StatisticsHomeScreenState createState() => _StatisticsHomeScreenState();
+  State<HomeView> createState() => _HomeViewState();
 }
 
-class _StatisticsHomeScreenState extends State<HomeView>
-    with TickerProviderStateMixin {
-  String selectedPeriod = 'M';
+class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
+  // String HomeViewModel.selectedPeriod = 'M';
   late AnimationController _progressController;
   late Animation<double> _progressAnimation;
-  String _formatCurrency(double amount) {
-    if (amount >= 1000) {
-      return amount
-          .toStringAsFixed(0)
-          .replaceAllMapped(
-            RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-            (Match m) => '${m[1]},',
-          );
-    }
-    return amount.toStringAsFixed(2);
-  }
+  // String _formatCurrency(double amount) {
+  //   if (amount >= 1000) {
+  //     return amount
+  //         .toStringAsFixed(0)
+  //         .replaceAllMapped(
+  //           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+  //           (Match m) => '${m[1]},',
+  //         );
+  //   }
+  //   return amount.toStringAsFixed(2);
+  // }
 
   // Data for different time periods
   final Map<String, PeriodData> periodData = {
@@ -35,84 +36,58 @@ class _StatisticsHomeScreenState extends State<HomeView>
       expenses: 600.50,
       budget: 600,
       title: 'This Week',
-      transactions: [
-        TransactionData(
-          'Coffee Shop',
-          'Today, 9:15 AM',
-          4,
-          Icons.coffee,
-          Colors.brown,
+      transactions:[
+        TransactionModel(
+            type: TransactionType.expense,
+            date: DateTime.now(),
+            title: "",
+            categoryName: "Hospital",
+            amount: 120,
+            paymentMethod: "Cash",
+            icon: Icons.local_hospital,
+            iconBgColor:  Color(0xFFFF6B6B)
         ),
-        TransactionData(
-          'Uber Ride',
-          'Yesterday, 6:30 PM',
-          12,
-          Icons.local_taxi,
-          Colors.black,
+        TransactionModel(
+            type: TransactionType.expense,
+            date: DateTime.now(),
+            title: "",
+            categoryName: "Medicine Doctor",
+            amount: 120,
+            paymentMethod: "Hospital",
+            icon: Icons.medication,
+            iconBgColor:  Color(0xFF4ECDC4)
         ),
-        TransactionData(
-          'Grocery Store',
-          'Yesterday, 2:10 PM',
-          45,
-          Icons.shopping_cart,
-          Colors.green,
+        TransactionModel(
+            type: TransactionType.expense,
+            date: DateTime.now(),
+            title: "",
+            categoryName: "Food",
+            amount: 120,
+            paymentMethod: "Hospital",
+            icon: Icons.local_hospital,
+            iconBgColor:  Color(0xFFFF6B6B)
         ),
-        TransactionData(
-          'Netflix',
-          '16 Dec, 8:00 PM',
-          15,
-          Icons.movie,
-          Colors.red,
+        TransactionModel(
+            type: TransactionType.expense,
+            date: DateTime.now(),
+            title: "",
+            categoryName: "Food",
+            amount: 120,
+            paymentMethod: "Hospital",
+            icon: Icons.local_hospital,
+            iconBgColor:  Color(0xFFFF6B6B)
         ),
-        TransactionData(
-          'Lunch',
-          '15 Dec, 1:30 PM',
-          22.50,
-          Icons.restaurant,
-          Colors.orange,
-        ),
-      ],
+      ]
+
+
+
     ),
     'M': PeriodData(
       expenses: 6500,
       budget: 9050,
       title: 'This Month',
       transactions: [
-        TransactionData(
-          'Apple Pay',
-          '15 Dec, 8:00 PM',
-          149,
-          Icons.apple,
-          Colors.white,
-        ),
-        TransactionData(
-          'Spotify Premium',
-          '14 Dec, 4:30 PM',
-          46,
-          Icons.library_music,
-          Colors.green,
-        ),
-        TransactionData(
-          'John Abraham',
-          '14 Dec, 2:10 PM',
-          92,
-          Icons.person,
-          Colors.green,
-        ),
-        TransactionData(
-          'Shopping',
-          '14 Dec, 2:10 PM',
-          225,
-          Icons.shopping_bag,
-          Colors.green,
-        ),
-        TransactionData(
-          'Electricity Bill',
-          '12 Dec, 10:00 AM',
-          156,
-          Icons.flash_on,
-          Colors.yellow,
-        ),
+
       ],
     ),
     'Y': PeriodData(
@@ -120,51 +95,18 @@ class _StatisticsHomeScreenState extends State<HomeView>
       budget: 108000,
       title: 'This Year',
       transactions: [
-        TransactionData(
-          'Annual Insurance',
-          '01 Dec, 9:00 AM',
-          2400,
-          Icons.security,
-          Colors.blue,
-        ),
-        TransactionData(
-          'Car Payment',
-          '28 Nov, 3:00 PM',
-          850,
-          Icons.directions_car,
-          Colors.grey,
-        ),
-        TransactionData(
-          'Vacation Trip',
-          '15 Nov, 6:00 PM',
-          3200,
-          Icons.flight,
-          Colors.purple,
-        ),
-        TransactionData(
-          'Home Renovation',
-          '10 Nov, 11:00 AM',
-          4500,
-          Icons.home,
-          Colors.orange,
-        ),
-        TransactionData(
-          'Investment',
-          '05 Nov, 2:30 PM',
-          5000,
-          Icons.trending_up,
-          Colors.green,
-        ),
+
       ],
     ),
   };
 
   // Getters for current period data
-  double get currentExpenses => periodData[selectedPeriod]!.expenses;
-  double get currentBudget => periodData[selectedPeriod]!.budget;
-  List<TransactionData> get currentTransactions =>
-      periodData[selectedPeriod]!.transactions;
-  String get currentTitle => periodData[selectedPeriod]!.title;
+  double get currentExpenses =>
+      periodData[HomeViewModel.selectedPeriod]!.expenses;
+  double get currentBudget => periodData[HomeViewModel.selectedPeriod]!.budget;
+  List<TransactionModel> get currentTransactions =>
+      periodData[HomeViewModel.selectedPeriod]!.transactions;
+  String get currentTitle => periodData[HomeViewModel.selectedPeriod]!.title;
 
   @override
   void initState() {
@@ -193,9 +135,9 @@ class _StatisticsHomeScreenState extends State<HomeView>
   }
 
   void _onPeriodChanged(String period) {
-    if (selectedPeriod != period) {
+    if (HomeViewModel.selectedPeriod != period) {
       setState(() {
-        selectedPeriod = period;
+        HomeViewModel.selectedPeriod = period;
       });
 
       // Reset and restart animation with new values
@@ -224,7 +166,7 @@ class _StatisticsHomeScreenState extends State<HomeView>
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.03,
+                  horizontal: MediaQuery.of(context).size.width * 0.04,
                 ),
                 child: Column(
                   children: [
@@ -245,7 +187,7 @@ class _StatisticsHomeScreenState extends State<HomeView>
 
   Widget _buildHeader() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04, vertical: 10),
 
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -253,7 +195,7 @@ class _StatisticsHomeScreenState extends State<HomeView>
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("wednesday", style: Theme.of(context).textTheme.labelSmall),
+              Text("Wednesday", style: Theme.of(context).textTheme.labelSmall),
               Text(
                 '17 September',
                 textAlign: TextAlign.center,
@@ -264,25 +206,21 @@ class _StatisticsHomeScreenState extends State<HomeView>
           Row(
             children: [
               // SizedBox(width: 10),
-              // GestureDetector(
-              //   onTap: () {},
-              //   child: Container(
-              //     padding: EdgeInsets.all(8),
-              //     decoration: BoxDecoration(
-              //       color: context.read<ThemeProvider>().isDark
-              //           ? AppColors.darkSecondaryBackground
-              //           : AppColors.lightCardBackground,
-              //       borderRadius: BorderRadius.circular(8),
-              //     ),
-              //     child: Icon(
-              //       Icons.notifications,
-              //       color: context.read<ThemeProvider>().isDark
-              //           ? AppColors.textPrimary
-              //           : AppColors.primaryBlue,
-              //       size: 20,
-              //     ),
-              //   ),
-              // ),
+              GestureDetector(
+                onTap: () {},
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.notifications,
+                    color: Theme.of(context).primaryColor,
+                    size: 20,
+                  ),
+                ),
+              ),
             ],
           ),
         ],
@@ -336,12 +274,12 @@ class _StatisticsHomeScreenState extends State<HomeView>
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '৳${_formatCurrency(currentExpenses)}',
+                    '৳${HomeViewModel.formatCurrency(currentExpenses)}',
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'Out of ৳${_formatCurrency(currentBudget)}',
+                    'Out of ৳${HomeViewModel.formatCurrency(currentBudget)}',
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                 ],
@@ -367,7 +305,7 @@ class _StatisticsHomeScreenState extends State<HomeView>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: periods.map((period) {
-          final isSelected = selectedPeriod == period;
+          final isSelected = HomeViewModel.selectedPeriod == period;
           return GestureDetector(
             onTap: () => _onPeriodChanged(period),
             child: AnimatedContainer(
@@ -404,7 +342,6 @@ class _StatisticsHomeScreenState extends State<HomeView>
           children: [
             Text("History", style: Theme.of(context).textTheme.headlineSmall),
             TextButton(
-
               onPressed: () {},
               child: Text(
                 "See All",
@@ -415,6 +352,7 @@ class _StatisticsHomeScreenState extends State<HomeView>
             ),
           ],
         ),
+
         SizedBox(height: 14),
         ...currentTransactions.map(
           (transaction) => _buildTransactionItem(transaction),
@@ -423,7 +361,7 @@ class _StatisticsHomeScreenState extends State<HomeView>
     );
   }
 
-  Widget _buildTransactionItem(TransactionData transaction) {
+  Widget _buildTransactionItem(TransactionModel transaction) {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(14),
@@ -438,39 +376,33 @@ class _StatisticsHomeScreenState extends State<HomeView>
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: transaction.iconColor == Colors.white
-                  ? Colors.grey[800]
-                  : transaction.iconColor.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
+              color:transaction.iconBgColor,
+            //  borderRadius: BorderRadius.circular(12),
+              shape: BoxShape.circle
             ),
-            child: Icon(
-              transaction.icon,
-              color: transaction.iconColor == Colors.white
-                  ? Colors.white
-                  : transaction.iconColor,
-              size: 24,
-            ),
+            child: Icon(transaction.icon,color: Colors.white,),
           ),
+
           SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  transaction.title,
+                  transaction.categoryName,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 SizedBox(height: 4),
                 Text(
-                  transaction.date,
+                  HelperFunctions.getFormattedDateTime(transaction.date),
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
               ],
             ),
           ),
           Text(
-            '৳${transaction.amount}',
-            style: Theme.of(context).textTheme.titleLarge,
+            '${transaction.type == TransactionType.expense ?"-":""}৳${transaction.amount}',
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(color: transaction.type == TransactionType.expense ? AppColors.error:AppColors.lightTextMuted),
           ),
         ],
       ),
@@ -540,7 +472,7 @@ class PeriodData {
   final double expenses;
   final double budget;
   final String title;
-  final List<TransactionData> transactions;
+  final List<TransactionModel> transactions;
 
   PeriodData({
     required this.expenses,
@@ -550,18 +482,3 @@ class PeriodData {
   });
 }
 
-class TransactionData {
-  final String title;
-  final String date;
-  final double amount;
-  final IconData icon;
-  final Color iconColor;
-
-  TransactionData(
-    this.title,
-    this.date,
-    this.amount,
-    this.icon,
-    this.iconColor,
-  );
-}

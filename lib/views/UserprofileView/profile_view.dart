@@ -36,7 +36,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
 
   Widget _buildProfessionalProfile() {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 20),
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -142,22 +142,13 @@ class _ProfessionalDashboardState extends State<ProfileView> {
 
   Widget _buildAdvancedOverview() {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Financial Overview',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              Text(
-                'This Month',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-            ],
+          Text(
+            'Financial Overview',
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
           SizedBox(height: 16),
           GridView.count(
@@ -261,7 +252,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
 
   Widget _buildSpendingAnalytics() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04),
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -358,7 +349,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
 
   Widget _buildInsightsAndTips() {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 20),
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -410,7 +401,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
 
   Widget _buildPremiumFeatures() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04),
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -477,7 +468,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
 
   Widget _buildAchievements() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04),
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(

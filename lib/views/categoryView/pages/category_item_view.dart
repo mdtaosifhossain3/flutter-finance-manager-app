@@ -1,6 +1,10 @@
+import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
+import 'package:finance_manager_app/utils/helper_functions.dart';
+import 'package:finance_manager_app/views/categoryView/pages/transaction_form_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 class CategoryTransactionView extends StatefulWidget {
   final String categoryName;
@@ -15,7 +19,7 @@ class CategoryTransactionView extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CategoryTransactionViewState createState() => _CategoryTransactionViewState();
+  State<CategoryTransactionView> createState() => _CategoryTransactionViewState();
 }
 
 class _CategoryTransactionViewState extends State<CategoryTransactionView> {
@@ -114,7 +118,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+
       appBar: customAppBar(title: "Food"),
       body: SingleChildScrollView(
         child: Column(
@@ -137,57 +141,15 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
       floatingActionButton: _buildFAB(),
     );
   }
-
-  Widget _buildTransactionListView() {
-    if (filteredTransactions.isEmpty) {
-      return SizedBox(
-        height: 300,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.receipt_long_outlined,
-                size: 64,
-                color: Colors.grey[400],
-              ),
-              SizedBox(height: 16),
-              Text(
-                'No transactions found',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Add your first transaction to get started',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[500],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Column(
-      children: filteredTransactions.map((transaction) => _buildTransactionCard(transaction)).toList(),
-    );
-  }
-
   Widget _buildCategoryHeader() {
     return Container(
-      margin: EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 16),
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            widget.categoryColor,
-            widget.categoryColor.withOpacity(0.8),
+           Theme.of(context).cardColor,
+            Theme.of(context).colorScheme.surface,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -195,7 +157,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: widget.categoryColor.withOpacity(0.3),
+            color:Theme.of(context).primaryColor.withOpacity(0.3),
             blurRadius: 15,
             offset: Offset(0, 8),
           ),
@@ -210,23 +172,20 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
               Container(
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Theme.of(context).dividerColor)
                 ),
                 child: Icon(
                   widget.categoryIcon,
-                  color: Colors.white,
+                  color: Theme.of(context).primaryColor,
                   size: 20,
                 ),
               ),
               SizedBox(width: 12),
               Text(
                 widget.categoryName,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
             ],
           ),
@@ -243,29 +202,17 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                   children: [
                     Text(
                       '${_getMonthName(selectedMonth.month)} ${selectedMonth.year}',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall
                     ),
                     SizedBox(height: 4),
                     Text(
                       'Total Amount',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
-                        fontSize: 12,
-                      ),
+                      style: Theme.of(context).textTheme.labelLarge
                     ),
                     SizedBox(height: 6),
                     Text(
                       totalAmount.abs().toStringAsFixed(2),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -1,
-                      ),
+                      style: Theme.of(context).textTheme.headlineLarge
                     ),
                   ],
                 ),
@@ -275,11 +222,11 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
-                    width: 1,
+                    color: Theme.of(context).dividerColor,
+                    width: 2,
                   ),
                 ),
                 child: Row(
@@ -287,17 +234,13 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                   children: [
                     Icon(
                       Icons.receipt_long,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       size: 16,
                     ),
                     SizedBox(width: 6),
                     Text(
                       '${filteredTransactions.length}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(context).textTheme.labelLarge
                     ),
                   ],
                 ),
@@ -310,8 +253,6 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
       ),
     );
   }
-
-
   Widget _buildMonthSelector() {
     return Container(
       height: 80,
@@ -335,21 +276,15 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
               width: 70,
               margin: EdgeInsets.only(right: 12),
               decoration: BoxDecoration(
-                color: isSelected ? widget.categoryColor : Colors.white,
+                color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isCurrentMonth && !isSelected
-                      ? widget.categoryColor.withOpacity(0.5)
-                      : Colors.transparent,
-                  width: 2,
+                      ? Theme.of(context).dividerColor
+                      : Theme.of(context).dividerColor,
+                  width: 1,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -357,7 +292,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                   Text(
                     _getMonthName(month.month).substring(0, 3),
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.grey[700],
+                      color: isSelected ? AppColors.textPrimary : AppColors.textMuted,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
@@ -366,7 +301,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                   Text(
                     month.year.toString(),
                     style: TextStyle(
-                      color: isSelected ? Colors.white.withOpacity(0.9) : Colors.grey[500],
+                      color: isSelected ? AppColors.textPrimary :AppColors.textMuted,
                       fontSize: 12,
                     ),
                   ),
@@ -378,9 +313,6 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
       ),
     );
   }
-
-
-
   Widget _buildTransactionsHeader() {
     return Padding(
       padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -389,26 +321,49 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
         children: [
           Text(
             'Transactions',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
-            ),
+            style: Theme.of(context).textTheme.headlineSmall
           ),
           Text(
             '${filteredTransactions.length} items',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14,
-            ),
+            style: Theme.of(context).textTheme.labelMedium
           ),
         ],
       ),
     );
   }
+  Widget _buildTransactionListView() {
+    if (filteredTransactions.isEmpty) {
+      return SizedBox(
+        height: 300,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.receipt_long_outlined,
+                size: 64,
+                color:Theme.of(context).colorScheme.onSecondary,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'No transactions found',
+                style:Theme.of(context).textTheme.bodyMedium
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Add your first transaction to get started',
+                style:Theme.of(context).textTheme.bodySmall
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
-
-
+    return Column(
+      children: filteredTransactions.map((transaction) => _buildTransactionCard(transaction)).toList(),
+    );
+  }
   Widget _buildTransactionCard(Transaction transaction) {
     bool isIncome = transaction.amount > 0;
     Color amountColor = isIncome ? Colors.green[600]! : Colors.red[600]!;
@@ -417,10 +372,10 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Card(
         elevation: 0,
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: Colors.grey[200]!, width: 1),
+          side: BorderSide(color: Theme.of(context).dividerColor, width: 1),
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
@@ -437,6 +392,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                     color: amountColor,
                     borderRadius: BorderRadius.circular(2),
                   ),
+                //  child: Center(child: Text("1",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: AppColors.textPrimary),)),
                 ),
                 SizedBox(width: 16),
 
@@ -447,45 +403,15 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                     children: [
                       Text(
                         transaction.title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[800],
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
                       ),
                       if (transaction.notes.isNotEmpty) ...[
                         SizedBox(height: 4),
                         Text(
                           transaction.notes,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
+                          style: Theme.of(context).textTheme.labelSmall,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                      if (transaction.tags.isNotEmpty) ...[
-                        SizedBox(height: 8),
-                        Wrap(
-                          spacing: 6,
-                          children: transaction.tags.take(2).map((tag) {
-                            return Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: widget.categoryColor.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                tag,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: widget.categoryColor,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            );
-                          }).toList(),
                         ),
                       ],
                     ],
@@ -506,11 +432,8 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      _formatDate(transaction.date),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      HelperFunctions.getFormattedDateTime(transaction.date),
+                      style: Theme.of(context).textTheme.labelSmall
                     ),
                   ],
                 ),
@@ -524,13 +447,13 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
 
   Widget _buildFAB() {
     return FloatingActionButton.extended(
-      onPressed: () => _showAddTransactionDialog(),
-      backgroundColor: widget.categoryColor,
-      foregroundColor: Colors.white,
-      icon: Icon(Icons.add),
+      onPressed: () => Get.to(TransactionFormPage()),
+      backgroundColor: Theme.of(context).primaryColor,
+      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+      icon: Icon(Icons.add,color: AppColors.textPrimary),
       label: Text(
         'Add Transaction',
-        style: TextStyle(fontWeight: FontWeight.w600),
+        style: TextStyle(fontWeight: FontWeight.w600,color: AppColors.textPrimary),
       ),
     );
   }
@@ -542,7 +465,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -559,7 +482,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: Theme.of(context).colorScheme.onSecondary,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -569,10 +492,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
             // Transaction details
             Text(
               'Transaction Details',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall
             ),
             SizedBox(height: 20),
 
@@ -599,18 +519,13 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
             width: 80,
             child: Text(
               label,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(context).textTheme.labelLarge
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium
             ),
           ),
         ],
@@ -618,20 +533,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
     );
   }
 
-  void _showAddTransactionDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AddTransactionDialog(
-        categoryName: widget.categoryName,
-        categoryColor: widget.categoryColor,
-        onTransactionAdded: (transaction) {
-          setState(() {
-            transactions.add(transaction);
-          });
-        },
-      ),
-    );
-  }
+
 
   String _getMonthName(int month) {
     const months = [
@@ -672,206 +574,3 @@ class Transaction {
   });
 }
 
-class AddTransactionDialog extends StatefulWidget {
-  final String categoryName;
-  final Color categoryColor;
-  final Function(Transaction) onTransactionAdded;
-
-  const AddTransactionDialog({
-    Key? key,
-    required this.categoryName,
-    required this.categoryColor,
-    required this.onTransactionAdded,
-  }) : super(key: key);
-
-  @override
-  _AddTransactionDialogState createState() => _AddTransactionDialogState();
-}
-
-class _AddTransactionDialogState extends State<AddTransactionDialog> {
-  final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _amountController = TextEditingController();
-  final _notesController = TextEditingController();
-  bool _isIncome = false;
-  DateTime _selectedDate = DateTime.now();
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        padding: EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Add Transaction',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Category: ${widget.categoryName}',
-                style: TextStyle(
-                  color: widget.categoryColor,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 20),
-
-              // Income/Expense Toggle
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _isIncome = false),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            color: !_isIncome ? Colors.red[600] : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'Expense',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: !_isIncome ? Colors.white : Colors.grey[700],
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _isIncome = true),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            color: _isIncome ? Colors.green[600] : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'Income',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: _isIncome ? Colors.white : Colors.grey[700],
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 16),
-
-              // Title field
-              TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
-
-              // Amount field
-              TextFormField(
-                controller: _amountController,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
-                  labelText: 'Amount',
-                  prefixText: '\$',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter an amount';
-                  }
-                  if (double.tryParse(value) == null || double.parse(value) <= 0) {
-                    return 'Please enter a valid amount';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
-
-              // Notes field
-              TextFormField(
-                controller: _notesController,
-                decoration: InputDecoration(
-                  labelText: 'Notes (optional)',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                maxLines: 2,
-              ),
-              SizedBox(height: 20),
-
-              // Action buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('Cancel'),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _saveTransaction,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: widget.categoryColor,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: Text('Add'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _saveTransaction() {
-    if (_formKey.currentState!.validate()) {
-      double amount = double.parse(_amountController.text);
-      if (!_isIncome) amount = -amount;
-
-      final transaction = Transaction(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: _titleController.text.trim(),
-        amount: amount,
-        date: _selectedDate,
-        notes: _notesController.text.trim(),
-        tags: [], // Could add tag input later
-      );
-
-      widget.onTransactionAdded(transaction);
-      Navigator.pop(context);
-    }
-  }
-}

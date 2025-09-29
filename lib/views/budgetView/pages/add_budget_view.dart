@@ -1,9 +1,20 @@
+import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AddBudgetView extends StatefulWidget {
+  const AddBudgetView({super.key});
+
   @override
-  _AddBudgetViewState createState() => _AddBudgetViewState();
+  State<AddBudgetView> createState() => _AddBudgetViewState();
+}
+
+class CategoryBudget {
+  final String category;
+  final double amount;
+
+  CategoryBudget({required this.category, required this.amount});
 }
 
 class _AddBudgetViewState extends State<AddBudgetView> {
@@ -12,13 +23,16 @@ class _AddBudgetViewState extends State<AddBudgetView> {
   final _amountController = TextEditingController();
   final _notesController = TextEditingController();
 
-  String? _selectedCategory;
   DateTime? _startDate;
   DateTime? _endDate;
 
+  final List<CategoryBudget> _selectedCategories = [];
+  String? _currentCategory;
+  final _categoryAmountController = TextEditingController();
+
   final List<String> _categories = [
     'Groceries',
-    'Transportation',
+    'Transportation Transportation',
     'Entertainment',
     'Utilities',
     'Dining Out',
@@ -32,36 +46,65 @@ class _AddBudgetViewState extends State<AddBudgetView> {
     'Other',
   ];
 
+  void _addCategory() {
+    if (_currentCategory == null || _currentCategory!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please select a category'),
+          backgroundColor: Colors.red[400],
+        ),
+      );
+      return;
+    }
+
+    final String amount = _categoryAmountController.text;
+    if (amount.isEmpty ||
+        double.tryParse(amount) == null ||
+        double.parse(amount) <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please enter a valid amount'),
+          backgroundColor: Colors.red[400],
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _selectedCategories.add(
+        CategoryBudget(
+          category: _currentCategory!,
+          amount: double.parse(amount),
+        ),
+      );
+      _currentCategory = null;
+      _categoryAmountController.clear();
+    });
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
     _amountController.dispose();
     _notesController.dispose();
+    _categoryAmountController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: Text('Create Budget', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+      appBar: customAppBar(title: "Create Budget"),
       body: Form(
         key: _formKey,
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.04,
+                  vertical: 20,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -86,10 +129,10 @@ class _AddBudgetViewState extends State<AddBudgetView> {
 
   Widget _buildHeaderCard() {
     return Container(
-      padding: EdgeInsets.all(24),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blue[600]!, Colors.blue[800]!],
+          colors: [AppColors.primaryBlue, AppColors.secondaryBlue],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -146,77 +189,60 @@ class _AddBudgetViewState extends State<AddBudgetView> {
   }
 
   Widget _buildFormCard() {
-    return Container(
-      padding: EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title Field
-          _buildTextField(
-            controller: _titleController,
-            label: 'Budget Title',
-            hint: 'e.g., Monthly Groceries',
-            icon: Icons.title,
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter a budget title';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 20),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Title Field
+        _buildTextField(
+          controller: _titleController,
+          label: 'Budget Title',
+          hint: 'e.g., Monthly Groceries',
+          icon: Icons.title,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Please enter a budget title';
+            }
+            return null;
+          },
+        ),
+        SizedBox(height: 20),
 
-          // Amount Field
-          _buildTextField(
-            controller: _amountController,
-            label: 'Budget Amount',
-            hint: '0.00',
-            icon: Icons.attach_money,
-            keyboardType: TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-            ],
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter budget amount';
-              }
-              if (double.tryParse(value) == null || double.parse(value) <= 0) {
-                return 'Please enter a valid amount';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 20),
+        // Amount Field
+        _buildTextField(
+          controller: _amountController,
+          label: 'Budget Amount',
+          hint: '0.00',
+          icon: Icons.attach_money,
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+          ],
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Please enter budget amount';
+            }
+            if (double.tryParse(value) == null || double.parse(value) <= 0) {
+              return 'Please enter a valid amount';
+            }
+            return null;
+          },
+        ),
+        SizedBox(height: 20),
 
-          // Category Dropdown
-          _buildCategoryDropdown(),
-          SizedBox(height: 20),
+        // Category Dropdown
+        _buildCategoryDropdown(),
+        SizedBox(height: 20),
 
-          // Date Fields
-          Row(
-            children: [
-              Expanded(child: _buildDateField(true)),  // Start Date
-              SizedBox(width: 16),
-              Expanded(child: _buildDateField(false)), // End Date
-            ],
-          ),
-          SizedBox(height: 20),
-
-          // Notes Field
-          _buildNotesField(),
-        ],
-      ),
+        // Date Fields
+        Row(
+          children: [
+            Expanded(child: _buildDateField(true)), // Start Date
+            SizedBox(width: 16),
+            Expanded(child: _buildDateField(false)), // End Date
+          ],
+        ),
+        SizedBox(height: 20),
+      ],
     );
   }
 
@@ -233,14 +259,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[800],
-          ),
-        ),
+        Text(label, style: Theme.of(context).textTheme.labelLarge),
         SizedBox(height: 8),
         TextFormField(
           controller: controller,
@@ -250,18 +269,24 @@ class _AddBudgetViewState extends State<AddBudgetView> {
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            prefixIcon: Icon(icon, color: Colors.grey[600]),
+            prefixIcon: Icon(
+              icon,
+              color: Theme.of(context).colorScheme.onTertiary,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
+              borderSide: BorderSide(
+                color: Theme.of(context).primaryColor,
+                width: 2,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -272,7 +297,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
               borderSide: BorderSide(color: Colors.red[400]!, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey[50],
+            fillColor: Theme.of(context).cardColor,
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
         ),
@@ -284,60 +309,165 @@ class _AddBudgetViewState extends State<AddBudgetView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Category',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[800],
-          ),
-        ),
+        Text('Categories', style: Theme.of(context).textTheme.labelLarge),
         SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          value: _selectedCategory,
-          decoration: InputDecoration(
-            hintText: 'Select a category',
-            prefixIcon: Icon(Icons.category, color: Colors.grey[600]),
-            border: OutlineInputBorder(
+
+        // Selected Categories List
+        if (_selectedCategories.isNotEmpty) ...[
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              border: Border.all(color: Theme.of(context).dividerColor),
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+            child: Column(
+              children: _selectedCategories.map((categoryBudget) {
+                return Container(
+                  margin: EdgeInsets.only(bottom: 8),
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Theme.of(context).dividerColor),
+                  ),
+                  child: Row(
+                    children: [
+                      _getCategoryIcon(categoryBudget.category),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              categoryBudget.category,
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            Text(
+                              '৳${categoryBudget.amount.toStringAsFixed(2)}',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.delete_outline,
+                          color: Colors.red[400],
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _selectedCategories.removeWhere(
+                              (item) =>
+                                  item.category == categoryBudget.category,
+                            );
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey[50],
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please select a category';
-            }
-            return null;
-          },
-          items: _categories.map((category) {
-            return DropdownMenuItem<String>(
-              value: category,
-              child: Row(
-                children: [
-                  _getCategoryIcon(category),
-                  SizedBox(width: 12),
-                  Text(category),
-                ],
+          SizedBox(height: 16),
+        ],
+
+        // Add New Category Section
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              flex: 2,
+              child: DropdownButtonFormField<String>(
+                value: _currentCategory,
+                isExpanded: true,
+                decoration: InputDecoration(
+                  hintText: 'Select a category',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 16,
+                  ),
+                ),
+                items: _categories
+                    .where(
+                      (category) => !_selectedCategories.any(
+                        (selected) => selected.category == category,
+                      ),
+                    )
+                    .map((category) {
+                      return DropdownMenuItem<String>(
+                        value: category,
+                        child: Row(
+                          children: [
+                            _getCategoryIcon(category),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                category,
+                                maxLines: 1,
+                                  overflow: TextOverflow.ellipsis
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    })
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _currentCategory = value;
+                  });
+                },
               ),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              _selectedCategory = value;
-            });
-          },
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              flex: 1,
+              child: TextFormField(
+                controller: _categoryAmountController,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                ],
+                decoration: InputDecoration(
+                  hintText: '৳',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 16,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
+        SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _addCategory,
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Icon(Icons.add),
+          ),
+        ),
+        if (_selectedCategories.isEmpty)
+          Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: Text(
+              'Please add at least one category',
+              style: TextStyle(color: Colors.red[400], fontSize: 12),
+            ),
+          ),
       ],
     );
   }
@@ -349,27 +479,24 @@ class _AddBudgetViewState extends State<AddBudgetView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[800],
-          ),
-        ),
+        Text(label, style: Theme.of(context).textTheme.labelLarge),
         SizedBox(height: 8),
         InkWell(
           onTap: () => _selectDate(isStartDate),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
+              border: Border.all(color: Theme.of(context).dividerColor),
               borderRadius: BorderRadius.circular(12),
-              color: Colors.grey[50],
+              color: Theme.of(context).cardColor,
             ),
             child: Row(
               children: [
-                Icon(Icons.calendar_today, color: Colors.grey[600], size: 20),
+                Icon(
+                  Icons.calendar_today,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  size: 20,
+                ),
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -377,7 +504,9 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                         ? '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}'
                         : 'Select date',
                     style: TextStyle(
-                      color: selectedDate != null ? Colors.black87 : Colors.grey[600],
+                      color: selectedDate != null
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : Theme.of(context).colorScheme.onTertiary,
                       fontSize: 16,
                     ),
                   ),
@@ -390,53 +519,12 @@ class _AddBudgetViewState extends State<AddBudgetView> {
           Padding(
             padding: EdgeInsets.only(top: 8, left: 12),
             child: Text(
-              isStartDate ? 'Please select start date' : 'End date must be after start date',
-              style: TextStyle(color: Colors.red[400], fontSize: 12),
+              isStartDate
+                  ? 'Please select start date'
+                  : 'End date must be after start date',
+              style: TextStyle(color: AppColors.error, fontSize: 12),
             ),
           ),
-      ],
-    );
-  }
-
-  Widget _buildNotesField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Notes (Optional)',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[800],
-          ),
-        ),
-        SizedBox(height: 8),
-        TextFormField(
-          controller: _notesController,
-          maxLines: 4,
-          decoration: InputDecoration(
-            hintText: 'Add any notes or description...',
-            prefixIcon: Padding(
-              padding: EdgeInsets.only(bottom: 60),
-              child: Icon(Icons.notes, color: Colors.grey[600]),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey[50],
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          ),
-        ),
       ],
     );
   }
@@ -445,7 +533,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -464,15 +552,11 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                side: BorderSide(color: Colors.grey[400]!),
+                side: BorderSide(color: Theme.of(context).dividerColor),
               ),
               child: Text(
                 'Cancel',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[700],
-                ),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
           ),
@@ -482,7 +566,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
             child: ElevatedButton(
               onPressed: _saveBudget,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[600],
+                backgroundColor: AppColors.primaryBlue,
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -494,7 +578,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ),
@@ -579,8 +663,11 @@ class _AddBudgetViewState extends State<AddBudgetView> {
 
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: initialDate.isBefore(firstDate) ? firstDate :
-      initialDate.isAfter(lastDate) ? lastDate : initialDate,
+      initialDate: initialDate.isBefore(firstDate)
+          ? firstDate
+          : initialDate.isAfter(lastDate)
+          ? lastDate
+          : initialDate,
       firstDate: firstDate,
       lastDate: lastDate,
       builder: (context, child) {
@@ -617,7 +704,9 @@ class _AddBudgetViewState extends State<AddBudgetView> {
     if (isStartDate) {
       return false; // We'll handle start date validation in form submission
     } else {
-      return _startDate != null && _endDate != null && _endDate!.isBefore(_startDate!);
+      return _startDate != null &&
+          _endDate != null &&
+          _endDate!.isBefore(_startDate!);
     }
   }
 
@@ -647,12 +736,27 @@ class _AddBudgetViewState extends State<AddBudgetView> {
       return;
     }
 
+    if (_selectedCategories.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please add at least one category'),
+          backgroundColor: Colors.red[400],
+        ),
+      );
+      return;
+    }
+
     if (_formKey.currentState!.validate() && datesValid) {
       // Create budget object
       final budget = {
         'title': _titleController.text.trim(),
-        'amount': double.parse(_amountController.text),
-        'category': _selectedCategory,
+        'categories': _selectedCategories
+            .map((cat) => {'category': cat.category, 'amount': cat.amount})
+            .toList(),
+        'totalAmount': _selectedCategories.fold(
+          0.0,
+          (sum, cat) => sum + cat.amount,
+        ),
         'startDate': _startDate,
         'endDate': _endDate,
         'notes': _notesController.text.trim(),

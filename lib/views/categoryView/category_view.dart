@@ -9,6 +9,8 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
 
+enum Period { day, week, month }
+
 class CategoryView extends StatefulWidget {
   @override
   _CategorySelectionPageState createState() => _CategorySelectionPageState();
@@ -18,6 +20,50 @@ class _CategorySelectionPageState extends State<CategoryView>
     with TickerProviderStateMixin {
   String selectedType = 'Expense';
   late TabController _tabController;
+
+  Period selectedPeriod = Period.day;
+  final List<Transaction> allTransactions = [
+    Transaction(title: 'Groceries', amount: 50.0, date: DateTime.now()),
+    Transaction(
+      title: 'Coffee',
+      amount: 4.5,
+      date: DateTime.now().subtract(Duration(days: 1)),
+    ),
+    Transaction(
+      title: 'Lunch',
+      amount: 12.0,
+      date: DateTime.now().subtract(Duration(days: 2)),
+    ),
+    // Add more sample transactions as needed
+  ];
+
+  List<Transaction> get filteredTransactions {
+    DateTime now = DateTime.now();
+    if (selectedPeriod == Period.day) {
+      return allTransactions
+          .where(
+            (tx) =>
+                tx.date.year == now.year &&
+                tx.date.month == now.month &&
+                tx.date.day == now.day,
+          )
+          .toList();
+    } else if (selectedPeriod == Period.week) {
+      DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+      DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
+      return allTransactions
+          .where(
+            (tx) =>
+                tx.date.isAfter(startOfWeek.subtract(Duration(days: 1))) &&
+                tx.date.isBefore(endOfWeek.add(Duration(days: 1))),
+          )
+          .toList();
+    } else {
+      return allTransactions
+          .where((tx) => tx.date.year == now.year && tx.date.month == now.month)
+          .toList();
+    }
+  }
 
   // Expense categories
   final List<CategoryData> expenseCategories = [
@@ -211,14 +257,13 @@ class _CategorySelectionPageState extends State<CategoryView>
     return Scaffold(
       appBar: customAppBar(title: 'Categories', actions: [
 
-
         ],
       ),
       body: SafeArea(
         child: Column(
           children: [
-            //  _buildHeader(),
             _buildTabButtons(),
+            weekmonthday(),
             Expanded(child: _buildCategoryGrid()),
             //_buildAddButton(),
             SizedBox(height: 60),
@@ -258,7 +303,7 @@ class _CategorySelectionPageState extends State<CategoryView>
   Widget _buildTabButtons() {
     return Container(
       margin: EdgeInsets.symmetric(
-        horizontal: MediaQuery.of(context).size.width * 0.03,
+        horizontal: MediaQuery.of(context).size.width * 0.04,
         vertical: 10,
       ),
       padding: EdgeInsets.all(4),
@@ -360,7 +405,7 @@ class _CategorySelectionPageState extends State<CategoryView>
         key: ValueKey(selectedType),
         physics: BouncingScrollPhysics(),
         padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * 0.03,
+          horizontal: MediaQuery.of(context).size.width * 0.04,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -464,6 +509,81 @@ class _CategorySelectionPageState extends State<CategoryView>
       ),
     );
   }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  Widget _buildPeriodButton(String label, Period period) {
+    final isSelected = selectedPeriod == period;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isSelected
+              ? Theme.of(context).primaryColor
+              : Colors.grey[300],
+          foregroundColor: isSelected ? Colors.white : Colors.black,
+        ),
+        onPressed: () {
+          setState(() {
+            selectedPeriod = period;
+          });
+        },
+        child: Text(label),
+      ),
+    );
+  }
+
+  Widget weekmonthday() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildPeriodButton('Day', Period.day),
+            _buildPeriodButton('Week', Period.week),
+            _buildPeriodButton('Month', Period.month),
+          ],
+        ),
+        // Expanded(
+        //   child: ListView.builder(
+        //     itemCount: filteredTransactions.length,
+        //     itemBuilder: (context, index) {
+        //       final tx = filteredTransactions[index];
+        //       return Card(
+        //         margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        //         child: ListTile(
+        //           title: Text(
+        //             tx.title,
+        //             style: Theme.of(context).textTheme.titleMedium,
+        //           ),
+        //           subtitle: Text(
+        //             _formatDate(tx.date),
+        //             style: Theme.of(context).textTheme.bodySmall,
+        //           ),
+        //           trailing: Text(
+        //             '\$${tx.amount.toStringAsFixed(2)}',
+        //             style: Theme.of(context).textTheme.titleMedium!.copyWith(
+        //               color: Theme.of(context).colorScheme.primary,
+        //             ),
+        //           ),
+        //         ),
+        //       );
+        //     },
+        //   ),
+        // ),
+      ],
+    );
+  }
+}
+
+class Transaction {
+  final String title;
+  final double amount;
+  final DateTime date;
+
+  Transaction({required this.title, required this.amount, required this.date});
 }
 
 class CategoryData {
