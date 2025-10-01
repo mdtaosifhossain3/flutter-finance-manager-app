@@ -1,5 +1,6 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
+import 'package:finance_manager_app/providers/category/category_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:finance_manager_app/views/categoryView/pages/category_item_view.dart';
 import 'package:finance_manager_app/views/categoryView/pages/custom_add_category_view.dart';
@@ -8,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
+
+import '../../config/enums/enums.dart';
 
 enum Period { day, week, month }
 
@@ -18,7 +21,6 @@ class CategoryView extends StatefulWidget {
 
 class _CategorySelectionPageState extends State<CategoryView>
     with TickerProviderStateMixin {
-  String selectedType = 'Expense';
   late TabController _tabController;
 
   Period selectedPeriod = Period.day;
@@ -227,7 +229,7 @@ class _CategorySelectionPageState extends State<CategoryView>
   ];
 
   List<CategoryData> get currentCategories =>
-      selectedType == 'Expense' ? expenseCategories : incomeCategories;
+      context.watch<CategoryProvider>().selectedType == TransactionType.expense ? expenseCategories : incomeCategories;
 
   Map<String, List<CategoryData>> get groupedCategories {
     Map<String, List<CategoryData>> grouped = {};
@@ -316,20 +318,19 @@ class _CategorySelectionPageState extends State<CategoryView>
           Expanded(
             child: GestureDetector(
               onTap: () {
-                setState(() {
-                  selectedType = 'Expense';
-                });
+                context.read<CategoryProvider>().changeSelectedType(TransactionType.expense);
+
               },
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
                 padding: EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: selectedType == 'Expense'
+                  color: context.watch<CategoryProvider>().selectedType == TransactionType.expense
                       ? AppColors.primaryBlue
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: selectedType == 'Expense'
+                  boxShadow: context.watch<CategoryProvider>().selectedType == TransactionType.expense
                       ? [
                           BoxShadow(
                             color: AppColors.primaryBlue.withValues(alpha: 0.3),
@@ -343,7 +344,7 @@ class _CategorySelectionPageState extends State<CategoryView>
                   'Expense',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: selectedType == 'Expense'
+                    color: context.watch<CategoryProvider>().selectedType == TransactionType.expense
                         ? Colors.white
                         : Colors.grey[600],
                     fontSize: 16,
@@ -356,20 +357,19 @@ class _CategorySelectionPageState extends State<CategoryView>
           Expanded(
             child: GestureDetector(
               onTap: () {
-                setState(() {
-                  selectedType = 'Income';
-                });
+                context.read<CategoryProvider>().changeSelectedType(TransactionType.income);
+
               },
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
                 padding: EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: selectedType == 'Income'
+                  color: context.watch<CategoryProvider>().selectedType == TransactionType.income
                       ? Colors.blue
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: selectedType == 'Income'
+                  boxShadow: context.watch<CategoryProvider>().selectedType == TransactionType.income
                       ? [
                           BoxShadow(
                             color: Colors.blue.withOpacity(0.3),
@@ -383,7 +383,7 @@ class _CategorySelectionPageState extends State<CategoryView>
                   'Income',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: selectedType == 'Income'
+                    color: context.watch<CategoryProvider>().selectedType == TransactionType.income
                         ? Colors.white
                         : Colors.grey[600],
                     fontSize: 16,
@@ -402,7 +402,7 @@ class _CategorySelectionPageState extends State<CategoryView>
     return AnimatedSwitcher(
       duration: Duration(milliseconds: 300),
       child: SingleChildScrollView(
-        key: ValueKey(selectedType),
+        key: ValueKey(context.watch<CategoryProvider>().selectedType),
         physics: BouncingScrollPhysics(),
         padding: EdgeInsets.symmetric(
           horizontal: MediaQuery.of(context).size.width * 0.04,
@@ -473,9 +473,9 @@ class _CategorySelectionPageState extends State<CategoryView>
         print('Selected: ${category.name}');
         Get.to(
           () => CategoryTransactionView(
-            categoryName: "Food",
-            categoryIcon: Icons.food_bank,
-            categoryColor: Colors.teal,
+            categoryName:category.name,
+            categoryIcon: category.icon,
+            categoryColor:  category.color,
           ),
         );
       },

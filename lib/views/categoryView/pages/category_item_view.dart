@@ -1,10 +1,11 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
+import 'package:finance_manager_app/providers/category/expense_provider.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:finance_manager_app/views/categoryView/pages/transaction_form_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class CategoryTransactionView extends StatefulWidget {
   final String categoryName;
@@ -12,11 +13,11 @@ class CategoryTransactionView extends StatefulWidget {
   final Color categoryColor;
 
   const CategoryTransactionView({
-    Key? key,
+    super.key,
     required this.categoryName,
     required this.categoryIcon,
     required this.categoryColor,
-  }) : super(key: key);
+  });
 
   @override
   State<CategoryTransactionView> createState() => _CategoryTransactionViewState();
@@ -119,7 +120,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
   Widget build(BuildContext context) {
     return Scaffold(
 
-      appBar: customAppBar(title: "Food"),
+      appBar: customAppBar(title: widget.categoryName),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -447,7 +448,10 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
 
   Widget _buildFAB() {
     return FloatingActionButton.extended(
-      onPressed: () => Get.to(TransactionFormPage()),
+      onPressed: () {
+        Get.to(TransactionFormPage(categoryColor: widget.categoryColor,categoryIcon: widget.categoryIcon,categoryName: widget.categoryName,));
+     print(context.read<AddExpenseProvider>().expenseList);
+        },
       backgroundColor: Theme.of(context).primaryColor,
       foregroundColor: Theme.of(context).colorScheme.onPrimary,
       icon: Icon(Icons.add,color: AppColors.textPrimary),

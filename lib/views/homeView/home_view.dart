@@ -1,10 +1,19 @@
 import 'package:finance_manager_app/config/enums/enums.dart';
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/globalWidgets/card_widget.dart';
 import 'package:finance_manager_app/models/tempm/categoryModel/transaction_model.dart';
+import 'package:finance_manager_app/providers/category/expense_provider.dart';
+import 'package:finance_manager_app/providers/home_provider.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:finance_manager_app/views/homeView/home_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'dart:math' as math;
+
+import 'package:provider/provider.dart';
+
+import '../reportView/pages/expenses_view.dart';
 
 
 class HomeView extends StatefulWidget {
@@ -15,98 +24,9 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
-  // String HomeViewModel.selectedPeriod = 'M';
   late AnimationController _progressController;
   late Animation<double> _progressAnimation;
-  // String _formatCurrency(double amount) {
-  //   if (amount >= 1000) {
-  //     return amount
-  //         .toStringAsFixed(0)
-  //         .replaceAllMapped(
-  //           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-  //           (Match m) => '${m[1]},',
-  //         );
-  //   }
-  //   return amount.toStringAsFixed(2);
-  // }
 
-  // Data for different time periods
-  final Map<String, PeriodData> periodData = {
-    'W': PeriodData(
-      expenses: 600.50,
-      budget: 600,
-      title: 'This Week',
-      transactions:[
-        TransactionModel(
-            type: TransactionType.expense,
-            date: DateTime.now(),
-            title: "",
-            categoryName: "Hospital",
-            amount: 120,
-            paymentMethod: "Cash",
-            icon: Icons.local_hospital,
-            iconBgColor:  Color(0xFFFF6B6B)
-        ),
-        TransactionModel(
-            type: TransactionType.expense,
-            date: DateTime.now(),
-            title: "",
-            categoryName: "Medicine Doctor",
-            amount: 120,
-            paymentMethod: "Hospital",
-            icon: Icons.medication,
-            iconBgColor:  Color(0xFF4ECDC4)
-        ),
-        TransactionModel(
-            type: TransactionType.expense,
-            date: DateTime.now(),
-            title: "",
-            categoryName: "Food",
-            amount: 120,
-            paymentMethod: "Hospital",
-            icon: Icons.local_hospital,
-            iconBgColor:  Color(0xFFFF6B6B)
-        ),
-        TransactionModel(
-            type: TransactionType.expense,
-            date: DateTime.now(),
-            title: "",
-            categoryName: "Food",
-            amount: 120,
-            paymentMethod: "Hospital",
-            icon: Icons.local_hospital,
-            iconBgColor:  Color(0xFFFF6B6B)
-        ),
-      ]
-
-
-
-    ),
-    'M': PeriodData(
-      expenses: 6500,
-      budget: 9050,
-      title: 'This Month',
-      transactions: [
-
-      ],
-    ),
-    'Y': PeriodData(
-      expenses: 78400,
-      budget: 108000,
-      title: 'This Year',
-      transactions: [
-
-      ],
-    ),
-  };
-
-  // Getters for current period data
-  double get currentExpenses =>
-      periodData[HomeViewModel.selectedPeriod]!.expenses;
-  double get currentBudget => periodData[HomeViewModel.selectedPeriod]!.budget;
-  List<TransactionModel> get currentTransactions =>
-      periodData[HomeViewModel.selectedPeriod]!.transactions;
-  String get currentTitle => periodData[HomeViewModel.selectedPeriod]!.title;
 
   @override
   void initState() {
@@ -116,17 +36,21 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       vsync: this,
     );
 
-    _updateProgressAnimation();
-
     // Start animation after a short delay
-    Future.delayed(Duration(milliseconds: 300), () {
+    Future.delayed(Duration(milliseconds: 200), () {
       _progressController.forward();
     });
   }
+@override
+  void didChangeDependencies() {
+  _updateProgressAnimation();
+    super.didChangeDependencies();
+  }
+
 
   void _updateProgressAnimation() {
     _progressAnimation =
-        Tween<double>(begin: 0.0, end: currentExpenses / currentBudget).animate(
+        Tween<double>(begin: 0.0, end: context.read<HomeViewProvider>().getTotals()["expenses"]! / context.read<HomeViewProvider>().getTotals()["income"]!).animate(
           CurvedAnimation(
             parent: _progressController,
             curve: Curves.easeInOutCubic,
@@ -135,10 +59,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   void _onPeriodChanged(String period) {
-    if (HomeViewModel.selectedPeriod != period) {
-      setState(() {
-        HomeViewModel.selectedPeriod = period;
-      });
+    if (context.read<HomeViewProvider>().dwm != period) {
+      context.read<HomeViewProvider>().setDWM(period);
+
 
       // Reset and restart animation with new values
       _progressController.reset();
@@ -171,7 +94,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 child: Column(
                   children: [
                     _buildExpensesChart(),
-
                     SizedBox(height: 16),
                     _buildTransactionHistory(),
                     SizedBox(height: 100),
@@ -195,9 +117,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Wednesday", style: Theme.of(context).textTheme.labelSmall),
+              Text(DateFormat('EEEE').format(DateTime.now()), style: Theme.of(context).textTheme.labelSmall),
               Text(
-                '17 September',
+                DateFormat('d MMMM').format(DateTime.now()),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
@@ -216,7 +138,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   ),
                   child: Icon(
                     Icons.notifications,
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).cardColor,
                     size: 20,
                   ),
                 ),
@@ -274,12 +196,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '৳${HomeViewModel.formatCurrency(currentExpenses)}',
+                    context.watch<HomeViewProvider>().getTotals()["expenses"].toString(),
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'Out of ৳${HomeViewModel.formatCurrency(currentBudget)}',
+                    'Out of ৳${ context.watch<HomeViewProvider>().getTotals()["income"].toString()}',
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                 ],
@@ -294,7 +216,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildPeriodSelector() {
-    final periods = ['W', 'M', 'Y'];
+    final periods = ['D', 'W', 'M'];
 
     return Container(
       padding: EdgeInsets.all(4),
@@ -305,7 +227,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: periods.map((period) {
-          final isSelected = HomeViewModel.selectedPeriod == period;
+          final isSelected = context.watch<HomeViewProvider>().dwm == period;
           return GestureDetector(
             onTap: () => _onPeriodChanged(period),
             child: AnimatedContainer(
@@ -342,7 +264,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           children: [
             Text("History", style: Theme.of(context).textTheme.headlineSmall),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+              Get.to(ExpensesScreen());
+              },
               child: Text(
                 "See All",
                 style: Theme.of(
@@ -354,60 +278,27 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         ),
 
         SizedBox(height: 14),
-        ...currentTransactions.map(
-          (transaction) => _buildTransactionItem(transaction),
-        ),
+
+        Consumer<HomeViewProvider>(
+          builder: (context, provider, child) {
+
+            final filteredTxns = provider.filterTransactions(provider.dwm);
+
+
+
+            return filteredTxns.isEmpty
+                ? const Text("No transactions yet")
+                : Column(
+              children: filteredTxns.map((tx) => CardWidget(transaction: tx)).toList(),
+            );
+
+          },
+        )
       ],
     );
   }
 
-  Widget _buildTransactionItem(TransactionModel transaction) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).dividerColor),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color:transaction.iconBgColor,
-            //  borderRadius: BorderRadius.circular(12),
-              shape: BoxShape.circle
-            ),
-            child: Icon(transaction.icon,color: Colors.white,),
-          ),
 
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  transaction.categoryName,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                SizedBox(height: 4),
-                Text(
-                  HelperFunctions.getFormattedDateTime(transaction.date),
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-              ],
-            ),
-          ),
-          Text(
-            '${transaction.type == TransactionType.expense ?"-":""}৳${transaction.amount}',
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(color: transaction.type == TransactionType.expense ? AppColors.error:AppColors.lightTextMuted),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class CircularProgressPainter extends CustomPainter {
@@ -468,17 +359,4 @@ class CircularProgressPainter extends CustomPainter {
       oldDelegate.progress != progress;
 }
 
-class PeriodData {
-  final double expenses;
-  final double budget;
-  final String title;
-  final List<TransactionModel> transactions;
-
-  PeriodData({
-    required this.expenses,
-    required this.budget,
-    required this.title,
-    required this.transactions,
-  });
-}
 

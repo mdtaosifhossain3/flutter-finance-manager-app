@@ -1,7 +1,11 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
+import 'package:finance_manager_app/models/tempm/budgetModel/budget_category_model.dart';
+import 'package:finance_manager_app/models/tempm/budgetModel/budget_model.dart';
+import 'package:finance_manager_app/providers/budget/budget_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class AddBudgetView extends StatefulWidget {
   const AddBudgetView({super.key});
@@ -710,7 +714,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
     }
   }
 
-  void _saveBudget() {
+  void _saveBudget() async {
     // Validate dates separately since they're not TextFormFields
     bool datesValid = true;
 
@@ -763,6 +767,41 @@ class _AddBudgetViewState extends State<AddBudgetView> {
         'createdAt': DateTime.now(),
       };
 
+      BudgetModel budgetData = BudgetModel(
+          title: _titleController.text.trim(),
+          totalAmount: int.parse(_amountController.text),
+          startDate: _startDate!,
+          endDate: _endDate!
+      );
+      // BudgetCategoryModel budgetCategoryModel = BudgetCategoryModel(
+      //     budgetId: 0,
+      //     categoryName: categoryName,
+      //     allocatedAmount: allocatedAmount
+      // );
+
+      // Create budget
+      final budgetId = await context.read<BudgetProvider>().addBudget(
+        BudgetModel(
+          title: "October Budget",
+          totalAmount: 1000,
+          startDate: DateTime(2025, 10, 1),
+          endDate: DateTime(2025, 10, 31),
+        ),
+        [
+          BudgetCategoryModel(
+            budgetId: 0, // will be replaced inside provider
+            categoryName: "Food",
+            allocatedAmount: 400,
+          ),
+          BudgetCategoryModel(
+            budgetId: 0,
+            categoryName: "Transport",
+            allocatedAmount: 200,
+          ),
+        ],
+      );
+
+      print("Budget: ${context.read<BudgetProvider>().budgets}");
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -770,7 +809,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
             children: [
               Icon(Icons.check_circle, color: Colors.white),
               SizedBox(width: 12),
-              Text('Budget created successfully!'),
+              Text('Budget created successfully!,$budgetId'),
             ],
           ),
           backgroundColor: Colors.green[600],

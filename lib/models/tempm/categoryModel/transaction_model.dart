@@ -12,7 +12,7 @@ class TransactionModel {
   final String? notes;
   final String paymentMethod;
   final IconData icon;
-  final Color iconBgColor;
+  final int iconBgColor;
 
   TransactionModel({
     this.id,

@@ -5,12 +5,7 @@ class HomeViewModel{
  static String selectedPeriod = 'M';
  static late AnimationController progressController;
  static late Animation<double> progressAnimation;
-  // Getters for current period data
- // static double get currentExpenses => periodData[selectedPeriod]!.expenses;
- // static  double get currentBudget => periodData[selectedPeriod]!.budget;
- // static  List<TransactionModel> get currentTransactions =>
- //      periodData[selectedPeriod]!.transactions;
- // static String get currentTitle => periodData[selectedPeriod]!.title;
+
  static String formatCurrency(double amount) {
     if (amount >= 1000) {
       return amount

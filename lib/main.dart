@@ -1,10 +1,13 @@
 import 'package:finance_manager_app/config/routes/routes.dart';
 import 'package:finance_manager_app/config/theme/app_theme.dart';
 import 'package:finance_manager_app/config/translator/app_translator.dart';
-import 'package:finance_manager_app/providers/category_item_provider.dart';
-import 'package:finance_manager_app/providers/expense_provider.dart';
+import 'package:finance_manager_app/providers/budget/budget_provider.dart';
+import 'package:finance_manager_app/providers/category/category_item_provider.dart';
+import 'package:finance_manager_app/providers/category/category_provider.dart';
+import 'package:finance_manager_app/providers/category/expense_provider.dart';
 import 'package:finance_manager_app/providers/home_provider.dart';
 import 'package:finance_manager_app/providers/language_translator_provider.dart';
+import 'package:finance_manager_app/providers/report_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +19,17 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LanguageTranslatorProvider()),
-        ChangeNotifierProvider(create: (_) => AddExpenseProvider()),
+        ChangeNotifierProvider(create: (_) => AddExpenseProvider()..getAllExpenses()),
         ChangeNotifierProvider(create: (_) => CategoryItemProvider()),
-        ChangeNotifierProvider(create: (_) => HomeViewProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProxyProvider<AddExpenseProvider, HomeViewProvider>(
+          create: (context) => HomeViewProvider(transactionProvider: context.read<AddExpenseProvider>()),
+          update: (context, txProvider, previous) => HomeViewProvider(transactionProvider: txProvider),
+        ),  ChangeNotifierProxyProvider<AddExpenseProvider, ReportProvider>(
+          create: (context) => ReportProvider(transactionProvider: context.read<AddExpenseProvider>()),
+          update: (context, txProvider, previous) => ReportProvider(transactionProvider: txProvider),
+        ),         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => CategoryProvider()),
+        ChangeNotifierProvider(create: (_) => BudgetProvider()..loadBudgets()),
       ],
       child: MyApp(),
     ),

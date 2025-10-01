@@ -13,4 +13,8 @@ class HelperFunctions {
     final formatter = DateFormat("dd MMM, h:mm a");
     return formatter.format(date);
   }
+
+  static String formatDate(DateTime date) {
+    return DateFormat('d MMMM yyyy').format(date);
+  }
 }

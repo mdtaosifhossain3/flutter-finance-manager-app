@@ -1,10 +1,19 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
+import 'package:finance_manager_app/models/tempm/categoryModel/transaction_model.dart';
+import 'package:finance_manager_app/providers/category/category_provider.dart';
+import 'package:finance_manager_app/providers/category/expense_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class TransactionFormPage extends StatefulWidget {
-  const TransactionFormPage({super.key});
+  const TransactionFormPage({super.key,required this.categoryName,
+    required this.categoryIcon,
+    required this.categoryColor,});
+  final String categoryName;
+  final IconData categoryIcon;
+  final Color categoryColor;
 
   @override
   _TransactionFormPageState createState() => _TransactionFormPageState();
@@ -22,18 +31,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
 
   bool isLoading = false;
 
-  final List<String> categories = [
-    'Food & Dining',
-    'Transportation',
-    'Shopping',
-    'Entertainment',
-    'Bills & Utilities',
-    'Health & Fitness',
-    'Travel',
-    'Education',
-    'Personal Care',
-    'Gifts & Donations',
-  ];
 
   final List<String> paymentMethods = [
     'Cash',
@@ -73,7 +70,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                       SizedBox(height: 20),
                       _buildAmountField(),
                       SizedBox(height: 20),
-                      _buildCategoryField(),
                       SizedBox(height: 20),
                       _buildDateField(),
                       SizedBox(height: 20),
@@ -173,54 +169,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     );
   }
 
-  Widget _buildCategoryField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Category *', style: Theme.of(context).textTheme.titleSmall),
-        SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          value: selectedCategory,
-          decoration: InputDecoration(
-            hintText: 'Select category',
-            hintStyle: TextStyle(color: Theme.of(context).hintColor),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Theme.of(context).primaryColor,
-                width: 2,
-              ),
-            ),
-            contentPadding: EdgeInsets.all(16),
-          ),
-          style: TextStyle(
-            fontSize: 16,
-            color: Theme.of(context).colorScheme.onSecondary,
-          ),
-          items: categories.map((String category) {
-            return DropdownMenuItem<String>(
-              value: category,
-              child: Text(category),
-            );
-          }).toList(),
-          onChanged: (String? value) {
-            setState(() {
-              selectedCategory = value;
-            });
-          },
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Category is required';
-            }
-            return null;
-          },
-          icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).hintColor),
-        ),
-      ],
-    );
-  }
 
   Widget _buildDateField() {
     return Column(
@@ -423,22 +371,28 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
       await Future.delayed(Duration(seconds: 2));
 
       // Collect form data
-      final transactionData = {
-        'title': _titleController.text.isEmpty ? null : _titleController.text,
-        'amount': double.parse(_amountController.text),
-        'category': selectedCategory,
-        'date': selectedDate.toIso8601String(),
-        'paymentMethod': selectedPaymentMethod,
-        'notes': _notesController.text.isEmpty ? null : _notesController.text,
-        'createdAt': DateTime.now().toIso8601String(),
-      };
+
+
+     TransactionModel tn = TransactionModel(
+         type: context.read<CategoryProvider>().selectedType,
+         date:selectedDate,
+         title: _titleController.text.isEmpty ? "" : _titleController.text,
+         categoryName: widget.categoryName,
+         amount: int.parse(_amountController.text),
+         paymentMethod: selectedPaymentMethod,
+         icon: widget.categoryIcon,
+         iconBgColor: widget.categoryColor.toARGB32(),
+         notes:  _notesController.text.isEmpty ? "" : _notesController.text
+     );
+
+     context.read<AddExpenseProvider>().addExpense(tn);
 
       setState(() {
         isLoading = false;
       });
 
       // Show success message
-      _showSuccessDialog(transactionData);
+    //  _showSuccessDialog(tn);
     }
   }
 

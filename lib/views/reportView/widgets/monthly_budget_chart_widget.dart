@@ -1,14 +1,22 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/models/budget_data_model.dart';
+import 'package:finance_manager_app/providers/report_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:provider/provider.dart';
 
-class MonthlyBudgetChartWidget extends StatelessWidget {
-  List<BudgetData> monthlyData;
-  MonthlyBudgetChartWidget({super.key, required this.monthlyData});
+class MonthlyBudgetChartWidget extends StatefulWidget {
+ final List<BudgetData> monthlyData;
+ const MonthlyBudgetChartWidget({super.key, required this.monthlyData});
+
+  @override
+  State<MonthlyBudgetChartWidget> createState() => _MonthlyBudgetChartWidgetState();
+}
+
+class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
+  @override
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +56,9 @@ class MonthlyBudgetChartWidget extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
-                        if (value.toInt() < monthlyData.length) {
+                        if (value.toInt() < context.read<ReportProvider>().montlydata.length) {
                           return Text(
-                            monthlyData[value.toInt()].month,
+                            context.watch<ReportProvider>().montlydata[value.toInt()]["months"],
                             style: TextStyle(
                               color: AppColors.textMuted,
                               fontSize: 12,
@@ -72,8 +80,8 @@ class MonthlyBudgetChartWidget extends StatelessWidget {
                 lineBarsData: [
                   // Budget line (green)
                   LineChartBarData(
-                    spots: monthlyData.asMap().entries.map((entry) {
-                      return FlSpot(entry.key.toDouble(), entry.value.budget);
+                    spots: context.watch<ReportProvider>().montlydata.asMap().entries.map((entry) {
+                      return FlSpot(entry.key.toDouble(), (entry.value["income"] as double));
                     }).toList(),
                     isCurved: true,
                     color: AppColors.primaryBlue,
@@ -82,11 +90,11 @@ class MonthlyBudgetChartWidget extends StatelessWidget {
                   ),
                   // Spent line (orange/red)
                   LineChartBarData(
-                    spots: monthlyData.asMap().entries.map((entry) {
-                      return FlSpot(entry.key.toDouble(), entry.value.spent);
+                    spots: context.watch<ReportProvider>().montlydata.asMap().entries.map((entry) {
+                      return FlSpot(entry.key.toDouble(), (entry.value["expenses"] as double));
                     }).toList(),
                     isCurved: true,
-                    color: AppColors.primaryPurple,
+                    color: AppColors.error,
                     barWidth: 3,
                     dotData: FlDotData(show: true),
                   ),
@@ -110,7 +118,7 @@ class MonthlyBudgetChartWidget extends StatelessWidget {
                   ),
                 ),
                 minY: 0,
-                maxY: 2500,
+                maxY:  context.watch<ReportProvider>().getMaxY(),
               ),
             ),
           ),
@@ -119,7 +127,7 @@ class MonthlyBudgetChartWidget extends StatelessWidget {
             children: [
               _buildLegendItem('Budget', AppColors.primaryBlue),
               SizedBox(width: 20),
-              _buildLegendItem('Spent', AppColors.primaryPurple),
+              _buildLegendItem('Spent', AppColors.error),
             ],
           ),
         ],

@@ -1,12 +1,10 @@
 import 'dart:io';
 
-import 'package:finance_manager_app/models/expense_model.dart';
 import 'package:finance_manager_app/models/tempm/categoryModel/custom_category_model.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../../../models/tempm/categoryModel/transaction_model.dart';
 
 class CustomCategoryDbHelper{
   CustomCategoryDbHelper._();

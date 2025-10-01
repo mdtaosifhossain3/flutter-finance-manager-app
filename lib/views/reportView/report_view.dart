@@ -1,13 +1,15 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/views/reportView/widgets/expense_chart_widget.dart';
-import 'package:finance_manager_app/views/reportView/widgets/last_five_days_period_chart_widget.dart';
+import 'package:finance_manager_app/views/reportView/widgets/last_six_days_period_chart_widget.dart';
 import 'package:finance_manager_app/views/reportView/widgets/monthly_budget_chart_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/budget_data_model.dart';
 import '../../models/expense_category_model.dart';
 import '../../models/period_data_model.dart';
+import '../../providers/report_provider.dart';
 
 class ReportView extends StatefulWidget {
   const ReportView({super.key});
@@ -16,7 +18,16 @@ class ReportView extends StatefulWidget {
   State<ReportView> createState() => _ReportViewState();
 }
 
+
+
 class _ReportViewState extends State<ReportView> {
+  @override
+  void initState() {
+    context.read<ReportProvider>().getMonthlyTotals();
+
+
+    super.initState();
+  }
   // Sample data - replace with your actual data source
   final double totalBudget = 5000;
   final double spentAmount = 3050;
@@ -73,7 +84,7 @@ class _ReportViewState extends State<ReportView> {
               SizedBox(height: 24),
               MonthlyBudgetChartWidget(monthlyData: monthlyData),
               SizedBox(height: 24),
-              LastFiveDaysPeriodChartWidget(periodData: periodData),
+              LastFiveDaysPeriodChartWidget(),
               SizedBox(height: 120),
             ],
           ),

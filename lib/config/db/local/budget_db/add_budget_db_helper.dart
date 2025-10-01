@@ -32,7 +32,7 @@ class AddBudgetDbHelper {
           CREATE TABLE budgets (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
-            totalAmount REAL NOT NULL,
+            totalAmount INTEGER NOT NULL,
             startDate TEXT NOT NULL,
             endDate TEXT NOT NULL
           )
@@ -44,7 +44,7 @@ class AddBudgetDbHelper {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             budgetId INTEGER NOT NULL,
             categoryName TEXT NOT NULL,
-            allocatedAmount REAL NOT NULL,
+            allocatedAmount INTEGER NOT NULL,
             FOREIGN KEY (budgetId) REFERENCES budgets (id) ON DELETE CASCADE
           )
         ''');

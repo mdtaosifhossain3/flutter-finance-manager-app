@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:finance_manager_app/models/expense_model.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -23,9 +22,10 @@ class AddTransactionDbHelper{
   final String amount = 'amount';
   final String notes = 'notes';
   final String paymentMethod = 'paymentMethod';
-  final String categoryName = 'category_name';
+  final String categoryName = 'categoryName';
   final String iconCodePoint = 'iconCodePoint';
   final String iconFontFamily = 'iconFontFamily';
+  final String iconBgColor = 'iconBgColor';
 
   Future<Database> getDB() async {
     myDB ??= await openDB();
@@ -34,12 +34,29 @@ class AddTransactionDbHelper{
 
   Future<Database> openDB() async {
     Directory appDir = await getApplicationDocumentsDirectory();
-    String dbPath = join(appDir.path,'fn_manager.db');
+    String dbPath = join(appDir.path, 'transaction_data.db');
 
-    return await openDatabase(dbPath,onCreate: (db,version){
-      db.execute("CREATE TABLE $tableName ($id INTEGER PRIMARY KEY AUTOINCREMENT, $type INTEGER NOT NULL,$date TEXT NOT NULL,$title TEXT NOT NULL,$categoryName TEXT NOT NULL,$amount REAL NOT NULL,$notes TEXT,$paymentMethod TEXT NOT NULL,$iconCodePoint INTEGER NOT NULL,$iconFontFamily TEXT NOT NULL");
-    },version: 1);
+    return await openDatabase(
+      dbPath,
+      version: 1,
+      onCreate: (db, version) async {
+        await db.execute('''CREATE TABLE $tableName (
+          $id INTEGER PRIMARY KEY AUTOINCREMENT,
+          $type INTEGER NOT NULL,
+          $date TEXT NOT NULL,
+          $title TEXT NOT NULL,
+          $categoryName TEXT NOT NULL,
+          $amount INTEGER NOT NULL,
+          $notes TEXT,
+          $paymentMethod TEXT NOT NULL,
+          $iconCodePoint INTEGER NOT NULL,
+          $iconFontFamily TEXT NOT NULL,
+          $iconBgColor INTEGER NOT NULL)'''
+        );
+      },
+    );
   }
+
 
   ///insertion
   Future<bool> addItem( TransactionModel ex) async {

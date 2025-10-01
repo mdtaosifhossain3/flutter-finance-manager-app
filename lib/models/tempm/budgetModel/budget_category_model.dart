@@ -1,12 +1,12 @@
 class BudgetCategoryModel {
   final int? id; // auto-increment
-  final int budgetId; // FK -> budgets.id
+  final int? budgetId; // FK -> budgets.id
   final String categoryName;
   final int allocatedAmount;
 
   BudgetCategoryModel({
     this.id,
-    required this.budgetId,
+    this.budgetId,
     required this.categoryName,
     required this.allocatedAmount,
   });

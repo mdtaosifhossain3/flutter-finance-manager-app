@@ -6,3 +6,6 @@ class PeriodData {
 
   PeriodData(this.period, this.within, this.risk, this.overspending);
 }
+
+//make a list of object eg: listt,
+//funcion to fetch them :
