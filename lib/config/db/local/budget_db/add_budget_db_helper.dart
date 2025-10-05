@@ -45,6 +45,7 @@ class AddBudgetDbHelper {
             budgetId INTEGER NOT NULL,
             categoryName TEXT NOT NULL,
             allocatedAmount INTEGER NOT NULL,
+            spent INTEGER NOT NULL,
             FOREIGN KEY (budgetId) REFERENCES budgets (id) ON DELETE CASCADE
           )
         ''');
@@ -102,4 +103,77 @@ class AddBudgetDbHelper {
     ''');
     return result;
   }
+
+
+// Add amount to spent
+  Future<bool> addToCategorySpent({
+    required int categoryId,
+    required int amountToAdd,
+  }) async {
+    final db = await database;
+
+    final result = await db.query(
+      'budget_categories',
+      columns: ['spent'],
+      where: 'id = ?',
+      whereArgs: [categoryId],
+    );
+
+    if (result.isEmpty) return false;
+
+    final currentSpent = result.first['spent'] as int;
+    final newSpent = currentSpent + amountToAdd;
+
+    final rowsAffected = await db.update(
+      'budget_categories',
+      {'spent': newSpent},
+      where: 'id = ?',
+      whereArgs: [categoryId],
+    );
+
+    return rowsAffected > 0;
+  }
+
+// Subtract amount from spent
+  Future<bool> subtractFromCategorySpent({
+    required int categoryId,
+    required int amountToSubtract,
+  }) async {
+    final db = await database;
+
+    final result = await db.query(
+      'budget_categories',
+      columns: ['spent'],
+      where: 'id = ?',
+      whereArgs: [categoryId],
+    );
+
+    if (result.isEmpty) return false;
+
+    final currentSpent = result.first['spent'] as int;
+    final newSpent = (currentSpent - amountToSubtract).clamp(0, double.infinity).toInt();
+
+    final rowsAffected = await db.update(
+      'budget_categories',
+      {'spent': newSpent},
+      where: 'id = ?',
+      whereArgs: [categoryId],
+    );
+
+    return rowsAffected > 0;
+  }
+
+// Delete category
+  Future<int> deleteCategory(int categoryId) async {
+    final db = await database;
+    return await db.delete(
+      'budget_categories',
+      where: 'id = ?',
+      whereArgs: [categoryId],
+    );
+  }
+
+
+
+
 }

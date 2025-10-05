@@ -82,6 +82,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       body: SafeArea(
         child: Column(
           children: [
@@ -138,7 +139,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   ),
                   child: Icon(
                     Icons.notifications,
-                    color: Theme.of(context).cardColor,
+                    color: AppColors.primaryBlue,
                     size: 20,
                   ),
                 ),

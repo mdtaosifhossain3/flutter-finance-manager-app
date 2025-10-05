@@ -8,9 +8,12 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class TransactionFormPage extends StatefulWidget {
-  const TransactionFormPage({super.key,required this.categoryName,
+  const TransactionFormPage({
+    super.key,
+    required this.categoryName,
     required this.categoryIcon,
-    required this.categoryColor,});
+    required this.categoryColor,
+  });
   final String categoryName;
   final IconData categoryIcon;
   final Color categoryColor;
@@ -30,7 +33,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   String selectedPaymentMethod = 'Cash';
 
   bool isLoading = false;
-
 
   final List<String> paymentMethods = [
     'Cash',
@@ -60,7 +62,10 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 20),
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.04,
+                  vertical: 20,
+                ),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -168,7 +173,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
       ],
     );
   }
-
 
   Widget _buildDateField() {
     return Column(
@@ -372,27 +376,26 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
 
       // Collect form data
 
+      TransactionModel tn = TransactionModel(
+        type: context.read<CategoryProvider>().selectedType,
+        date: selectedDate,
+        title: _titleController.text.isEmpty ? "" : _titleController.text,
+        categoryName: widget.categoryName,
+        amount: int.parse(_amountController.text),
+        paymentMethod: selectedPaymentMethod,
+        icon: widget.categoryIcon,
+        iconBgColor: widget.categoryColor.toARGB32(),
+        notes: _notesController.text.isEmpty ? "" : _notesController.text,
+      );
 
-     TransactionModel tn = TransactionModel(
-         type: context.read<CategoryProvider>().selectedType,
-         date:selectedDate,
-         title: _titleController.text.isEmpty ? "" : _titleController.text,
-         categoryName: widget.categoryName,
-         amount: int.parse(_amountController.text),
-         paymentMethod: selectedPaymentMethod,
-         icon: widget.categoryIcon,
-         iconBgColor: widget.categoryColor.toARGB32(),
-         notes:  _notesController.text.isEmpty ? "" : _notesController.text
-     );
-
-     context.read<AddExpenseProvider>().addExpense(tn);
+      context.read<AddExpenseProvider>().addExpense(tn);
 
       setState(() {
         isLoading = false;
       });
 
       // Show success message
-    //  _showSuccessDialog(tn);
+      //  _showSuccessDialog(tn);
     }
   }
 
@@ -424,7 +427,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
-                  Text('Amount: \$${data['amount']}'),
+                  Text('Amount: ৳${data['amount']}'),
                   Text('Category: ${data['category']}'),
                   Text('Payment: ${data['paymentMethod']}'),
                   Text('Date: ${_formatDate(selectedDate)}'),

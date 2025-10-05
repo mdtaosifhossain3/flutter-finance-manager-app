@@ -22,50 +22,16 @@ class ReportView extends StatefulWidget {
 
 class _ReportViewState extends State<ReportView> {
   @override
-  void initState() {
-    context.read<ReportProvider>().getMonthlyTotals();
-
-
-    super.initState();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final reportProvider = context.read<ReportProvider>();
+    reportProvider.getMonthlyTotals();
+    reportProvider.periodDatafunction();
+    reportProvider.filterCategoryFunction();
   }
-  // Sample data - replace with your actual data source
-  final double totalBudget = 5000;
-  final double spentAmount = 3050;
 
-  // Monthly budget vs spent data
-  final List<BudgetData> monthlyData = [
-    BudgetData('Jan', 1800, 1500),
-    BudgetData('Feb', 2000, 1800),
-    BudgetData('Mar', 1600, 2200),
-    BudgetData('Apr', 1900, 1400),
-    BudgetData('May', 2100, 1600),
-    BudgetData('June', 1700, 1900),
-    BudgetData('July', 2000, 1800),
-    BudgetData('Aug', 2000, 1800),
-    BudgetData('Sep', 2000, 1800),
-    BudgetData('Oct', 2000, 1800),
-    BudgetData('Nov ', 2000, 1800),
-    BudgetData('Dec', 2000, 1800),
-  ];
 
-  // Last 6 periods data
-  final List<PeriodData> periodData = [
-    PeriodData('Jan', 1800, 1500, 0), // within, risk, overspending
-    PeriodData('Feb', 0, 0, 2300), // overspending
-    PeriodData('Mar', 0, 1900, 0), // risk
-    PeriodData('Apr', 1700, 0, 0), // within
-    PeriodData('May', 1600, 0, 0), // within
-    PeriodData('June', 1800, 0, 0), // within
-  ];
-
-  // Expenses breakdown
-  final List<ExpenseCategoryModel> expenseCategories = [
-    ExpenseCategoryModel('Shopping', 1200, AppColors.error),
-    ExpenseCategoryModel('Food', 800, AppColors.border),
-    ExpenseCategoryModel('Groceries', 600, AppColors.warning),
-    ExpenseCategoryModel('Transport', 350, AppColors.primaryBlue),
-    ExpenseCategoryModel('Entertainment', 100, AppColors.success),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -77,12 +43,11 @@ class _ReportViewState extends State<ReportView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               _buildSpentIndicator(),
               SizedBox(height: 24),
-              ExpenseChartWidget(expenseCategories: expenseCategories),
+              ExpenseChartWidget( ),
               SizedBox(height: 24),
-              MonthlyBudgetChartWidget(monthlyData: monthlyData),
+              MonthlyBudgetChartWidget(),
               SizedBox(height: 24),
               LastFiveDaysPeriodChartWidget(),
               SizedBox(height: 120),
@@ -94,7 +59,14 @@ class _ReportViewState extends State<ReportView> {
   }
 
   Widget _buildSpentIndicator() {
-    double percentage = (spentAmount / totalBudget) * 100;
+    final reportProvider = context.watch<ReportProvider>();
+    final totals = reportProvider.getCurrentMonthTotals();
+   double expense = totals["expense"] ?? 0.0;
+   double income = totals["income"] ?? 0.0;
+    double percentage = 0.0;
+    if (income > 0 && expense > 0) {
+      percentage = (expense / income) * 100;
+    }
 
     return Container(
       padding: EdgeInsets.all(16),
@@ -109,11 +81,11 @@ class _ReportViewState extends State<ReportView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Spent: ৳${spentAmount.toStringAsFixed(0)} / ৳${totalBudget.toStringAsFixed(0)}',
+                'Spent: ৳$expense / ৳$income',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               Text(
-                '${percentage.toStringAsFixed(0)}%',
+                '$percentage%',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: percentage > 90
                       ? AppColors.error
@@ -126,7 +98,7 @@ class _ReportViewState extends State<ReportView> {
           ),
           SizedBox(height: 12),
           LinearProgressIndicator(
-            value: spentAmount / totalBudget,
+            value:percentage,
             backgroundColor: AppColors.darkSecondaryBackground,
             valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryBlue),
             minHeight: 8,

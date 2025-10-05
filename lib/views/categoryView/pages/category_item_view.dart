@@ -20,7 +20,8 @@ class CategoryTransactionView extends StatefulWidget {
   });
 
   @override
-  State<CategoryTransactionView> createState() => _CategoryTransactionViewState();
+  State<CategoryTransactionView> createState() =>
+      _CategoryTransactionViewState();
 }
 
 class _CategoryTransactionViewState extends State<CategoryTransactionView> {
@@ -97,7 +98,10 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
   }
 
   double get totalAmount {
-    return filteredTransactions.fold(0.0, (sum, transaction) => sum + transaction.amount);
+    return filteredTransactions.fold(
+      0.0,
+      (sum, transaction) => sum + transaction.amount,
+    );
   }
 
   double get totalIncome {
@@ -119,7 +123,6 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: customAppBar(title: widget.categoryName),
       body: SingleChildScrollView(
         child: Column(
@@ -129,7 +132,6 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
 
             // Month Selector
             _buildMonthSelector(),
-
 
             // Transactions Header
             _buildTransactionsHeader(),
@@ -142,14 +144,18 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
       floatingActionButton: _buildFAB(),
     );
   }
+
   Widget _buildCategoryHeader() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 16),
+      margin: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.04,
+        vertical: 16,
+      ),
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-           Theme.of(context).cardColor,
+            Theme.of(context).cardColor,
             Theme.of(context).colorScheme.surface,
           ],
           begin: Alignment.topLeft,
@@ -158,7 +164,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color:Theme.of(context).primaryColor.withOpacity(0.3),
+            color: Theme.of(context).primaryColor.withOpacity(0.3),
             blurRadius: 15,
             offset: Offset(0, 8),
           ),
@@ -175,7 +181,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Theme.of(context).dividerColor)
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: Icon(
                   widget.categoryIcon,
@@ -203,17 +209,17 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                   children: [
                     Text(
                       '${_getMonthName(selectedMonth.month)} ${selectedMonth.year}',
-                      style: Theme.of(context).textTheme.labelSmall
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                     SizedBox(height: 4),
                     Text(
                       'Total Amount',
-                      style: Theme.of(context).textTheme.labelLarge
+                      style: Theme.of(context).textTheme.labelLarge,
                     ),
                     SizedBox(height: 6),
                     Text(
                       totalAmount.abs().toStringAsFixed(2),
-                      style: Theme.of(context).textTheme.headlineLarge
+                      style: Theme.of(context).textTheme.headlineLarge,
                     ),
                   ],
                 ),
@@ -223,7 +229,9 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.2),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onPrimary.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: Theme.of(context).dividerColor,
@@ -241,19 +249,18 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                     SizedBox(width: 6),
                     Text(
                       '${filteredTransactions.length}',
-                      style: Theme.of(context).textTheme.labelLarge
+                      style: Theme.of(context).textTheme.labelLarge,
                     ),
                   ],
                 ),
               ),
             ],
           ),
-
-
         ],
       ),
     );
   }
+
   Widget _buildMonthSelector() {
     return Container(
       height: 80,
@@ -263,9 +270,16 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
         padding: EdgeInsets.symmetric(horizontal: 16),
         itemCount: 12,
         itemBuilder: (context, index) {
-          DateTime month = DateTime(DateTime.now().year, DateTime.now().month - 6 + index);
-          bool isSelected = month.month == selectedMonth.month && month.year == selectedMonth.year;
-          bool isCurrentMonth = month.month == DateTime.now().month && month.year == DateTime.now().year;
+          DateTime month = DateTime(
+            DateTime.now().year,
+            DateTime.now().month - 6 + index,
+          );
+          bool isSelected =
+              month.month == selectedMonth.month &&
+              month.year == selectedMonth.year;
+          bool isCurrentMonth =
+              month.month == DateTime.now().month &&
+              month.year == DateTime.now().year;
 
           return GestureDetector(
             onTap: () {
@@ -277,7 +291,9 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
               width: 70,
               margin: EdgeInsets.only(right: 12),
               decoration: BoxDecoration(
-                color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).cardColor,
+                color: isSelected
+                    ? Theme.of(context).primaryColor
+                    : Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isCurrentMonth && !isSelected
@@ -285,7 +301,6 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                       : Theme.of(context).dividerColor,
                   width: 1,
                 ),
-
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -293,7 +308,9 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                   Text(
                     _getMonthName(month.month).substring(0, 3),
                     style: TextStyle(
-                      color: isSelected ? AppColors.textPrimary : AppColors.textMuted,
+                      color: isSelected
+                          ? AppColors.textPrimary
+                          : AppColors.textMuted,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
@@ -302,7 +319,9 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                   Text(
                     month.year.toString(),
                     style: TextStyle(
-                      color: isSelected ? AppColors.textPrimary :AppColors.textMuted,
+                      color: isSelected
+                          ? AppColors.textPrimary
+                          : AppColors.textMuted,
                       fontSize: 12,
                     ),
                   ),
@@ -314,6 +333,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
       ),
     );
   }
+
   Widget _buildTransactionsHeader() {
     return Padding(
       padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -322,16 +342,17 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
         children: [
           Text(
             'Transactions',
-            style: Theme.of(context).textTheme.headlineSmall
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           Text(
             '${filteredTransactions.length} items',
-            style: Theme.of(context).textTheme.labelMedium
+            style: Theme.of(context).textTheme.labelMedium,
           ),
         ],
       ),
     );
   }
+
   Widget _buildTransactionListView() {
     if (filteredTransactions.isEmpty) {
       return SizedBox(
@@ -343,17 +364,17 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
               Icon(
                 Icons.receipt_long_outlined,
                 size: 64,
-                color:Theme.of(context).colorScheme.onSecondary,
+                color: Theme.of(context).colorScheme.onSecondary,
               ),
               SizedBox(height: 16),
               Text(
                 'No transactions found',
-                style:Theme.of(context).textTheme.bodyMedium
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 8),
               Text(
                 'Add your first transaction to get started',
-                style:Theme.of(context).textTheme.bodySmall
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
           ),
@@ -362,9 +383,12 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
     }
 
     return Column(
-      children: filteredTransactions.map((transaction) => _buildTransactionCard(transaction)).toList(),
+      children: filteredTransactions
+          .map((transaction) => _buildTransactionCard(transaction))
+          .toList(),
     );
   }
+
   Widget _buildTransactionCard(Transaction transaction) {
     bool isIncome = transaction.amount > 0;
     Color amountColor = isIncome ? Colors.green[600]! : Colors.red[600]!;
@@ -393,7 +417,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                     color: amountColor,
                     borderRadius: BorderRadius.circular(2),
                   ),
-                //  child: Center(child: Text("1",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: AppColors.textPrimary),)),
+                  //  child: Center(child: Text("1",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: AppColors.textPrimary),)),
                 ),
                 SizedBox(width: 16),
 
@@ -404,7 +428,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                     children: [
                       Text(
                         transaction.title,
-                        style: Theme.of(context).textTheme.titleMedium
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                       if (transaction.notes.isNotEmpty) ...[
                         SizedBox(height: 4),
@@ -424,7 +448,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '${isIncome ? '+' : '-'}\$${transaction.amount.abs().toStringAsFixed(2)}',
+                      '${isIncome ? '+' : '-'}৳${transaction.amount.abs().toStringAsFixed(2)}',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -434,7 +458,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                     SizedBox(height: 4),
                     Text(
                       HelperFunctions.getFormattedDateTime(transaction.date),
-                      style: Theme.of(context).textTheme.labelSmall
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                   ],
                 ),
@@ -449,15 +473,24 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
   Widget _buildFAB() {
     return FloatingActionButton.extended(
       onPressed: () {
-        Get.to(TransactionFormPage(categoryColor: widget.categoryColor,categoryIcon: widget.categoryIcon,categoryName: widget.categoryName,));
-     print(context.read<AddExpenseProvider>().expenseList);
-        },
+        Get.to(
+          TransactionFormPage(
+            categoryColor: widget.categoryColor,
+            categoryIcon: widget.categoryIcon,
+            categoryName: widget.categoryName,
+          ),
+        );
+        print(context.read<AddExpenseProvider>().expenseList);
+      },
       backgroundColor: Theme.of(context).primaryColor,
       foregroundColor: Theme.of(context).colorScheme.onPrimary,
-      icon: Icon(Icons.add,color: AppColors.textPrimary),
+      icon: Icon(Icons.add, color: AppColors.textPrimary),
       label: Text(
         'Add Transaction',
-        style: TextStyle(fontWeight: FontWeight.w600,color: AppColors.textPrimary),
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
+        ),
       ),
     );
   }
@@ -496,12 +529,15 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
             // Transaction details
             Text(
               'Transaction Details',
-              style: Theme.of(context).textTheme.headlineSmall
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             SizedBox(height: 20),
 
             _buildDetailRow('Title', transaction.title),
-            _buildDetailRow('Amount', '${transaction.amount > 0 ? '+' : '-'}\$${transaction.amount.abs().toStringAsFixed(2)}'),
+            _buildDetailRow(
+              'Amount',
+              '${transaction.amount > 0 ? '+' : '-'}\$${transaction.amount.abs().toStringAsFixed(2)}',
+            ),
             _buildDetailRow('Date', _formatFullDate(transaction.date)),
             if (transaction.notes.isNotEmpty)
               _buildDetailRow('Notes', transaction.notes),
@@ -521,41 +557,67 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
         children: [
           SizedBox(
             width: 80,
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.labelLarge
-            ),
+            child: Text(label, style: Theme.of(context).textTheme.labelLarge),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.bodyMedium
-            ),
+            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),
     );
   }
 
-
-
   String _getMonthName(int month) {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return months[month - 1];
   }
 
   String _formatDate(DateTime date) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return '${date.day} ${months[date.month - 1]}';
   }
 
   String _formatFullDate(DateTime date) {
-    const months = ['January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'];
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 }
@@ -577,4 +639,3 @@ class Transaction {
     this.tags = const [],
   });
 }
-

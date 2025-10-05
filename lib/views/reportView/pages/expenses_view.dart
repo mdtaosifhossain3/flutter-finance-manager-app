@@ -1,137 +1,31 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/models/expense_data_model.dart';
+import 'package:finance_manager_app/providers/report_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+
+import '../../../globalWidgets/card_widget.dart';
+import '../../../providers/home_provider.dart';
 
 class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});
-
   @override
   _ExpensesScreenState createState() => _ExpensesScreenState();
 }
 
 class _ExpensesScreenState extends State<ExpensesScreen> {
-  String selectedPeriod = 'Daily';
   final TextEditingController searchController = TextEditingController();
 
-  // Sample data - replace with your actual data source
-  final Map<String, List<ExpenseData>> expensesData = {
-    'Daily': [
-      ExpenseData(
-        'Groceries',
-        67.00,
-        15,
-        true,
-        Icons.shopping_basket,
-        Colors.green,
-      ),
-      ExpenseData('Shopping', 158.00, 8, false, Icons.shopping_bag, Colors.red),
-      ExpenseData('Food', 125.00, 2, false, Icons.restaurant, Colors.orange),
-      ExpenseData('Health', 28.00, 1, false, Icons.local_hospital, Colors.blue),
-      ExpenseData('Travel', 685.00, 12, true, Icons.flight, Colors.purple),
-      ExpenseData('Taxi', 45.00, 3, false, Icons.local_taxi, Colors.blue[300]!),
-    ],
-    'Weekly': [
-      ExpenseData(
-        'Groceries',
-        280.00,
-        12,
-        true,
-        Icons.shopping_basket,
-        Colors.green,
-      ),
-      ExpenseData('Shopping', 450.00, 5, false, Icons.shopping_bag, Colors.red),
-      ExpenseData('Food', 320.00, 8, true, Icons.restaurant, Colors.orange),
-      ExpenseData(
-        'Health',
-        120.00,
-        15,
-        true,
-        Icons.local_hospital,
-        Colors.blue,
-      ),
-      ExpenseData('Travel', 1200.00, 20, true, Icons.flight, Colors.purple),
-      ExpenseData('Taxi', 180.00, 6, true, Icons.local_taxi, Colors.blue[300]!),
-    ],
-    'Monthly': [
-      ExpenseData(
-        'Groceries',
-        1200.00,
-        8,
-        true,
-        Icons.shopping_basket,
-        Colors.green,
-      ),
-      ExpenseData(
-        'Shopping',
-        1800.00,
-        3,
-        false,
-        Icons.shopping_bag,
-        Colors.red,
-      ),
-      ExpenseData('Food', 950.00, 12, true, Icons.restaurant, Colors.orange),
-      ExpenseData(
-        'Health',
-        480.00,
-        25,
-        true,
-        Icons.local_hospital,
-        Colors.blue,
-      ),
-      ExpenseData('Travel', 2400.00, 18, true, Icons.flight, Colors.purple),
-      ExpenseData(
-        'Taxi',
-        650.00,
-        10,
-        true,
-        Icons.local_taxi,
-        Colors.blue[300]!,
-      ),
-    ],
-    'Yearly': [
-      ExpenseData(
-        'Groceries',
-        14400.00,
-        5,
-        true,
-        Icons.shopping_basket,
-        Colors.green,
-      ),
-      ExpenseData(
-        'Shopping',
-        21600.00,
-        2,
-        false,
-        Icons.shopping_bag,
-        Colors.red,
-      ),
-      ExpenseData('Food', 11400.00, 8, true, Icons.restaurant, Colors.orange),
-      ExpenseData(
-        'Health',
-        5760.00,
-        15,
-        true,
-        Icons.local_hospital,
-        Colors.blue,
-      ),
-      ExpenseData('Travel', 28800.00, 12, true, Icons.flight, Colors.purple),
-      ExpenseData(
-        'Taxi',
-        7800.00,
-        6,
-        true,
-        Icons.local_taxi,
-        Colors.blue[300]!,
-      ),
-    ],
-  };
+  @override
+  void initState() {
+    context.read<ReportProvider>().filterCategoryFunction();
+    super.initState();
+  }
 
-  List<ExpenseData> get currentExpenses => expensesData[selectedPeriod] ?? [];
-  double get totalAmount =>
-      currentExpenses.fold(0.0, (sum, expense) => sum + expense.amount);
+
 
   @override
   Widget build(BuildContext context) {
@@ -146,9 +40,22 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
               child: Column(
                 children: [
-                  _buildDonutChart(),
+                 _buildDonutChart(),
+
                   SizedBox(height: 24),
-                  _buildExpensesList(),
+                  Consumer<HomeViewProvider>(
+                    builder: (context, provider, child) {
+                      final filteredTxns = provider.filteredTransactions;
+
+                      return filteredTxns.isEmpty
+                          ? const Text("No transactions yet")
+                          : Column(
+                        children: filteredTxns
+                            .map((tx) => CardWidget(transaction: tx))
+                            .toList(),
+                      );
+                    },
+                  )
                 ],
               ),
             ),
@@ -159,47 +66,66 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   }
 
   Widget _buildSearchBar() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04,vertical: 16),
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TextField(
-        controller: searchController,
-        style: Theme.of(context).textTheme.bodyLarge,
-        decoration: InputDecoration(
-          hintText: 'Super AI search',
-          hintStyle: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
-          prefixIcon: Icon(Icons.search, color: AppColors.textMuted),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 16),
-        ),
-        onChanged: (value) {
-          // Implement search functionality here
-          setState(() {});
-        },
-      ),
+    return Consumer<HomeViewProvider>(
+      builder: (context, provider, child) {
+        return Container(
+          margin: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.04,
+            vertical: 16,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: TextField(
+            controller: searchController,
+            style: Theme.of(context).textTheme.bodyLarge,
+            decoration: InputDecoration(
+              hintText: 'Super AI search',
+              hintStyle: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textMuted),
+              prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            onChanged: (value) {
+              provider.setSearchQuery(value);
+            },
+          ),
+        );
+      },
     );
   }
 
+
   Widget _buildPeriodTabs() {
-    final periods = ['Daily', 'Weekly', 'Monthly', 'Yearly'];
+    final periods = ['Daily', 'Weekly', 'Monthly',];
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
       child: Row(
         children: periods.map((period) {
-          final isSelected = selectedPeriod == period;
+          final isSelected = context.watch<ReportProvider>().selectedPeriod == period;
           return Expanded(
             child: GestureDetector(
               onTap: () {
-                setState(() {
-                  selectedPeriod = period;
-                });
+                //  selectedPeriod = period;
+                  context.read<ReportProvider>().setSelectedMonth(period);
+                  if(period =="Daily"){
+                    print("d");
+                    context.read<HomeViewProvider>().setDWM("d");
+                  } else if(period =="Weekly"){
+                    print("dw");
+                    context.read<HomeViewProvider>().setDWM("w");
+                  } else{
+                    print("dwm");
+                    context.read<HomeViewProvider>().setDWM("m");
+
+                  }
+
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 12),
@@ -234,173 +160,103 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   }
 
   Widget _buildDonutChart() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          SizedBox(
-            height: 200,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                PieChart(
-                  PieChartData(
-                    sections: _buildPieChartSections(),
-                    sectionsSpace: 3,
-                    centerSpaceRadius: 60,
-                    startDegreeOffset: -90,
-                  ),
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '৳${totalAmount.toStringAsFixed(2)}',
-                      style: Theme.of(context).textTheme.headlineLarge,
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Total',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: AppColors.textMuted,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 20),
-          _buildChartLegend(),
-        ],
-      ),
-    );
-  }
 
-  List<PieChartSectionData> _buildPieChartSections() {
-    return currentExpenses.map((expense) {
-      final percentage = (expense.amount / totalAmount) * 100;
-      return PieChartSectionData(
-        color: expense.color,
-        value: percentage,
-        title: '',
-        radius: 25,
-      );
-    }).toList();
-  }
-
-  Widget _buildChartLegend() {
-    return Wrap(
-      spacing: 16,
-      runSpacing: 8,
-      children: currentExpenses.map((expense) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: expense.color,
-                shape: BoxShape.circle,
-              ),
-            ),
-            SizedBox(width: 6),
-            Text(
-              expense.category,
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-          ],
+    return Consumer<ReportProvider>(
+      builder: (context,provider,child) {
+        double total = provider.filterCategories.fold(
+          0,
+              (sum, category) => sum + category["amount"],
         );
-      }).toList(),
-    );
-  }
-
-  Widget _buildExpensesList() {
-    List<ExpenseData> filteredExpenses = currentExpenses;
-
-    // Apply search filter
-    if (searchController.text.isNotEmpty) {
-      filteredExpenses = currentExpenses
-          .where(
-            (expense) => expense.category.toLowerCase().contains(
-              searchController.text.toLowerCase(),
-            ),
-          )
-          .toList();
-    }
-
-    return Column(
-      children: filteredExpenses
-          .map((expense) => _buildExpenseCard(expense))
-          .toList(),
-    );
-  }
-
-  Widget _buildExpenseCard(ExpenseData expense) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: expense.color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(expense.icon, color: expense.color, size: 20),
+        return Container(
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(16),
           ),
-          SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              expense.category,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          child: Column(
             children: [
-              Text(
-                '৳${expense.amount.toStringAsFixed(2)}',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              SizedBox(height: 2),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${expense.percentage}%',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: expense.isIncreasing
-                          ? AppColors.error
-                          : AppColors.success,
-                      fontWeight: FontWeight.w600,
-                    ),
+
+              SizedBox(
+                height: 200,
+                child: PieChart(
+                  PieChartData(
+                    sections:provider.filterCategories.map((category) {
+                      double percentage = (category["amount"] / total) * 100;
+                      return PieChartSectionData(
+                        color: Color(category["color"]),
+                        value: percentage,
+                        title: '${percentage.toStringAsFixed(0)}%',
+                        radius: 60,
+                        titleStyle: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      );
+                    }).toList(),
+                    sectionsSpace: 2,
+                    centerSpaceRadius: 20,
                   ),
-                  SizedBox(width: 4),
-                  Icon(
-                    expense.isIncreasing
-                        ? Icons.arrow_upward
-                        : Icons.arrow_downward,
-                    color: expense.isIncreasing ? Colors.red : Colors.green,
-                    size: 12,
-                  ),
-                ],
+                ),
               ),
+              SizedBox(height: 20),
+              _buildChartLegend(),
             ],
           ),
-        ],
-      ),
+        );
+      }
     );
   }
+
+
+  Widget _buildChartLegend() {
+    return Consumer<HomeViewProvider>(
+      builder: (context,provider,child) {
+        final filteredTxns = provider.filterTransactions(provider.dwm);
+
+        return Align(
+          alignment: Alignment.centerLeft, // 👈 push whole wrap to right
+          child: Wrap(
+            alignment: WrapAlignment.start,   // 👈 items start from right
+            spacing: 16,
+            runSpacing: 8,
+            children: [
+
+            ...filteredTxns.map((expense) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.grey.withValues(alpha:0.1),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: Color(expense.iconBgColor),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        expense.categoryName,
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
+        );
+      }
+    );
+
+
+  }
+
+
 }

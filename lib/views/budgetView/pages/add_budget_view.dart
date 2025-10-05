@@ -30,7 +30,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
   DateTime? _startDate;
   DateTime? _endDate;
 
-  final List<CategoryBudget> _selectedCategories = [];
+  final List<BudgetCategoryModel> _selectedCategories = [];
   String? _currentCategory;
   final _categoryAmountController = TextEditingController();
 
@@ -76,9 +76,9 @@ class _AddBudgetViewState extends State<AddBudgetView> {
 
     setState(() {
       _selectedCategories.add(
-        CategoryBudget(
-          category: _currentCategory!,
-          amount: double.parse(amount),
+        BudgetCategoryModel(
+          categoryName: _currentCategory!,
+          allocatedAmount: int.parse(amount),
         ),
       );
       _currentCategory = null;
@@ -336,18 +336,18 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                   ),
                   child: Row(
                     children: [
-                      _getCategoryIcon(categoryBudget.category),
+                      _getCategoryIcon(categoryBudget.categoryName),
                       SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              categoryBudget.category,
+                              categoryBudget.categoryName,
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                             Text(
-                              '৳${categoryBudget.amount.toStringAsFixed(2)}',
+                              '৳${categoryBudget.allocatedAmount.toStringAsFixed(2)}',
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                           ],
@@ -362,7 +362,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                           setState(() {
                             _selectedCategories.removeWhere(
                               (item) =>
-                                  item.category == categoryBudget.category,
+                                  item.categoryName == categoryBudget.categoryName,
                             );
                           });
                         },
@@ -398,7 +398,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                 items: _categories
                     .where(
                       (category) => !_selectedCategories.any(
-                        (selected) => selected.category == category,
+                        (selected) => selected.categoryName == category,
                       ),
                     )
                     .map((category) {
@@ -755,11 +755,11 @@ class _AddBudgetViewState extends State<AddBudgetView> {
       final budget = {
         'title': _titleController.text.trim(),
         'categories': _selectedCategories
-            .map((cat) => {'category': cat.category, 'amount': cat.amount})
+            .map((cat) => {'category': cat.categoryName, 'amount': cat.allocatedAmount})
             .toList(),
         'totalAmount': _selectedCategories.fold(
           0.0,
-          (sum, cat) => sum + cat.amount,
+          (sum, cat) => sum + cat.allocatedAmount,
         ),
         'startDate': _startDate,
         'endDate': _endDate,
@@ -782,23 +782,12 @@ class _AddBudgetViewState extends State<AddBudgetView> {
       // Create budget
       final budgetId = await context.read<BudgetProvider>().addBudget(
         BudgetModel(
-          title: "October Budget",
-          totalAmount: 1000,
-          startDate: DateTime(2025, 10, 1),
-          endDate: DateTime(2025, 10, 31),
+          title: _titleController.text.trim(),
+          totalAmount: int.parse(_amountController.text),
+          startDate: _startDate!,
+          endDate: _endDate!,
         ),
-        [
-          BudgetCategoryModel(
-            budgetId: 0, // will be replaced inside provider
-            categoryName: "Food",
-            allocatedAmount: 400,
-          ),
-          BudgetCategoryModel(
-            budgetId: 0,
-            categoryName: "Transport",
-            allocatedAmount: 200,
-          ),
-        ],
+          _selectedCategories
       );
 
       print("Budget: ${context.read<BudgetProvider>().budgets}");

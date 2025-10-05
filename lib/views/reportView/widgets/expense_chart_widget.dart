@@ -1,4 +1,5 @@
 import 'package:finance_manager_app/models/expense_category_model.dart';
+import 'package:finance_manager_app/providers/report_provider.dart';
 import 'package:finance_manager_app/views/reportView/pages/expenses_view.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -8,15 +9,24 @@ import 'package:provider/provider.dart';
 import '../../../config/myColors/app_colors.dart';
 import '../../../providers/theme_provider.dart';
 
-class ExpenseChartWidget extends StatelessWidget {
-  List<ExpenseCategoryModel> expenseCategories;
-  ExpenseChartWidget({super.key, required this.expenseCategories});
+class ExpenseChartWidget extends StatefulWidget {
+  ExpenseChartWidget({super.key, });
 
   @override
+  State<ExpenseChartWidget> createState() => _ExpenseChartWidgetState();
+}
+
+class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
+  @override
+  void initState() {
+    context.read<ReportProvider>().filterCategoryFunction();
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    double total = expenseCategories.fold(
+    double total = context.watch<ReportProvider>().filterCategories.fold(
       0,
-      (sum, category) => sum + category.amount,
+      (sum, category) => sum + category["amount"],
     );
 
     return GestureDetector(
@@ -43,10 +53,10 @@ class ExpenseChartWidget extends StatelessWidget {
                     height: 150,
                     child: PieChart(
                       PieChartData(
-                        sections: expenseCategories.map((category) {
-                          double percentage = (category.amount / total) * 100;
+                        sections:context.watch<ReportProvider>().filterCategories.map((category) {
+                          double percentage = (category["amount"] / total) * 100;
                           return PieChartSectionData(
-                            color: category.color,
+                            color: Color(category["color"]),
                             value: percentage,
                             title: '${percentage.toStringAsFixed(0)}%',
                             radius: 60,
@@ -68,30 +78,37 @@ class ExpenseChartWidget extends StatelessWidget {
                   flex: 1,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: expenseCategories.map((category) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 12,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                color: category.color,
-                                shape: BoxShape.circle,
+                    children: [
+                      ...context.watch<ReportProvider>().filterCategories
+                          .take(5) // 👈 only first 5
+                          .map((category) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 12,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  color: Color(category["color"]),
+                                  shape: BoxShape.circle,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              category.name,
-                              style: Theme.of(context).textTheme.labelMedium,
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
+                              const SizedBox(width: 8),
+                              Text(
+                                category["categoryName"],
+                                style: Theme.of(context).textTheme.labelMedium,
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                      if (context.watch<ReportProvider>().filterCategories.length > 5)
+                        Text("see more...", style:Theme.of(context).textTheme.labelSmall),
+                    ],
                   ),
                 ),
+
               ],
             ),
           ],

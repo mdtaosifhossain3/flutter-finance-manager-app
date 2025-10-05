@@ -10,16 +10,48 @@ import 'category/expense_provider.dart';
 class ReportProvider extends ChangeNotifier {
   final AddExpenseProvider transactionProvider;
   ReportProvider({required this.transactionProvider});
-
+ String selectedPeriod = "Daily";
+ void setSelectedMonth(val){
+   selectedPeriod =val;
+   notifyListeners();
+ }
   final List<Map<String,dynamic>> montlydata= [];
   final List<Map<String,dynamic>> periodData= [];
+  final List<Map<String,dynamic>> filterCategories= [];
+
+  void filterCategoryFunction() {
+    filterCategories.clear();
+
+    final Map<String, Map<String, dynamic>> categoryTotals = {};
+
+    for (var elm in transactionProvider.expenseList) {
+      final name = elm.categoryName;
+      final color = elm.iconBgColor;
+      final amount = elm.amount;
+
+      if (categoryTotals.containsKey(name)) {
+        // Add to existing amount
+        categoryTotals[name]!["amount"] += amount;
+      } else {
+        // Create new category entry
+        categoryTotals[name] = {
+          "categoryName": name,
+          "color": color,
+          "amount": amount,
+        };
+      }
+    }
+
+    // convert map back to list
+    filterCategories.addAll(categoryTotals.values);
+  }
 
   void periodDatafunction() {
     periodData.clear(); // clear old data before adding new ones
 
     for (var i in montlydata) {
-      final int income = i["income"] ?? 0;
-      final int expenses = i["expenses"] ?? 0;
+      final double income = i["income"] ?? 0;
+      final double expenses = i["expenses"] ?? 0;
       final String month = i["months"] ?? "";
 
       double riskThreshold = 0.8; // 80% of income
@@ -28,31 +60,33 @@ class ReportProvider extends ChangeNotifier {
         // Overspending
         final amount = expenses - income;
         periodData.add({
-          "month": month,
-          "overspending": amount,
-          "risk": 0,
-          "within": 0,
+          "month": month.toString(),
+          "overspending": amount.toDouble(),
+          "risk": 0.0,
+          "within": 0.0,
         });
       } else if (expenses >= income * riskThreshold && expenses <= income) {
         // At Risk
         final amount = expenses; // can also store % of income if you want
         periodData.add({
-          "month": month,
-          "overspending": 0,
-          "risk": amount,
-          "within": 0,
+          "month": month.toString(),
+          "overspending": 0.0,
+          "risk": amount.toDouble(),
+          "within": 0.0,
         });
       } else {
         // Within
         final amount = income - expenses;
         periodData.add({
-          "month": month,
-          "overspending": 0,
-          "risk": 0,
-          "within": amount,
+          "month": month.toString(),
+          "overspending": 0.0,
+          "risk": 0.0,
+          "within": amount.toDouble(),
         });
       }
     }
+
+
 
   }
 
@@ -75,12 +109,15 @@ class ReportProvider extends ChangeNotifier {
     };
   }
   void getMonthlyTotals() {
-    montlydata.clear(); // reset old values
+    montlydata.clear();
     final now = DateTime.now();
 
-    for (int month = 1; month <= 12; month++) {
-      final startOfMonth = DateTime(now.year, month, 1);
-      final endOfMonth = DateTime(now.year, month + 1, 0);
+    // Get last 6 months including current
+    for (int i = 5; i >= 0; i--) {
+      final date = DateTime(now.year, now.month - i, 1);
+
+      final startOfMonth = DateTime(date.year, date.month, 1);
+      final endOfMonth = DateTime(date.year, date.month + 1, 0);
 
       final monthTxns = transactionProvider.expenseList.where((tx) {
         return tx.date.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
@@ -91,8 +128,8 @@ class ReportProvider extends ChangeNotifier {
       montlydata.add(calculateTotals(monthTxns, monthName));
     }
 
-    notifyListeners();
   }
+
   double getMaxY() {
     if (montlydata.isEmpty) return 1000; // fallback
 
@@ -108,5 +145,50 @@ class ReportProvider extends ChangeNotifier {
     // Add some padding (20%)
     return maxValue + (maxValue * 0.2);
   }
+
+  double getMaxYof6DayPeriod() {
+    if (periodData.isEmpty) return 1000; // fallback
+
+    double maxValue = 0;
+    for (var month in periodData) {
+      double within = (month["within"] as num).toDouble();
+      double overspending = (month["overspending"] as num).toDouble();
+      double risk = (month["risk"] as num).toDouble();
+
+      // pick the largest among them
+      if (within > maxValue) maxValue = within;
+      if (overspending > maxValue) maxValue = overspending;
+      if (risk > maxValue) maxValue = risk;
+    }
+
+    // Add padding (20%)
+    return maxValue + (maxValue * 0.2);
+  }
+
+  Map<String, double> getCurrentMonthTotals() {
+    double totalExpense = 0;
+    double totalIncome = 0;
+
+    final now = DateTime.now();
+    final startOfMonth = DateTime(now.year, now.month, 1);
+    final endOfMonth = DateTime(now.year, now.month + 1, 0);
+
+    for (var tx in transactionProvider.expenseList) {
+      if (tx.date.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
+          tx.date.isBefore(endOfMonth.add(const Duration(days: 1)))) {
+        if (tx.type == TransactionType.expense) {
+          totalExpense += tx.amount;
+        } else {
+          totalIncome += tx.amount;
+        }
+      }
+    }
+
+    return {
+      "expense": totalExpense,
+      "income": totalIncome,
+    };
+  }
+
 
 }

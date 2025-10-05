@@ -7,6 +7,24 @@ import '../models/tempm/categoryModel/transaction_model.dart';
 
 class HomeViewProvider extends  ChangeNotifier{
   String selectedPeriod = 'Monthly';
+  String _searchQuery = "";
+  String get searchQuery => _searchQuery;
+  void setSearchQuery(String query) {
+    _searchQuery = query.toLowerCase();
+    notifyListeners();
+  }
+
+  List<TransactionModel> get filteredTransactions {
+    final periodFiltered = filterTransactions(dwm);
+
+    if (_searchQuery.isEmpty) return periodFiltered;
+
+    return periodFiltered.where((tx) {
+      return tx.categoryName.toLowerCase().contains(_searchQuery) ||
+          tx.amount.toString().contains(_searchQuery);
+    }).toList();
+  }
+
   String dwm = "W";
   void setDWM(val) {
     dwm = val;

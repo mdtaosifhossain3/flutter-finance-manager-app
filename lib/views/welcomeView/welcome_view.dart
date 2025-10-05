@@ -109,7 +109,7 @@ class _WelcomeScreenState extends State<WelcomeView>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
 
-              _buildIllustrationSection(),
+             _buildIllustrationSection(),
               _buildContentSection(),
               Padding(
                 padding: EdgeInsets.fromLTRB(24, 0, 24, 40),
@@ -127,301 +127,7 @@ class _WelcomeScreenState extends State<WelcomeView>
     return Center(
       child: ScaleTransition(
         scale: _illustrationAnimation,
-        child: Container(
-          height: 300,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Background card/surface
-              Container(
-                width: MediaQuery.of(context).size.width * .92,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFF2A2A2A),
-                      Color(0xFF232323),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(32),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.25),
-                      blurRadius: 32,
-                      offset: Offset(0, 16),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Payment terminal
-              Positioned(
-                left: 32,
-                child: Container(
-                  width: 90,
-                  height: 130,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.primaryBlue,
-                        AppColors.primaryPurple,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xFF4CAF50).withOpacity(0.25),
-                        blurRadius: 16,
-                        offset: Offset(-2, 8),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      // Screen
-                      Container(
-                        margin: EdgeInsets.all(8),
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: Color(0xFF1A1A1A),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: 22,
-                            height: 22,
-                            decoration: BoxDecoration(
-                              color: Color(0xFF4CAF50),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.check,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                          ),
-                        ),
-                      ),
-                      // Receipt
-                      Container(
-                        width: 54,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(8),
-                            bottomRight: Radius.circular(8),
-                          ),
-                        ),
-                        child: Column(
-                          children: List.generate(3, (i) {
-                            return Container(
-                              margin: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              height: 2,
-                              decoration: BoxDecoration(
-                                color: i == 1 ? Colors.grey[400] : Colors.grey[300],
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            );
-                          }),
-                        ),
-                      ),
-                      // Keypad
-                      Expanded(
-                        child: Container(
-                          margin: EdgeInsets.all(8),
-                          child: GridView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 3,
-                              mainAxisSpacing: 3,
-                            ),
-                            itemCount: 9,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF66BB6A),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Hand holding card
-              Positioned(
-                right: 24,
-                child: Container(
-                  width: 110,
-                  height: 90,
-                  child: Stack(
-                    children: [
-                      // Hand
-                      Positioned(
-                        bottom: 0,
-                        left: 24,
-                        child: Container(
-                          width: 62,
-                          height: 54,
-                          decoration: BoxDecoration(
-                            color: Color(0xFFFFCC80),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(24),
-                              topRight: Radius.circular(12),
-                              bottomLeft: Radius.circular(18),
-                              bottomRight: Radius.circular(18),
-                            ),
-                          ),
-                        ),
-                      ),
-                      // Sleeve
-                      Positioned(
-                        bottom: 0,
-                        left: 18,
-                        child: Container(
-                          width: 32,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF4CAF50),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                      // Card
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: Container(
-                          width: 64,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Color(0xFF4CAF50),
-                                Color(0xFF81C784),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0xFF4CAF50).withOpacity(0.35),
-                                blurRadius: 12,
-                                offset: Offset(2, 6),
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                left: 8,
-                                top: 8,
-                                child: Container(
-                                  width: 14,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFFFFEB3B),
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                right: 8,
-                                bottom: 8,
-                                child: Container(
-                                  width: 22,
-                                  height: 14,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.95),
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                  child: Center(
-                                    child: Container(
-                                      width: 14,
-                                      height: 10,
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFF2E7D32),
-                                        borderRadius: BorderRadius.circular(2),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Floating elements with blur
-              Positioned(
-                top: 36,
-                right: 68,
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF4CAF50).withOpacity(0.8),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xFF4CAF50).withOpacity(0.4),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 56,
-                right: 44,
-                child: Container(
-                  width: 16,
-                  height: 3,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF4CAF50).withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xFF4CAF50).withOpacity(0.3),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 36,
-                right: 148,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF81C784).withOpacity(0.8),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xFF81C784).withOpacity(0.3),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        child: Image.asset("assets/images/welcome_image.png",width: 350,),
       ),
     );
   }
@@ -432,13 +138,13 @@ class _WelcomeScreenState extends State<WelcomeView>
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Easy way to\nManage your\nMoney',
+                'Easy way to\nManage your Money',
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
@@ -446,7 +152,7 @@ class _WelcomeScreenState extends State<WelcomeView>
                 )
               ),
 
-              SizedBox(height: 20),
+              SizedBox(height: 5),
 
               Text(
                 'Organize your spending, plan your savings, and stay stress-free.',

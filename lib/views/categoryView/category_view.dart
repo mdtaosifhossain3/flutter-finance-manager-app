@@ -265,7 +265,7 @@ class _CategorySelectionPageState extends State<CategoryView>
         child: Column(
           children: [
             _buildTabButtons(),
-            weekmonthday(),
+         //   weekmonthday(),
             Expanded(child: _buildCategoryGrid()),
             //_buildAddButton(),
             SizedBox(height: 60),

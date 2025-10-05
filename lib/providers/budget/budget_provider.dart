@@ -37,6 +37,8 @@ class BudgetProvider with ChangeNotifier {
           budgetId: budgetId,
           categoryName: cat.categoryName,
           allocatedAmount: cat.allocatedAmount,
+          spent: cat.spent ?? 0,
+         //   color: cat.color
         ),
       );
     }
@@ -50,6 +52,75 @@ class BudgetProvider with ChangeNotifier {
     await _dbHelper.insertBudgetCategory(category);
     await loadBudgets();
   }
+
+  Future<void> addToCategorySpent(int categoryId, int amountToAdd) async {
+    final success = await _dbHelper.addToCategorySpent(
+      categoryId: categoryId,
+      amountToAdd: amountToAdd,
+    );
+
+    if (success) {
+      // update local data immediately
+      for (var budgetId in _categoriesByBudget.keys) {
+        final categories = _categoriesByBudget[budgetId];
+        if (categories != null) {
+          final index = categories.indexWhere((c) => c.id == categoryId);
+          if (index != -1) {
+            final old = categories[index];
+            categories[index] =
+                old.copyWith(spent: old.spent + amountToAdd); // ✅ update local
+            break;
+          }
+        }
+      }
+
+      notifyListeners(); // ✅ tell UI to rebuild
+    }
+  }
+
+
+  Future<void> subtractFromCategorySpent(int categoryId, int amountToSubtract) async {
+    final success = await _dbHelper.subtractFromCategorySpent(
+      categoryId: categoryId,
+      amountToSubtract: amountToSubtract,
+    );
+
+    if (success) {
+      for (var budgetId in _categoriesByBudget.keys) {
+        final categories = _categoriesByBudget[budgetId];
+        if (categories != null) {
+          final index = categories.indexWhere((c) => c.id == categoryId);
+          if (index != -1) {
+            final old = categories[index];
+            final newSpent = (old.spent - amountToSubtract).clamp(0, double.infinity).toInt();
+            categories[index] = old.copyWith(spent: newSpent); // ✅ update local
+            break;
+          }
+        }
+      }
+
+      notifyListeners(); // ✅ refresh UI
+    }
+  }
+
+
+  Future<void> deleteCategory(int categoryId) async {
+    final deleted = await _dbHelper.deleteCategory(categoryId);
+
+    if (deleted > 0) {
+      for (var budgetId in _categoriesByBudget.keys) {
+        final categories = _categoriesByBudget[budgetId];
+        if (categories != null) {
+          categories.removeWhere((c) => c.id == categoryId); // ✅ remove from memory
+        }
+      }
+
+      notifyListeners(); // ✅ rebuild UI instantly
+    }
+  }
+
+
+
 
   /// Delete budget (cascade removes categories)
   Future<void> deleteBudget(int budgetId) async {

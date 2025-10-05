@@ -7,13 +7,19 @@ import 'package:provider/provider.dart';
 import '../../../config/myColors/app_colors.dart';
 import '../../../providers/report_provider.dart';
 
-class LastFiveDaysPeriodChartWidget extends StatelessWidget {
+class LastFiveDaysPeriodChartWidget extends StatefulWidget {
   const LastFiveDaysPeriodChartWidget({super.key});
+
+  @override
+  State<LastFiveDaysPeriodChartWidget> createState() => _LastFiveDaysPeriodChartWidgetState();
+}
+
+class _LastFiveDaysPeriodChartWidgetState extends State<LastFiveDaysPeriodChartWidget> {
 
   @override
   Widget build(BuildContext context) {
     final periodData = context.watch<ReportProvider>().periodData;
-
+  print(periodData);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -31,8 +37,10 @@ class LastFiveDaysPeriodChartWidget extends StatelessWidget {
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
-                maxY: 2500,
-                barTouchData: BarTouchData(enabled: false),
+                maxY: context.watch<ReportProvider>().getMaxYof6DayPeriod(),
+                barTouchData: BarTouchData(enabled: true,
+                    touchTooltipData: BarTouchTooltipData(
+                  tooltipBgColor: Theme.of(context).colorScheme.surface,)),
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
@@ -74,7 +82,7 @@ class LastFiveDaysPeriodChartWidget extends StatelessWidget {
                 barGroups: periodData.asMap().entries.map((entry) {
                   final data = entry.value;
                   Color barColor = AppColors.secondaryBlue;
-                  double barValue = data["within"];
+                  double  barValue = data["within"];
 
                   if (data["overspending"] > 0) {
                     barColor = AppColors.warning;
