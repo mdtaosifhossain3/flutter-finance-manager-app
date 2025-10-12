@@ -1,22 +1,22 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
-import 'package:finance_manager_app/models/expense_data_model.dart';
-import 'package:finance_manager_app/providers/report_provider.dart';
+import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
+import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import '../../../globalWidgets/card_widget.dart';
-import '../../../providers/home_provider.dart';
+import '../../../providers/homeProvider/home_provider.dart';
 
-class ExpensesScreen extends StatefulWidget {
-  const ExpensesScreen({super.key});
+class ExpensesView extends StatefulWidget {
+  const ExpensesView({super.key});
   @override
-  _ExpensesScreenState createState() => _ExpensesScreenState();
+  State<ExpensesView> createState() => _ExpensesScreenState();
 }
 
-class _ExpensesScreenState extends State<ExpensesScreen> {
+class _ExpensesScreenState extends State<ExpensesView> {
   final TextEditingController searchController = TextEditingController();
 
   @override
@@ -25,22 +25,27 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar(title: "Expenses"),
+      appBar: customAppBar(title: "expensesTitle".tr,leading: Padding(
+        padding: const EdgeInsets.only(left:10.0),
+        child: IconButton(onPressed: (){
+          Get.back();
+        }, icon: Icon(Icons.arrow_back)),
+      )),
       body: Column(
         children: [
           _buildSearchBar(),
           _buildPeriodTabs(),
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.04,
+              ),
               child: Column(
                 children: [
-                 _buildDonutChart(),
+                  _buildDonutChart(),
 
                   SizedBox(height: 24),
                   Consumer<HomeViewProvider>(
@@ -48,14 +53,14 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                       final filteredTxns = provider.filteredTransactions;
 
                       return filteredTxns.isEmpty
-                          ? const Text("No transactions yet")
+                          ?  Text("noTransactions".tr)
                           : Column(
-                        children: filteredTxns
-                            .map((tx) => CardWidget(transaction: tx))
-                            .toList(),
-                      );
+                              children: filteredTxns
+                                  .map((tx) => CardWidget(transaction: tx))
+                                  .toList(),
+                            );
                     },
-                  )
+                  ),
                 ],
               ),
             ),
@@ -82,11 +87,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             controller: searchController,
             style: Theme.of(context).textTheme.bodyLarge,
             decoration: InputDecoration(
-              hintText: 'Super AI search',
-              hintStyle: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: AppColors.textMuted),
+              hintText: 'search'.tr,
+              hintStyle: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
               prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -100,32 +104,29 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     );
   }
 
-
   Widget _buildPeriodTabs() {
-    final periods = ['Daily', 'Weekly', 'Monthly',];
+    final periods = ['periodDay'.tr, 'periodWeek'.tr, 'periodMonth'.tr];
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
+      padding: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.04,
+      ),
       child: Row(
         children: periods.map((period) {
-          final isSelected = context.watch<ReportProvider>().selectedPeriod == period;
+          final isSelected =
+              context.watch<ReportProvider>().selectedPeriod == period;
           return Expanded(
             child: GestureDetector(
               onTap: () {
                 //  selectedPeriod = period;
-                  context.read<ReportProvider>().setSelectedMonth(period);
-                  if(period =="Daily"){
-                    print("d");
-                    context.read<HomeViewProvider>().setDWM("d");
-                  } else if(period =="Weekly"){
-                    print("dw");
-                    context.read<HomeViewProvider>().setDWM("w");
-                  } else{
-                    print("dwm");
-                    context.read<HomeViewProvider>().setDWM("m");
-
-                  }
-
+                context.read<ReportProvider>().setSelectedMonth(period);
+                if (period == "periodDay".tr) {
+                  context.read<HomeViewProvider>().setDWM("periodDay".tr);
+                } else if (period == "periodWeek".tr) {
+                  context.read<HomeViewProvider>().setDWM("periodWeek".tr);
+                } else {
+                  context.read<HomeViewProvider>().setDWM("periodMonth".tr);
+                }
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 12),
@@ -160,12 +161,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   }
 
   Widget _buildDonutChart() {
-
     return Consumer<ReportProvider>(
-      builder: (context,provider,child) {
+      builder: (context, provider, child) {
         double total = provider.filterCategories.fold(
           0,
-              (sum, category) => sum + category["amount"],
+          (sum, category) => sum + category["amount"],
         );
         return Container(
           padding: EdgeInsets.all(20),
@@ -175,17 +175,17 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           ),
           child: Column(
             children: [
-
               SizedBox(
                 height: 200,
                 child: PieChart(
                   PieChartData(
-                    sections:provider.filterCategories.map((category) {
+                    sections: provider.filterCategories.map((category) {
                       double percentage = (category["amount"] / total) * 100;
+                      final a = HelperFunctions.convertToBanglaDigits(percentage.toStringAsFixed(0));
                       return PieChartSectionData(
                         color: Color(category["color"]),
                         value: percentage,
-                        title: '${percentage.toStringAsFixed(0)}%',
+                        title: '$a%',
                         radius: 60,
                         titleStyle: TextStyle(
                           fontSize: 12,
@@ -204,30 +204,31 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             ],
           ),
         );
-      }
+      },
     );
   }
 
-
   Widget _buildChartLegend() {
     return Consumer<HomeViewProvider>(
-      builder: (context,provider,child) {
+      builder: (context, provider, child) {
         final filteredTxns = provider.filterTransactions(provider.dwm);
 
         return Align(
           alignment: Alignment.centerLeft, // 👈 push whole wrap to right
           child: Wrap(
-            alignment: WrapAlignment.start,   // 👈 items start from right
+            alignment: WrapAlignment.start, // 👈 items start from right
             spacing: 16,
             runSpacing: 8,
             children: [
-
-            ...filteredTxns.map((expense) {
+              ...filteredTxns.map((expense) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: Colors.grey.withValues(alpha:0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -252,11 +253,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             ],
           ),
         );
-      }
+      },
     );
-
-
   }
-
-
 }

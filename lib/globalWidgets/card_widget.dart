@@ -1,10 +1,11 @@
-
-
+import 'package:finance_manager_app/providers/category/transaction_provider.dart';
+import 'package:finance_manager_app/views/categoryView/pages/transaction_form_view.dart';
 import 'package:flutter/material.dart';
-
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import '../config/enums/enums.dart';
 import '../config/myColors/app_colors.dart';
-import '../models/tempm/categoryModel/transaction_model.dart';
+import '../models/categoryModel/transaction_model.dart';
 import '../utils/helper_functions.dart';
 
 class CardWidget extends StatefulWidget {
@@ -19,7 +20,9 @@ class _CardWidgetState extends State<CardWidget> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){_showTransactionDetails(widget.transaction);},
+      onTap: () {
+        _showTransactionDetails(widget.transaction);
+      },
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
         padding: EdgeInsets.all(14),
@@ -34,11 +37,11 @@ class _CardWidgetState extends State<CardWidget> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                  color:Color(widget.transaction.iconBgColor),
-                  //  borderRadius: BorderRadius.circular(12),
-                  shape: BoxShape.circle
+                color: Color(widget.transaction.iconBgColor),
+                //  borderRadius: BorderRadius.circular(12),
+                shape: BoxShape.circle,
               ),
-              child: Icon(widget.transaction.icon,color: Colors.white,),
+              child: Icon(widget.transaction.icon, color: Colors.white),
             ),
 
             SizedBox(width: 16),
@@ -52,15 +55,21 @@ class _CardWidgetState extends State<CardWidget> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    HelperFunctions.getFormattedDateTime(widget.transaction.date),
+                    HelperFunctions.getFormattedDateTime(
+                      widget.transaction.date,
+                    ),
                     style: Theme.of(context).textTheme.labelSmall,
                   ),
                 ],
               ),
             ),
             Text(
-              '${widget.transaction.type == TransactionType.expense ?"-":""}৳${widget.transaction.amount}',
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: widget.transaction.type == TransactionType.expense ? AppColors.error:AppColors.lightTextMuted),
+              '${widget.transaction.type == TransactionType.expense ? "-" : ""}৳${HelperFunctions.convertToBanglaDigits(widget.transaction.amount.toString())}',
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                color: widget.transaction.type == TransactionType.expense
+                    ? AppColors.error
+                    : AppColors.lightTextMuted,
+              ),
             ),
           ],
         ),
@@ -71,6 +80,7 @@ class _CardWidgetState extends State<CardWidget> {
   void _showTransactionDetails(TransactionModel transaction) {
     showModalBottomSheet(
       context: context,
+
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
@@ -104,54 +114,70 @@ class _CardWidgetState extends State<CardWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                    'Transaction Details',
-                    style: Theme.of(context).textTheme.headlineSmall
+                  'transactionDetails'.tr,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                Row(children: [
-
-                  InkWell(
-                    onTap: (){},
-                    child: Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      Icons.edit,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      size: 20,
-                    ),
-                  ),),
-                  SizedBox(width: 10,),
-                  InkWell(
-                    onTap: (){},
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(8),
+                Row(
+                  children: [
+                    InkWell(
+                      onTap: () async {
+                        Get.to(
+                          TransactionFormPage(transactionModel: transaction),
+                          transition: Transition.rightToLeft,
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.edit,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          size: 20,
+                        ),
                       ),
-                      child: Icon(
-                        Icons.delete,
-                        color: Theme.of(context).colorScheme.error
-                        ,
-                        size: 20,
+                    ),
+                    SizedBox(width: 10),
+                    InkWell(
+                      onTap: () async {
+                        await context
+                            .read<AddExpenseProvider>()
+                            .deleteTransaction(transaction.id!);
+                        Get.back();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.delete,
+                          color: Theme.of(context).colorScheme.error,
+                          size: 20,
+                        ),
                       ),
-                    ),),
-
-                ],)
+                    ),
+                  ],
+                ),
               ],
             ),
             SizedBox(height: 20),
-            _buildDetailRow('Category', transaction.categoryName),
+            _buildDetailRow('category'.tr, transaction.categoryName),
 
-            _buildDetailRow('Title', transaction.title),
-            _buildDetailRow('Amount', '৳${transaction.amount.abs().toStringAsFixed(2)}'),
-            _buildDetailRow('Date', HelperFunctions.formatDate(transaction.date)),
+            _buildDetailRow('title'.tr, transaction.title),
+            _buildDetailRow(
+              'amount'.tr,
+              '৳ ${HelperFunctions.convertToBanglaDigits(transaction.amount.toString())}',
+            ),
+            _buildDetailRow(
+              'date'.tr,
+              HelperFunctions.getFormattedDateTime(transaction.date),
+            ),
             if (transaction.notes != null)
-              _buildDetailRow('Notes', transaction.notes!),
-
+              _buildDetailRow('notes'.tr, transaction.notes!),
           ],
         ),
       ),
@@ -166,16 +192,10 @@ class _CardWidgetState extends State<CardWidget> {
         children: [
           SizedBox(
             width: 80,
-            child: Text(
-                label,
-                style: Theme.of(context).textTheme.labelLarge
-            ),
+            child: Text(label, style: Theme.of(context).textTheme.labelLarge),
           ),
           Expanded(
-            child: Text(
-                value,
-                style: Theme.of(context).textTheme.bodyMedium
-            ),
+            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),

@@ -1,11 +1,7 @@
-import 'package:finance_manager_app/config/enums/enums.dart';
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/card_widget.dart';
-import 'package:finance_manager_app/models/tempm/categoryModel/transaction_model.dart';
-import 'package:finance_manager_app/providers/category/expense_provider.dart';
-import 'package:finance_manager_app/providers/home_provider.dart';
+import 'package:finance_manager_app/providers/homeProvider/home_provider.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
-import 'package:finance_manager_app/views/homeView/home_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -14,7 +10,7 @@ import 'dart:math' as math;
 import 'package:provider/provider.dart';
 
 import '../reportView/pages/expenses_view.dart';
-
+import 'home_view_model.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -26,7 +22,6 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   late AnimationController _progressController;
   late Animation<double> _progressAnimation;
-
 
   @override
   void initState() {
@@ -41,16 +36,21 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       _progressController.forward();
     });
   }
-@override
+
+  @override
   void didChangeDependencies() {
-  _updateProgressAnimation();
+    _updateProgressAnimation();
     super.didChangeDependencies();
   }
 
-
   void _updateProgressAnimation() {
     _progressAnimation =
-        Tween<double>(begin: 0.0, end: context.read<HomeViewProvider>().getTotals()["expenses"]! / context.read<HomeViewProvider>().getTotals()["income"]!).animate(
+        Tween<double>(
+          begin: 0.0,
+          end:
+              context.read<HomeViewProvider>().getTotals()["expenses"]! /
+              context.read<HomeViewProvider>().getTotals()["income"]!,
+        ).animate(
           CurvedAnimation(
             parent: _progressController,
             curve: Curves.easeInOutCubic,
@@ -61,7 +61,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   void _onPeriodChanged(String period) {
     if (context.read<HomeViewProvider>().dwm != period) {
       context.read<HomeViewProvider>().setDWM(period);
-
 
       // Reset and restart animation with new values
       _progressController.reset();
@@ -82,7 +81,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: SafeArea(
         child: Column(
           children: [
@@ -110,7 +108,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   Widget _buildHeader() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04, vertical: 10),
+      padding: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.04,
+        vertical: 10,
+      ),
 
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -118,10 +119,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(DateFormat('EEEE').format(DateTime.now()), style: Theme.of(context).textTheme.labelSmall),
               Text(
-                DateFormat('d MMMM').format(DateTime.now()),
-                textAlign: TextAlign.center,
+                HelperFunctions.getLocalizedDate().split(',')[0],
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+              Text(
+                HelperFunctions.getLocalizedDate().split(',')[1].trim(),                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ],
@@ -152,72 +155,79 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildExpensesChart() {
-    return Column(
-      children: [
-        SizedBox(
-          width: 280,
-          height: 280,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Background circle
-              Container(
-                width: 280,
-                height: 280,
-                decoration: BoxDecoration(shape: BoxShape.circle),
-              ),
-              // Animated progress circle
-              AnimatedBuilder(
-                animation: _progressAnimation,
-                builder: (context, child) {
-                  return CustomPaint(
-                    size: Size(280, 280),
-                    painter: CircularProgressPainter(
-                      progress: _progressAnimation.value,
-                      strokeWidth: 20,
-                      backgroundColor: Theme.of(context).dividerColor,
-                      segmentColors: [
-                        AppColors.primaryBlue,
-                        AppColors.success,
-                        AppColors.warning,
-                        AppColors.error,
-                      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(
+            width: 280,
+            height: 280,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Background circle
+                Container(
+                  width: 280,
+                  height: 280,
+                  decoration: BoxDecoration(shape: BoxShape.circle),
+                ),
+                // Animated progress circle
+                AnimatedBuilder(
+                  animation: _progressAnimation,
+                  builder: (context, child) {
+                    return CustomPaint(
+                      size: Size(280, 280),
+                      painter: CircularProgressPainter(
+                        progress: _progressAnimation.value,
+                        strokeWidth: 20,
+                        backgroundColor: Theme.of(context).dividerColor,
+                        segmentColors: [
+                          AppColors.primaryBlue,
+                          AppColors.success,
+                          AppColors.warning,
+                          AppColors.error,
+                        ],
+                      ),
+                    );
+                  },
+                ),
+      
+                // Center content
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'expensesTitle'.tr,
+                      style: Theme.of(context).textTheme.headlineMedium,
                     ),
-                  );
-                },
-              ),
+                    SizedBox(height: 8),
+                    Text(
+                      HelperFunctions.convertToBanglaDigits(context
+                          .watch<HomeViewProvider>()
+                          .getTotals()["expenses"]
+                          .toString(),),
 
-              // Center content
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Expenses',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    context.watch<HomeViewProvider>().getTotals()["expenses"].toString(),
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Out of ৳${ context.watch<HomeViewProvider>().getTotals()["income"].toString()}',
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                ],
-              ),
-            ],
+                      style: Theme.of(context).textTheme.headlineLarge,
+                    ),
+                    SizedBox(height: 4),
+                  
+                    Text(
+                      '${"outOfText".tr} ৳${HelperFunctions.convertToBanglaDigits(context.watch<HomeViewProvider>().getTotals()["income"].toString())}',
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-        SizedBox(height: 10),
-        _buildPeriodSelector(),
-      ],
+          SizedBox(height: 10),
+          _buildPeriodSelector(),
+        ],
+      ),
     );
   }
 
   Widget _buildPeriodSelector() {
-    final periods = ['D', 'W', 'M'];
+    final periods = ['periodDay'.tr, 'periodWeek'.tr, 'periodMonth'.tr];
 
     return Container(
       padding: EdgeInsets.all(4),
@@ -225,33 +235,37 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(25),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: periods.map((period) {
-          final isSelected = context.watch<HomeViewProvider>().dwm == period;
-          return GestureDetector(
-            onTap: () => _onPeriodChanged(period),
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.surface.withOpacity(isSelected ? .97 : 0.0),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                period,
-                style: isSelected
-                    ? Theme.of(context).textTheme.titleMedium
-                    : Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textMuted,
-                      ),
-              ),
-            ),
+      child: Consumer<HomeViewProvider>(
+        builder: (context,provider,child) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: periods.map((period) {
+              final isSelected = provider.dwm == period;
+              return GestureDetector(
+                onTap: () => _onPeriodChanged(period),
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surface.withValues(alpha: isSelected ? .97 : 0.0),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    period,
+                    style: isSelected
+                        ? Theme.of(context).textTheme.titleMedium
+                        : Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textMuted,
+                          ),
+                  ),
+                ),
+              );
+            }).toList(),
           );
-        }).toList(),
+        }
       ),
     );
   }
@@ -263,13 +277,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("History", style: Theme.of(context).textTheme.headlineSmall),
+            Text("historyTitle".tr, style: Theme.of(context).textTheme.headlineSmall),
             TextButton(
               onPressed: () {
-              Get.to(ExpensesScreen());
+                Get.to(ExpensesView());
               },
               child: Text(
-                "See All",
+                "seeAllButton".tr,
                 style: Theme.of(
                   context,
                 ).textTheme.labelMedium?.copyWith(color: AppColors.primaryBlue),
@@ -282,24 +296,26 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
         Consumer<HomeViewProvider>(
           builder: (context, provider, child) {
-
             final filteredTxns = provider.filterTransactions(provider.dwm);
 
-
-
             return filteredTxns.isEmpty
-                ? const Text("No transactions yet")
-                : Column(
-              children: filteredTxns.map((tx) => CardWidget(transaction: tx)).toList(),
-            );
-
+                ?  Text("noTransactions".tr)
+                : SizedBox(
+                  child: ListView.builder(
+                    reverse: true,
+                                itemCount: filteredTxns.length,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context,index){
+                    final tx = filteredTxns[index];
+                    return CardWidget(transaction:tx ,);
+                              }),
+                );
           },
-        )
+        ),
       ],
     );
   }
-
-
 }
 
 class CircularProgressPainter extends CustomPainter {
@@ -359,5 +375,3 @@ class CircularProgressPainter extends CustomPainter {
   bool shouldRepaint(CircularProgressPainter oldDelegate) =>
       oldDelegate.progress != progress;
 }
-
-

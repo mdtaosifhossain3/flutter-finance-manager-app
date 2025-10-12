@@ -1,15 +1,14 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/views/mainView/main_view.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
 import 'package:get/get.dart';
 
-
-
 class WelcomeView extends StatefulWidget {
+  const WelcomeView({super.key});
+
   @override
-  _WelcomeScreenState createState() => _WelcomeScreenState();
+  State<WelcomeView> createState() => _WelcomeScreenState();
 }
 
 class _WelcomeScreenState extends State<WelcomeView>
@@ -41,29 +40,21 @@ class _WelcomeScreenState extends State<WelcomeView>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
 
-    _slideAnimation = Tween<Offset>(
-      begin: Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
+    _slideAnimation = Tween<Offset>(begin: Offset(0, 0.3), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+        );
 
-    _illustrationAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _illustrationController,
-      curve: Curves.easeOutBack,
-    ));
+    _illustrationAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _illustrationController,
+        curve: Curves.easeOutBack,
+      ),
+    );
 
     // Start animations with delay
     Future.delayed(Duration(milliseconds: 300), () {
@@ -99,7 +90,6 @@ class _WelcomeScreenState extends State<WelcomeView>
               AppColors.darkMainBackground,
               AppColors.darkSecondaryBackground,
               AppColors.darkCardBackground,
-
             ],
             stops: [0.0, 0.7, 1.0],
           ),
@@ -108,8 +98,7 @@ class _WelcomeScreenState extends State<WelcomeView>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-
-             _buildIllustrationSection(),
+              _buildIllustrationSection(),
               _buildContentSection(),
               Padding(
                 padding: EdgeInsets.fromLTRB(24, 0, 24, 40),
@@ -122,12 +111,11 @@ class _WelcomeScreenState extends State<WelcomeView>
     );
   }
 
-
   Widget _buildIllustrationSection() {
     return Center(
       child: ScaleTransition(
         scale: _illustrationAnimation,
-        child: Image.asset("assets/images/welcome_image.png",width: 350,),
+        child: Image.asset("assets/images/welcome_image.png", width: 350),
       ),
     );
   }
@@ -138,25 +126,27 @@ class _WelcomeScreenState extends State<WelcomeView>
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
+          padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.04,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Easy way to\nManage your Money',
+                'welcomeViewTitle'.tr,
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary
-                )
+                  color: AppColors.textPrimary,
+                ),
               ),
 
               SizedBox(height: 5),
 
               Text(
-                'Organize your spending, plan your savings, and stay stress-free.',
-                style: TextStyle(fontSize: 16,color: AppColors.textSecondary)
+                'welcomeViewSubtitle'.tr,
+                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
               ),
             ],
           ),
@@ -178,7 +168,6 @@ class _WelcomeScreenState extends State<WelcomeView>
               height: 56,
               child: ElevatedButton(
                 onPressed: () {
-                  print('Get Started pressed');
                   Get.to(MainView());
                 },
                 style: ElevatedButton.styleFrom(
@@ -194,7 +183,7 @@ class _WelcomeScreenState extends State<WelcomeView>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Get Started',
+                      'welcomeViewButtonOne'.tr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -206,7 +195,7 @@ class _WelcomeScreenState extends State<WelcomeView>
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -228,13 +217,12 @@ class _WelcomeScreenState extends State<WelcomeView>
               height: 56,
               child: OutlinedButton(
                 onPressed: () {
-                  print('Preview Demo pressed');
                   Get.to(MainView());
                 },
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white.withOpacity(0.8),
+                  foregroundColor: Colors.white.withValues(alpha: 0.8),
                   side: BorderSide(
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                     width: 1.5,
                   ),
                   shape: RoundedRectangleBorder(
@@ -244,13 +232,10 @@ class _WelcomeScreenState extends State<WelcomeView>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.play_circle_outline,
-                      size: 22,
-                    ),
+                    Icon(Icons.play_circle_outline, size: 22),
                     SizedBox(width: 10),
                     Text(
-                      'Preview Demo',
+                      'welcomeViewButtonTwo'.tr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,

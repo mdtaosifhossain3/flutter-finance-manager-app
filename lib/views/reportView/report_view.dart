@@ -1,15 +1,14 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
+import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:finance_manager_app/views/reportView/widgets/expense_chart_widget.dart';
 import 'package:finance_manager_app/views/reportView/widgets/last_six_days_period_chart_widget.dart';
 import 'package:finance_manager_app/views/reportView/widgets/monthly_budget_chart_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/budget_data_model.dart';
-import '../../models/expense_category_model.dart';
-import '../../models/period_data_model.dart';
-import '../../providers/report_provider.dart';
+import '../../providers/reportProvider/report_provider.dart';
 
 class ReportView extends StatefulWidget {
   const ReportView({super.key});
@@ -17,8 +16,6 @@ class ReportView extends StatefulWidget {
   @override
   State<ReportView> createState() => _ReportViewState();
 }
-
-
 
 class _ReportViewState extends State<ReportView> {
   @override
@@ -31,21 +28,22 @@ class _ReportViewState extends State<ReportView> {
     reportProvider.filterCategoryFunction();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar(title: "Report"),
+      appBar: customAppBar(title: "reportTitle".tr),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 5),
+          padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.04,
+            vertical: 5,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildSpentIndicator(),
               SizedBox(height: 24),
-              ExpenseChartWidget( ),
+              ExpenseChartWidget(),
               SizedBox(height: 24),
               MonthlyBudgetChartWidget(),
               SizedBox(height: 24),
@@ -61,9 +59,10 @@ class _ReportViewState extends State<ReportView> {
   Widget _buildSpentIndicator() {
     final reportProvider = context.watch<ReportProvider>();
     final totals = reportProvider.getCurrentMonthTotals();
-   double expense = totals["expense"] ?? 0.0;
-   double income = totals["income"] ?? 0.0;
-    double percentage = 0.0;
+    int expense = totals["expense"] ?? 0;
+    int income = totals["income"] ?? 0;
+
+    double percentage = 0;
     if (income > 0 && expense > 0) {
       percentage = (expense / income) * 100;
     }
@@ -81,11 +80,11 @@ class _ReportViewState extends State<ReportView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Spent: ৳$expense / ৳$income',
+                '${"spent".tr}: ৳${HelperFunctions.convertToBanglaDigits(expense.toString())} / ৳${HelperFunctions.convertToBanglaDigits(income.toString())}',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               Text(
-                '$percentage%',
+                '${HelperFunctions.convertToBanglaDigits(percentage.round().toString())}%',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: percentage > 90
                       ? AppColors.error
@@ -98,7 +97,7 @@ class _ReportViewState extends State<ReportView> {
           ),
           SizedBox(height: 12),
           LinearProgressIndicator(
-            value:percentage,
+            value: percentage,
             backgroundColor: AppColors.darkSecondaryBackground,
             valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryBlue),
             minHeight: 8,

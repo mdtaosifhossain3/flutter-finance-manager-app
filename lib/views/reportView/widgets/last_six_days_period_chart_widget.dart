@@ -1,25 +1,25 @@
-import 'dart:ui';
-
+import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import '../../../config/myColors/app_colors.dart';
-import '../../../providers/report_provider.dart';
+import '../../../providers/reportProvider/report_provider.dart';
 
 class LastFiveDaysPeriodChartWidget extends StatefulWidget {
   const LastFiveDaysPeriodChartWidget({super.key});
 
   @override
-  State<LastFiveDaysPeriodChartWidget> createState() => _LastFiveDaysPeriodChartWidgetState();
+  State<LastFiveDaysPeriodChartWidget> createState() =>
+      _LastFiveDaysPeriodChartWidgetState();
 }
 
-class _LastFiveDaysPeriodChartWidgetState extends State<LastFiveDaysPeriodChartWidget> {
-
+class _LastFiveDaysPeriodChartWidgetState
+    extends State<LastFiveDaysPeriodChartWidget> {
   @override
   Widget build(BuildContext context) {
     final periodData = context.watch<ReportProvider>().periodData;
-  print(periodData);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -29,8 +29,10 @@ class _LastFiveDaysPeriodChartWidgetState extends State<LastFiveDaysPeriodChartW
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Last 6 periods',
-              style: Theme.of(context).textTheme.headlineSmall),
+          Text(
+            '6periods'.tr,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
           const SizedBox(height: 16),
           SizedBox(
             height: 200,
@@ -38,9 +40,12 @@ class _LastFiveDaysPeriodChartWidgetState extends State<LastFiveDaysPeriodChartW
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
                 maxY: context.watch<ReportProvider>().getMaxYof6DayPeriod(),
-                barTouchData: BarTouchData(enabled: true,
-                    touchTooltipData: BarTouchTooltipData(
-                  tooltipBgColor: Theme.of(context).colorScheme.surface,)),
+                barTouchData: BarTouchData(
+                  enabled: true,
+                  touchTooltipData: BarTouchTooltipData(
+                    tooltipBgColor: Theme.of(context).colorScheme.surface,
+                  ),
+                ),
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
@@ -48,7 +53,7 @@ class _LastFiveDaysPeriodChartWidgetState extends State<LastFiveDaysPeriodChartW
                       reservedSize: 50,
                       getTitlesWidget: (value, meta) {
                         return Text(
-                          '৳ ${value.toInt()}',
+                            '৳ ${HelperFunctions.recievedIntAndconvertToBanglaDigits(value.toInt())}',
                           style: Theme.of(context).textTheme.labelSmall,
                         );
                       },
@@ -60,7 +65,7 @@ class _LastFiveDaysPeriodChartWidgetState extends State<LastFiveDaysPeriodChartW
                       getTitlesWidget: (value, meta) {
                         if (value.toInt() < periodData.length) {
                           return Text(
-                            periodData[value.toInt()]["month"],
+                            HelperFunctions.getLocalizedMonth(periodData[value.toInt()]["month"]),
                             style: const TextStyle(
                               color: AppColors.textMuted,
                               fontSize: 12,
@@ -82,7 +87,7 @@ class _LastFiveDaysPeriodChartWidgetState extends State<LastFiveDaysPeriodChartW
                 barGroups: periodData.asMap().entries.map((entry) {
                   final data = entry.value;
                   Color barColor = AppColors.secondaryBlue;
-                  double  barValue = data["within"];
+                  double barValue = data["within"];
 
                   if (data["overspending"] > 0) {
                     barColor = AppColors.warning;
@@ -111,11 +116,11 @@ class _LastFiveDaysPeriodChartWidgetState extends State<LastFiveDaysPeriodChartW
           const SizedBox(height: 16),
           Row(
             children: [
-              _buildLegendItem('Within', AppColors.secondaryBlue),
+              _buildLegendItem('within'.tr, AppColors.secondaryBlue),
               const SizedBox(width: 15),
-              _buildLegendItem('Risk', AppColors.error),
+              _buildLegendItem('risk'.tr, AppColors.error),
               const SizedBox(width: 15),
-              _buildLegendItem('Overspending', AppColors.warning),
+              _buildLegendItem('overspending'.tr, AppColors.warning),
             ],
           ),
         ],

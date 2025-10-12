@@ -1,16 +1,13 @@
-import 'package:finance_manager_app/models/expense_category_model.dart';
-import 'package:finance_manager_app/providers/report_provider.dart';
+import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
 import 'package:finance_manager_app/views/reportView/pages/expenses_view.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-
 import '../../../config/myColors/app_colors.dart';
-import '../../../providers/theme_provider.dart';
 
 class ExpenseChartWidget extends StatefulWidget {
-  ExpenseChartWidget({super.key, });
+  const ExpenseChartWidget({super.key});
 
   @override
   State<ExpenseChartWidget> createState() => _ExpenseChartWidgetState();
@@ -22,6 +19,7 @@ class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
     context.read<ReportProvider>().filterCategoryFunction();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     double total = context.watch<ReportProvider>().filterCategories.fold(
@@ -32,7 +30,7 @@ class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
     return GestureDetector(
       onTap: () {
         // Handle tap event if needed
-        Get.to(() => ExpensesScreen());
+        Get.to(() => ExpensesView());
       },
       child: Container(
         padding: EdgeInsets.all(16),
@@ -43,7 +41,7 @@ class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Expenses', style: Theme.of(context).textTheme.headlineSmall),
+            Text('expensesTitle'.tr, style: Theme.of(context).textTheme.headlineSmall),
             SizedBox(height: 16),
             Row(
               children: [
@@ -53,20 +51,25 @@ class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
                     height: 150,
                     child: PieChart(
                       PieChartData(
-                        sections:context.watch<ReportProvider>().filterCategories.map((category) {
-                          double percentage = (category["amount"] / total) * 100;
-                          return PieChartSectionData(
-                            color: Color(category["color"]),
-                            value: percentage,
-                            title: '${percentage.toStringAsFixed(0)}%',
-                            radius: 60,
-                            titleStyle: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          );
-                        }).toList(),
+                        sections: context
+                            .watch<ReportProvider>()
+                            .filterCategories
+                            .map((category) {
+                              double percentage =
+                                  (category["amount"] / total) * 100;
+                              return PieChartSectionData(
+                                color: Color(category["color"]),
+                                value: percentage,
+                                title: '${percentage.toStringAsFixed(0)}%',
+                                radius: 60,
+                                titleStyle: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              );
+                            })
+                            .toList(),
                         sectionsSpace: 2,
                         centerSpaceRadius: 20,
                       ),
@@ -79,36 +82,46 @@ class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ...context.watch<ReportProvider>().filterCategories
+                      ...context
+                          .watch<ReportProvider>()
+                          .filterCategories
                           .take(5) // 👈 only first 5
                           .map((category) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 12,
-                                height: 12,
-                                decoration: BoxDecoration(
-                                  color: Color(category["color"]),
-                                  shape: BoxShape.circle,
-                                ),
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 12,
+                                    height: 12,
+                                    decoration: BoxDecoration(
+                                      color: Color(category["color"]),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    category["categoryName"],
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.labelMedium,
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                category["categoryName"],
-                                style: Theme.of(context).textTheme.labelMedium,
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
-                      if (context.watch<ReportProvider>().filterCategories.length > 5)
-                        Text("see more...", style:Theme.of(context).textTheme.labelSmall),
+                            );
+                          }),
+                      if (context
+                              .watch<ReportProvider>()
+                              .filterCategories
+                              .length >
+                          5)
+                        Text(
+                          "seeAllButton".tr,
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
                     ],
                   ),
                 ),
-
               ],
             ),
           ],

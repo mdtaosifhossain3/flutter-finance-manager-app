@@ -1,15 +1,19 @@
+import 'package:finance_manager_app/models/budgetModel/budget_category_model.dart';
+import 'package:finance_manager_app/models/budgetModel/budget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/myColors/app_colors.dart';
-import '../../../models/tempm/budgetModel/budget_category_model.dart';
-import '../../../models/tempm/budgetModel/budget_model.dart';
 import '../../../providers/budget/budget_provider.dart';
 import '../pages/budget_card_view.dart';
 
 class BudgetCardWidget extends StatelessWidget {
- final BudgetProvider provider;
- final BudgetModel budget;
-  const BudgetCardWidget({super.key,required this.budget,required this.provider});
+  final BudgetProvider provider;
+  final BudgetModel budget;
+  const BudgetCardWidget({
+    super.key,
+    required this.budget,
+    required this.provider,
+  });
   @override
   Widget build(BuildContext context) {
     // ✅ Collect categories by budgetId
@@ -17,13 +21,9 @@ class BudgetCardWidget extends StatelessWidget {
         provider.categoriesByBudget[budget.id] ?? [];
 
     // ✅ Sum spent from all categories
-    final int totalSpent = categories.fold(
-      0,
-          (sum, cat) => sum + (cat.spent),
-    );
+    final int totalSpent = categories.fold(0, (sum, cat) => sum + (cat.spent));
 
-    final double percentage =
-    (totalSpent / budget.totalAmount).clamp(0.0, 1.0);
+    final double percentage = (totalSpent / budget.totalAmount).clamp(0.0, 1.0);
 
     final bool isOverspent = totalSpent > budget.totalAmount;
     final int remaining = budget.totalAmount - totalSpent;
@@ -31,11 +31,15 @@ class BudgetCardWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         //percentage
-        Get.to(() => BudgetCardView(
-          budget: budget,
-          categories: categories,
-          remaining: remaining,
-          totalSpent: totalSpent,percentage:percentage));
+        Get.to(
+          () => BudgetCardView(
+            budget: budget,
+            categories: categories,
+            remaining: remaining,
+            totalSpent: totalSpent,
+            percentage: percentage,
+          ),
+        );
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
@@ -54,7 +58,7 @@ class BudgetCardWidget extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).shadowColor.withOpacity(0.2),
+              color: Theme.of(context).shadowColor.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -72,21 +76,25 @@ class BudgetCardWidget extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isOverspent
-                          ? AppColors.error.withOpacity(0.5)
-                          : AppColors.success.withOpacity(0.5),
+                          ? AppColors.error.withValues(alpha: 0.5)
+                          : AppColors.success.withValues(alpha: 0.5),
                     ),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         isOverspent ? Icons.trending_up : Icons.trending_down,
-                        color: isOverspent ? AppColors.error : AppColors.success,
+                        color: isOverspent
+                            ? AppColors.error
+                            : AppColors.success,
                         size: 16,
                       ),
                       const SizedBox(width: 4),
@@ -142,9 +150,14 @@ class BudgetCardWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: isOverspent
-                          ? [AppColors.error.withOpacity(0.7), AppColors.error]
-                          : [AppColors.success.withOpacity(0.7),
-                        AppColors.success],
+                          ? [
+                              AppColors.error.withValues(alpha: 0.7),
+                              AppColors.error,
+                            ]
+                          : [
+                              AppColors.success.withValues(alpha: 0.7),
+                              AppColors.success,
+                            ],
                     ),
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -154,50 +167,55 @@ class BudgetCardWidget extends StatelessWidget {
             const SizedBox(height: 12),
 
             // Message
-            totalSpent ==0 ? SizedBox.shrink() : Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isOverspent
-                    ? AppColors.error.withOpacity(0.1)
-                    : AppColors.success.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: isOverspent
-                      ? AppColors.error.withOpacity(0.3)
-                      : AppColors.success.withOpacity(0.3),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    isOverspent
-                        ? Icons.warning_rounded
-                        : Icons.check_circle_rounded,
-                    color: isOverspent ? AppColors.error : AppColors.success,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                    isOverspent
-                          ? 'You\'ve exceeded your budget. Consider reducing spending.'
-                          : percentage > 0.8
-                          ? 'You\'re close to your budget limit. Spend carefully.'
-                          : 'You\'re doing great! Keep it up.',
-                      style: TextStyle(
+            totalSpent == 0
+                ? SizedBox.shrink()
+                : Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isOverspent
+                          ? AppColors.error.withValues(alpha: 0.1)
+                          : AppColors.success.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
                         color: isOverspent
-                            ? AppColors.error
-                            : AppColors.success,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                            ? AppColors.error.withValues(alpha: 0.3)
+                            : AppColors.success.withValues(alpha: 0.3),
                       ),
                     ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          isOverspent
+                              ? Icons.warning_rounded
+                              : Icons.check_circle_rounded,
+                          color: isOverspent
+                              ? AppColors.error
+                              : AppColors.success,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            isOverspent
+                                ? 'You\'ve exceeded your budget. Consider reducing spending.'
+                                : percentage > 0.8
+                                ? 'You\'re close to your budget limit. Spend carefully.'
+                                : 'You\'re doing great! Keep it up.',
+                            style: TextStyle(
+                              color: isOverspent
+                                  ? AppColors.error
+                                  : AppColors.success,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            )
           ],
         ),
       ),
-    );  }
+    );
+  }
 }

@@ -43,6 +43,18 @@ class TransactionModel {
       'iconBgColor': iconBgColor,
     };
   }
+  Map<String, dynamic> toMapForUpdate() => {
+    'type': type == TransactionType.expense ? 1 : 0,
+    'date': date.toIso8601String(),
+    'title': title,
+    'categoryName': categoryName,
+    'amount': amount,
+    'notes': notes,
+    'paymentMethod': paymentMethod,
+    'iconCodePoint': icon.codePoint,
+    'iconFontFamily': icon.fontFamily,
+    'iconBgColor': iconBgColor,
+  };
 
   // Create from Map (SQLite row)
   factory TransactionModel.fromMap(Map<String, dynamic> map) {

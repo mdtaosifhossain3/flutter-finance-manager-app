@@ -1,11 +1,14 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
-import 'package:finance_manager_app/models/tempm/budgetModel/budget_category_model.dart';
-import 'package:finance_manager_app/models/tempm/budgetModel/budget_model.dart';
+import 'package:finance_manager_app/models/budgetModel/budget_category_model.dart';
+import 'package:finance_manager_app/models/budgetModel/budget_model.dart';
 import 'package:finance_manager_app/providers/budget/budget_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+
+import '../../../data/budget/budget_categories.dart';
 
 class AddBudgetView extends StatefulWidget {
   const AddBudgetView({super.key});
@@ -34,24 +37,11 @@ class _AddBudgetViewState extends State<AddBudgetView> {
   String? _currentCategory;
   final _categoryAmountController = TextEditingController();
 
-  final List<String> _categories = [
-    'Groceries',
-    'Transportation Transportation',
-    'Entertainment',
-    'Utilities',
-    'Dining Out',
-    'Shopping',
-    'Healthcare',
-    'Education',
-    'Travel',
-    'Insurance',
-    'Savings',
-    'Investment',
-    'Other',
-  ];
+
 
   void _addCategory() {
-    if (_currentCategory == null || _currentCategory!.isEmpty) {
+
+    if (_currentCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Please select a category'),
@@ -86,6 +76,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
     });
   }
 
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -98,7 +89,12 @@ class _AddBudgetViewState extends State<AddBudgetView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar(title: "Create Budget"),
+      appBar: customAppBar(title: "Create Budget",leading: Padding(
+        padding: const EdgeInsets.only(left:10.0),
+        child: IconButton(onPressed: (){
+          Get.back();
+        }, icon: Icon(Icons.arrow_back)),
+      )),
       body: Form(
         key: _formKey,
         child: Column(
@@ -143,7 +139,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
+            color: Colors.blue.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
@@ -154,7 +150,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -180,7 +176,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                 Text(
                   'Set spending limits and track your expenses',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 14,
                   ),
                 ),
@@ -362,7 +358,8 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                           setState(() {
                             _selectedCategories.removeWhere(
                               (item) =>
-                                  item.categoryName == categoryBudget.categoryName,
+                                  item.categoryName ==
+                                  categoryBudget.categoryName,
                             );
                           });
                         },
@@ -395,7 +392,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                     vertical: 16,
                   ),
                 ),
-                items: _categories
+                items: categories
                     .where(
                       (category) => !_selectedCategories.any(
                         (selected) => selected.categoryName == category,
@@ -412,7 +409,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                               child: Text(
                                 category,
                                 maxLines: 1,
-                                  overflow: TextOverflow.ellipsis
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
@@ -540,7 +537,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
         color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: Offset(0, -2),
           ),
@@ -718,6 +715,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
     // Validate dates separately since they're not TextFormFields
     bool datesValid = true;
 
+
     if (_startDate == null) {
       datesValid = false;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -755,7 +753,12 @@ class _AddBudgetViewState extends State<AddBudgetView> {
       final budget = {
         'title': _titleController.text.trim(),
         'categories': _selectedCategories
-            .map((cat) => {'category': cat.categoryName, 'amount': cat.allocatedAmount})
+            .map(
+              (cat) => {
+                'category': cat.categoryName,
+                'amount': cat.allocatedAmount,
+              },
+            )
             .toList(),
         'totalAmount': _selectedCategories.fold(
           0.0,
@@ -767,18 +770,6 @@ class _AddBudgetViewState extends State<AddBudgetView> {
         'createdAt': DateTime.now(),
       };
 
-      BudgetModel budgetData = BudgetModel(
-          title: _titleController.text.trim(),
-          totalAmount: int.parse(_amountController.text),
-          startDate: _startDate!,
-          endDate: _endDate!
-      );
-      // BudgetCategoryModel budgetCategoryModel = BudgetCategoryModel(
-      //     budgetId: 0,
-      //     categoryName: categoryName,
-      //     allocatedAmount: allocatedAmount
-      // );
-
       // Create budget
       final budgetId = await context.read<BudgetProvider>().addBudget(
         BudgetModel(
@@ -787,10 +778,9 @@ class _AddBudgetViewState extends State<AddBudgetView> {
           startDate: _startDate!,
           endDate: _endDate!,
         ),
-          _selectedCategories
+        _selectedCategories,
       );
 
-      print("Budget: ${context.read<BudgetProvider>().budgets}");
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

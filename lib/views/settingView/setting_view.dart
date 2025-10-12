@@ -1,15 +1,16 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
-import 'package:finance_manager_app/providers/language_translator_provider.dart';
+import 'package:finance_manager_app/providers/languageProvider/language_translator_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
-import 'package:finance_manager_app/views/UserprofileView/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
+
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
@@ -36,7 +37,75 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildProfileCard(),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(
+                              context,
+                            ).shadowColor.withValues(alpha: 0.1),
+                            blurRadius: 10,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            // User Avatar
+                            CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surface,
+                              child: Icon(
+                                Icons.person,
+                                size: 35,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            // User Info
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Taosif Hossain",
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleLarge,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.phone,
+                                        size: 16,
+                                        color: AppColors.textMuted,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        "01747211887",
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.labelMedium,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ), //  _buildProfileCard(),
                     SizedBox(height: 24),
                     _buildGeneralSettings(),
                     SizedBox(height: 24),
@@ -45,7 +114,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildPrivacySettings(),
                     SizedBox(height: 24),
                     _buildOtherSettings(),
-                    SizedBox(height: 60),
+                    SizedBox(height: 120),
                   ],
                 ),
               ),
@@ -56,63 +125,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildProfileCard() {
-    return GestureDetector(
-      onTap: () => Get.to(ProfileView()),
-      child: Container(
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Theme.of(context).dividerColor, width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).shadowColor.withOpacity(0.1),
-              blurRadius: 10,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: NetworkImage(
-                'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-              ),
-            ),
-            SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Daniel Travis',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    '+1 (555) 123-4567',
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: AppColors.textMuted,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            //   Icon(Icons.edit, color: Colors.grey[400], size: 20),
-            Icon(Icons.arrow_forward_ios, color: AppColors.textMuted, size: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildGeneralSettings() {
-    print(
-      'Building General Settings with theme: ${context.watch<ThemeProvider>().themeMode.toString().split('.').last.capitalize!}',
-    );
     return _buildSection('🔧 General App Settings', [
       _buildDropdownSetting(
         'App Theme',
@@ -124,9 +137,7 @@ class _SettingsPageState extends State<SettingsPage> {
             .last
             .capitalize!,
         ['Light', 'Dark', 'System'],
-        (value) => setState(() {
-          context.read<ThemeProvider>().setTheme(value!);
-        }),
+        (value) => context.read<ThemeProvider>().setTheme(value!),
       ),
       _buildDropdownSetting(
         'App Language',
@@ -261,7 +272,7 @@ class _SettingsPageState extends State<SettingsPage> {
             border: Border.all(color: Theme.of(context).dividerColor, width: 1),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).shadowColor.withOpacity(0.05),
+                color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: Offset(0, 2),
               ),

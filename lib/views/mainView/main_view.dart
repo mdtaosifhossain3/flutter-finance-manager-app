@@ -1,5 +1,4 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
-import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:finance_manager_app/views/budgetView/budget_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
 import 'package:finance_manager_app/views/reportView/report_view.dart';
@@ -7,7 +6,6 @@ import 'package:finance_manager_app/views/settingView/setting_view.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
-import 'package:provider/provider.dart';
 
 import '../categoryView/category_view.dart';
 
@@ -15,7 +13,7 @@ class MainView extends StatefulWidget {
   const MainView({super.key});
 
   @override
-  _MainViewState createState() => _MainViewState();
+  State<MainView> createState() => _MainViewState();
 }
 
 class _MainViewState extends State<MainView>
@@ -94,7 +92,7 @@ class _MainViewState extends State<MainView>
             HomeView(),
             ReportView(),
             CategoryView(),
-            BudgetViewScreen(),
+            BudgetView(),
             SettingsPage(),
           ],
         ),

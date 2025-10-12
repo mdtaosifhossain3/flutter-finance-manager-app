@@ -4,7 +4,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../../../models/tempm/categoryModel/transaction_model.dart';
+import '../../../../models/categoryModel/transaction_model.dart';
+
 
 class AddTransactionDbHelper{
   AddTransactionDbHelper._();
@@ -31,7 +32,6 @@ class AddTransactionDbHelper{
     myDB ??= await openDB();
     return myDB!;
   }
-
   Future<Database> openDB() async {
     Directory appDir = await getApplicationDocumentsDirectory();
     String dbPath = join(appDir.path, 'transaction_data.db');
@@ -57,7 +57,6 @@ class AddTransactionDbHelper{
     );
   }
 
-
   ///insertion
   Future<bool> addItem( TransactionModel ex) async {
     var db = await getDB();
@@ -72,27 +71,34 @@ class AddTransactionDbHelper{
 
     return mData;
   }
-// Update Table Data
-// Future<bool> updateNote(
-//     {required int s_no, required String title, required String desc}) async {
-//   var db = await getDB();
-//
-//   int rowEffected = await db.update(
-//       TABLE_NOTE, {COLUMN_NOTE_TITLE: title, COLUMN_NOTE_DESC: desc},
-//       where: "$COLUMN_NOTE_SNO = $s_no");
-//
-//   return rowEffected > 0;
-// }
 
-//Delete Data
-// Future<bool> deleteNote({required String sNo}) async {
-//   print(sNo);
-//   var db = await getDB();
-//
-//   int rowEffected =
-//   await db.delete(TABLE_NOTE, where: "$COLUMN_NOTE_SNO = $sNo");
-//   print(rowEffected);
-//   return rowEffected > 0;
-// }
+  //update
+  Future<bool> updateItem({
+    required int itemID,
+    required TransactionModel tx,
+  }) async {
+    final db = await getDB();
+
+    final rowsAffected = await db.update(
+      tableName,
+      tx.toMapForUpdate(),
+      where: 'id = ?',
+      whereArgs: [itemID],
+    );
+
+    return rowsAffected > 0;
+  }
+
+
+  //delete
+  Future<int> deleteItem(int itemId)  async{
+    final db = await getDB();
+    return await db.delete(
+      tableName,
+      where: "id = ?",
+      whereArgs: [itemId]
+    );
+  }
+
 
 }

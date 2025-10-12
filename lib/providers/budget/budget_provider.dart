@@ -1,9 +1,8 @@
 import 'package:finance_manager_app/config/db/local/budget_db/add_budget_db_helper.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../models/tempm/budgetModel/budget_category_model.dart';
-import '../../models/tempm/budgetModel/budget_model.dart';
-
+import '../../models/budgetModel/budget_category_model.dart';
+import '../../models/budgetModel/budget_model.dart';
 
 class BudgetProvider with ChangeNotifier {
   final AddBudgetDbHelper _dbHelper = AddBudgetDbHelper();
@@ -12,7 +11,8 @@ class BudgetProvider with ChangeNotifier {
   final Map<int, List<BudgetCategoryModel>> _categoriesByBudget = {};
 
   List<BudgetModel> get budgets => _budgets;
-  Map<int, List<BudgetCategoryModel>> get categoriesByBudget => _categoriesByBudget;
+  Map<int, List<BudgetCategoryModel>> get categoriesByBudget =>
+      _categoriesByBudget;
 
   /// Fetch all budgets and their categories
   Future<void> loadBudgets() async {
@@ -28,7 +28,10 @@ class BudgetProvider with ChangeNotifier {
   }
 
   /// Insert new budget
-  Future<int> addBudget(BudgetModel budget, List<BudgetCategoryModel> categories) async {
+  Future<int> addBudget(
+    BudgetModel budget,
+    List<BudgetCategoryModel> categories,
+  ) async {
     final budgetId = await _dbHelper.insertBudget(budget);
 
     for (var cat in categories) {
@@ -37,8 +40,8 @@ class BudgetProvider with ChangeNotifier {
           budgetId: budgetId,
           categoryName: cat.categoryName,
           allocatedAmount: cat.allocatedAmount,
-          spent: cat.spent ?? 0,
-         //   color: cat.color
+          spent: cat.spent,
+          //   color: cat.color
         ),
       );
     }
@@ -48,7 +51,10 @@ class BudgetProvider with ChangeNotifier {
   }
 
   /// Add category to an existing budget
-  Future<void> addCategoryToBudget(int budgetId, BudgetCategoryModel category) async {
+  Future<void> addCategoryToBudget(
+    int budgetId,
+    BudgetCategoryModel category,
+  ) async {
     await _dbHelper.insertBudgetCategory(category);
     await loadBudgets();
   }
@@ -67,8 +73,9 @@ class BudgetProvider with ChangeNotifier {
           final index = categories.indexWhere((c) => c.id == categoryId);
           if (index != -1) {
             final old = categories[index];
-            categories[index] =
-                old.copyWith(spent: old.spent + amountToAdd); // ✅ update local
+            categories[index] = old.copyWith(
+              spent: old.spent + amountToAdd,
+            ); // ✅ update local
             break;
           }
         }
@@ -78,32 +85,6 @@ class BudgetProvider with ChangeNotifier {
     }
   }
 
-
-  Future<void> subtractFromCategorySpent(int categoryId, int amountToSubtract) async {
-    final success = await _dbHelper.subtractFromCategorySpent(
-      categoryId: categoryId,
-      amountToSubtract: amountToSubtract,
-    );
-
-    if (success) {
-      for (var budgetId in _categoriesByBudget.keys) {
-        final categories = _categoriesByBudget[budgetId];
-        if (categories != null) {
-          final index = categories.indexWhere((c) => c.id == categoryId);
-          if (index != -1) {
-            final old = categories[index];
-            final newSpent = (old.spent - amountToSubtract).clamp(0, double.infinity).toInt();
-            categories[index] = old.copyWith(spent: newSpent); // ✅ update local
-            break;
-          }
-        }
-      }
-
-      notifyListeners(); // ✅ refresh UI
-    }
-  }
-
-
   Future<void> deleteCategory(int categoryId) async {
     final deleted = await _dbHelper.deleteCategory(categoryId);
 
@@ -111,7 +92,9 @@ class BudgetProvider with ChangeNotifier {
       for (var budgetId in _categoriesByBudget.keys) {
         final categories = _categoriesByBudget[budgetId];
         if (categories != null) {
-          categories.removeWhere((c) => c.id == categoryId); // ✅ remove from memory
+          categories.removeWhere(
+            (c) => c.id == categoryId,
+          ); // ✅ remove from memory
         }
       }
 
@@ -119,8 +102,50 @@ class BudgetProvider with ChangeNotifier {
     }
   }
 
+  // ✅ Add a new category to an existing budget
+  Future<void> addCategoryToExistingBudget({
+    required int budgetId,
+    required String categoryName,
+    required int allocatedAmount,
+  }) async {
+    // Add to database
+    await _dbHelper.addCategoryToExistingBudget(
+      budgetId: budgetId,
+      categoryName: categoryName,
+      allocatedAmount: allocatedAmount,
+    );
 
+    // Reload budgets and categories
+    await loadBudgets();
+  }
 
+  // ✅ Update (add to) allocated amount of an existing category
+  Future<void> updateCategoryAmount({
+    required int categoryId,
+    required int amountToAdd,
+  }) async {
+    final success = await _dbHelper.updateCategoryAmount(
+      categoryId: categoryId,
+      amountToAdd: amountToAdd,
+    );
+
+    if (success) {
+      // Update local in-memory data instantly
+      for (var budgetId in _categoriesByBudget.keys) {
+        final categories = _categoriesByBudget[budgetId];
+        if (categories != null) {
+          final index = categories.indexWhere((c) => c.id == categoryId);
+          if (index != -1) {
+            final old = categories[index];
+            categories[index] = old.copyWith(spent: old.spent + amountToAdd);
+            break;
+          }
+        }
+      }
+
+      notifyListeners(); // ✅ Refresh UI immediately
+    }
+  }
 
   /// Delete budget (cascade removes categories)
   Future<void> deleteBudget(int budgetId) async {

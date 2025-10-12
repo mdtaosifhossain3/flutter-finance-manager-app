@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 
 class LanguageTranslatorProvider with ChangeNotifier {
-  Locale _locale = const Locale('en', 'US');
+  Locale _locale = const Locale('bn', 'BD');
 
   Locale get locale => _locale;
 
@@ -26,8 +26,8 @@ class LanguageTranslatorProvider with ChangeNotifier {
 
   Future<void> _loadLocale() async {
     final prefs = await SharedPreferences.getInstance();
-    final langCode = prefs.getString('languageCode') ?? 'en';
-    final countryCode = prefs.getString('countryCode') ?? 'US';
+    final langCode = prefs.getString('languageCode') ?? 'bn';
+    final countryCode = prefs.getString('countryCode') ?? 'BD';
     _locale = Locale(langCode, countryCode);
 
     // set GetX locale

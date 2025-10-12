@@ -1,12 +1,13 @@
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../config/myColors/app_colors.dart';
 
 class ProfileView extends StatefulWidget {
+  const ProfileView({super.key});
+
   @override
-  _ProfessionalDashboardState createState() => _ProfessionalDashboardState();
+  State<ProfileView> createState() => _ProfessionalDashboardState();
 }
 
 class _ProfessionalDashboardState extends State<ProfileView> {
@@ -36,7 +37,10 @@ class _ProfessionalDashboardState extends State<ProfileView> {
 
   Widget _buildProfessionalProfile() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 20),
+      margin: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.04,
+        vertical: 20,
+      ),
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -114,13 +118,13 @@ class _ProfessionalDashboardState extends State<ProfileView> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.warning.withOpacity(0.2),
-                        AppColors.warning.withOpacity(0.2),
+                        AppColors.warning.withValues(alpha: 0.2),
+                        AppColors.warning.withValues(alpha: 0.2),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: AppColors.warning.withOpacity(0.3),
+                      color: AppColors.warning.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Text(
@@ -142,7 +146,10 @@ class _ProfessionalDashboardState extends State<ProfileView> {
 
   Widget _buildAdvancedOverview() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 20),
+      margin: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.04,
+        vertical: 20,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -221,7 +228,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
               Container(
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, color: color, size: 18),
@@ -252,7 +259,9 @@ class _ProfessionalDashboardState extends State<ProfileView> {
 
   Widget _buildSpendingAnalytics() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04),
+      margin: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.04,
+      ),
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -349,26 +358,29 @@ class _ProfessionalDashboardState extends State<ProfileView> {
 
   Widget _buildInsightsAndTips() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04,vertical: 20),
+      margin: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.04,
+        vertical: 20,
+      ),
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.amber.withOpacity(0.2),
-            Colors.orange.withOpacity(0.2),
+            Colors.amber.withValues(alpha: 0.2),
+            Colors.orange.withValues(alpha: 0.2),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.amber.withOpacity(0.2)),
+        border: Border.all(color: Colors.amber.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.amber.withOpacity(0.2),
+              color: Colors.amber.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(Icons.lightbulb, color: Colors.amber, size: 24),
@@ -401,19 +413,21 @@ class _ProfessionalDashboardState extends State<ProfileView> {
 
   Widget _buildPremiumFeatures() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04),
+      margin: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.04,
+      ),
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.purple.withOpacity(0.3),
-            Colors.blue.withOpacity(0.3),
+            Colors.purple.withValues(alpha: 0.3),
+            Colors.blue.withValues(alpha: 0.3),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.purple.withOpacity(0.3)),
+        border: Border.all(color: Colors.purple.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -434,7 +448,7 @@ class _ProfessionalDashboardState extends State<ProfileView> {
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
                 size: 16,
               ),
             ],
@@ -468,16 +482,21 @@ class _ProfessionalDashboardState extends State<ProfileView> {
 
   Widget _buildAchievements() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal:MediaQuery.of(context).size.width * 0.04),
+      margin: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.04,
+      ),
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Colors.green.withOpacity(0.1), Colors.blue.withOpacity(0.1)],
+          colors: [
+            Colors.green.withValues(alpha: 0.1),
+            Colors.blue.withValues(alpha: 0.1),
+          ],
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.green.withOpacity(0.2)),
+        border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

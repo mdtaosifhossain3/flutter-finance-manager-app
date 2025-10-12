@@ -31,7 +31,7 @@ class CustomListTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.15),
+              color: Colors.grey.withValues(alpha: 0.15),
               blurRadius: 0,
               offset: const Offset(0, 3),
             ),
@@ -45,19 +45,27 @@ class CustomListTile extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w500)),
-                const SizedBox(height: 2,),
-                Text(subtitle,
-                    style: const TextStyle(
-                        fontSize: 10, fontWeight: FontWeight.w200)),
-
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w200,
+                  ),
+                ),
               ],
             ),
-            Text(money,
-                style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w400)),
+            Text(
+              money,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+            ),
           ],
         ),
       ),

@@ -1,23 +1,24 @@
-import 'package:finance_manager_app/models/budget_data_model.dart';
+import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../config/enums/enums.dart';
-import '../models/tempm/categoryModel/transaction_model.dart';
-import 'category/expense_provider.dart';
+import '../../config/enums/enums.dart';
+import '../category/transaction_provider.dart';
 
 class ReportProvider extends ChangeNotifier {
   final AddExpenseProvider transactionProvider;
   ReportProvider({required this.transactionProvider});
- String selectedPeriod = "Daily";
- void setSelectedMonth(val){
-   selectedPeriod =val;
-   notifyListeners();
- }
-  final List<Map<String,dynamic>> montlydata= [];
-  final List<Map<String,dynamic>> periodData= [];
-  final List<Map<String,dynamic>> filterCategories= [];
+  String selectedPeriod = "periodMonth".tr;
+  void setSelectedMonth(val) {
+    selectedPeriod = val;
+    notifyListeners();
+  }
+
+  final List<Map<String, dynamic>> montlydata = [];
+  final List<Map<String, dynamic>> periodData = [];
+  final List<Map<String, dynamic>> filterCategories = [];
 
   void filterCategoryFunction() {
     filterCategories.clear();
@@ -85,12 +86,12 @@ class ReportProvider extends ChangeNotifier {
         });
       }
     }
-
-
-
   }
 
-  Map<String, dynamic> calculateTotals(List<TransactionModel> filteredTxns, String monthName) {
+  Map<String, dynamic> calculateTotals(
+    List<TransactionModel> filteredTxns,
+    String monthName,
+  ) {
     double expenses = 0;
     double income = 0;
 
@@ -102,12 +103,9 @@ class ReportProvider extends ChangeNotifier {
       }
     }
 
-    return {
-      "expenses": expenses,
-      "income": income,
-      "months": monthName,
-    };
+    return {"expenses": expenses, "income": income, "months": monthName};
   }
+
   void getMonthlyTotals() {
     montlydata.clear();
     final now = DateTime.now();
@@ -120,14 +118,15 @@ class ReportProvider extends ChangeNotifier {
       final endOfMonth = DateTime(date.year, date.month + 1, 0);
 
       final monthTxns = transactionProvider.expenseList.where((tx) {
-        return tx.date.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
+        return tx.date.isAfter(
+              startOfMonth.subtract(const Duration(days: 1)),
+            ) &&
             tx.date.isBefore(endOfMonth.add(const Duration(days: 1)));
       }).toList();
 
       final monthName = DateFormat('MMM').format(startOfMonth);
       montlydata.add(calculateTotals(monthTxns, monthName));
     }
-
   }
 
   double getMaxY() {
@@ -165,9 +164,9 @@ class ReportProvider extends ChangeNotifier {
     return maxValue + (maxValue * 0.2);
   }
 
-  Map<String, double> getCurrentMonthTotals() {
-    double totalExpense = 0;
-    double totalIncome = 0;
+  Map<String, int> getCurrentMonthTotals() {
+    int totalExpense = 0;
+    int totalIncome = 0;
 
     final now = DateTime.now();
     final startOfMonth = DateTime(now.year, now.month, 1);
@@ -184,11 +183,6 @@ class ReportProvider extends ChangeNotifier {
       }
     }
 
-    return {
-      "expense": totalExpense,
-      "income": totalIncome,
-    };
+    return {"expense": totalExpense, "income": totalIncome};
   }
-
-
 }

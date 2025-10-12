@@ -1,18 +1,22 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/globalWidgets/card_widget.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
-import 'package:finance_manager_app/providers/category/expense_provider.dart';
+import 'package:finance_manager_app/providers/category/category_item_provider.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:finance_manager_app/views/categoryView/pages/transaction_form_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
-class CategoryTransactionView extends StatefulWidget {
+import '../../../config/enums/enums.dart';
+import '../../../models/categoryModel/transaction_model.dart';
+
+class CategoryItemView extends StatefulWidget {
   final String categoryName;
   final IconData categoryIcon;
   final Color categoryColor;
 
-  const CategoryTransactionView({
+  const CategoryItemView({
     super.key,
     required this.categoryName,
     required this.categoryIcon,
@@ -20,124 +24,48 @@ class CategoryTransactionView extends StatefulWidget {
   });
 
   @override
-  State<CategoryTransactionView> createState() =>
+  State<CategoryItemView> createState() =>
       _CategoryTransactionViewState();
 }
 
-class _CategoryTransactionViewState extends State<CategoryTransactionView> {
-  DateTime selectedMonth = DateTime.now();
-  List<Transaction> transactions = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _generateSampleTransactions();
-  }
-
-  void _generateSampleTransactions() {
-    // Sample transactions for different months
-    transactions = [
-      // Current month
-      Transaction(
-        id: '1',
-        title: 'Weekly grocery shopping',
-        amount: -85.50,
-        date: DateTime.now().subtract(Duration(days: 2)),
-        notes: 'Walmart - family groceries',
-        tags: ['essentials', 'family'],
-      ),
-      Transaction(
-        id: '2',
-        title: 'Organic vegetables',
-        amount: -32.75,
-        date: DateTime.now().subtract(Duration(days: 5)),
-        notes: 'Farmers market',
-        tags: ['organic', 'healthy'],
-      ),
-      Transaction(
-        id: '3',
-        title: 'Cashback reward',
-        amount: 12.50,
-        date: DateTime.now().subtract(Duration(days: 8)),
-        notes: 'Credit card cashback',
-        tags: ['reward'],
-      ),
-      Transaction(
-        id: '4',
-        title: 'Monthly bulk shopping',
-        amount: -156.30,
-        date: DateTime.now().subtract(Duration(days: 10)),
-        notes: 'Costco - bulk items',
-        tags: ['bulk', 'savings'],
-      ),
-      Transaction(
-        id: '5',
-        title: 'Fresh fruits and snacks',
-        amount: -28.90,
-        date: DateTime.now().subtract(Duration(days: 15)),
-        notes: 'Local grocery store',
-        tags: ['fresh', 'snacks'],
-      ),
-      // Previous month
-      Transaction(
-        id: '6',
-        title: 'Monthly grocery budget',
-        amount: -245.80,
-        date: DateTime(selectedMonth.year, selectedMonth.month - 1, 25),
-        notes: 'Multiple stores',
-        tags: ['monthly'],
-      ),
-    ];
-  }
-
-  List<Transaction> get filteredTransactions {
-    return transactions.where((transaction) {
-      return transaction.date.year == selectedMonth.year &&
-          transaction.date.month == selectedMonth.month;
-    }).toList()..sort((a, b) => b.date.compareTo(a.date));
-  }
-
-  double get totalAmount {
-    return filteredTransactions.fold(
-      0.0,
-      (sum, transaction) => sum + transaction.amount,
-    );
-  }
-
-  double get totalIncome {
-    return filteredTransactions
-        .where((t) => t.amount > 0)
-        .fold(0.0, (sum, transaction) => sum + transaction.amount);
-  }
-
-  double get totalExpenses {
-    return filteredTransactions
-        .where((t) => t.amount < 0)
-        .fold(0.0, (sum, transaction) => sum + transaction.amount.abs());
-  }
-
-  double get netBalance {
-    return totalIncome - totalExpenses;
-  }
+class _CategoryTransactionViewState extends State<CategoryItemView> {
+  List<TransactionModel> transactionModel = [];
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<CategoryItemProvider>();
+    List<TransactionModel> transactionModel = provider.filteredTransactions(
+      selectedCategory: widget.categoryName,
+    );
+
     return Scaffold(
-      appBar: customAppBar(title: widget.categoryName),
+      appBar: customAppBar(title: widget.categoryName,leading: Padding(
+        padding: const EdgeInsets.only(left:10.0),
+        child: IconButton(onPressed: (){
+          Get.back();
+        }, icon: Icon(Icons.arrow_back)),
+      )),
       body: SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Category Header
-            _buildCategoryHeader(),
+            _buildCategoryHeader(transactionModel, provider),
 
             // Month Selector
-            _buildMonthSelector(),
+            _buildMonthSelector(provider),
 
             // Transactions Header
-            _buildTransactionsHeader(),
-
+            Padding(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                'transactions'.tr,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+            ),
             // Transaction List
-            _buildTransactionListView(),
+            _buildTransactionListView(transactionModel),
           ],
         ),
       ),
@@ -145,7 +73,12 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
     );
   }
 
-  Widget _buildCategoryHeader() {
+  Widget _buildCategoryHeader( tx, provider) {
+    final totalAmount = tx.fold(
+      0,
+      (sum, transaction) => sum + transaction.amount,
+    );
+
     return Container(
       margin: EdgeInsets.symmetric(
         horizontal: MediaQuery.of(context).size.width * 0.04,
@@ -164,9 +97,9 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).primaryColor.withOpacity(0.3),
-            blurRadius: 15,
-            offset: Offset(0, 8),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -207,18 +140,18 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Text(
+                    //   '${_getMonthName(provider.selectedMonth.month)} ${provider.selectedMonth.year}',
+                    //   style: Theme.of(context).textTheme.labelSmall,
+                    // ),
+                  //  SizedBox(height: 4),
                     Text(
-                      '${_getMonthName(selectedMonth.month)} ${selectedMonth.year}',
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Total Amount',
+                      'totalAmount'.tr,
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                     SizedBox(height: 6),
                     Text(
-                      totalAmount.abs().toStringAsFixed(2),
+                      HelperFunctions.convertToBanglaDigits(totalAmount.toString()),
                       style: Theme.of(context).textTheme.headlineLarge,
                     ),
                   ],
@@ -231,7 +164,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                 decoration: BoxDecoration(
                   color: Theme.of(
                     context,
-                  ).colorScheme.onPrimary.withOpacity(0.2),
+                  ).colorScheme.onPrimary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: Theme.of(context).dividerColor,
@@ -248,7 +181,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                     ),
                     SizedBox(width: 6),
                     Text(
-                      '${filteredTransactions.length}',
+                      HelperFunctions.convertToBanglaDigits(tx.length.toString()),
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                   ],
@@ -261,7 +194,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
     );
   }
 
-  Widget _buildMonthSelector() {
+  Widget _buildMonthSelector(provider) {
     return Container(
       height: 80,
       margin: EdgeInsets.symmetric(vertical: 16),
@@ -275,17 +208,15 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
             DateTime.now().month - 6 + index,
           );
           bool isSelected =
-              month.month == selectedMonth.month &&
-              month.year == selectedMonth.year;
+              month.month == provider.selectedMonth.month &&
+              month.year == provider.selectedMonth.year;
           bool isCurrentMonth =
               month.month == DateTime.now().month &&
               month.year == DateTime.now().year;
 
           return GestureDetector(
             onTap: () {
-              setState(() {
-                selectedMonth = month;
-              });
+              provider.setSelectedMonth(month);
             },
             child: Container(
               width: 70,
@@ -306,7 +237,7 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    _getMonthName(month.month).substring(0, 3),
+                    _getMonthName(month.month),
                     style: TextStyle(
                       color: isSelected
                           ? AppColors.textPrimary
@@ -334,27 +265,8 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
     );
   }
 
-  Widget _buildTransactionsHeader() {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Transactions',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          Text(
-            '${filteredTransactions.length} items',
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTransactionListView() {
-    if (filteredTransactions.isEmpty) {
+  Widget _buildTransactionListView(transactionModel) {
+    if (transactionModel.isEmpty) {
       return SizedBox(
         height: 300,
         child: Center(
@@ -368,12 +280,12 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
               ),
               SizedBox(height: 16),
               Text(
-                'No transactions found',
+                'noTransactions'.tr,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 8),
               Text(
-                'Add your first transaction to get started',
+                'addFirstTransaction'.tr,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
@@ -382,90 +294,18 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
       );
     }
 
-    return Column(
-      children: filteredTransactions
-          .map((transaction) => _buildTransactionCard(transaction))
-          .toList(),
-    );
-  }
-
-  Widget _buildTransactionCard(Transaction transaction) {
-    bool isIncome = transaction.amount > 0;
-    Color amountColor = isIncome ? Colors.green[600]! : Colors.red[600]!;
-
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Card(
-        elevation: 0,
-        color: Theme.of(context).cardColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: Theme.of(context).dividerColor, width: 1),
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () => _showTransactionDetails(transaction),
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Row(
-              children: [
-                // Amount Indicator
-                Container(
-                  width: 4,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: amountColor,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  //  child: Center(child: Text("1",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: AppColors.textPrimary),)),
-                ),
-                SizedBox(width: 16),
-
-                // Transaction Details
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        transaction.title,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      if (transaction.notes.isNotEmpty) ...[
-                        SizedBox(height: 4),
-                        Text(
-                          transaction.notes,
-                          style: Theme.of(context).textTheme.labelSmall,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-
-                // Amount and Date
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '${isIncome ? '+' : '-'}৳${transaction.amount.abs().toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: amountColor,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      HelperFunctions.getFormattedDateTime(transaction.date),
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.04,
+      ),
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: transactionModel.length,
+        itemBuilder: (context, index) {
+          final transaction = transactionModel[index];
+          return CardWidget(transaction: transaction);
+        },
       ),
     );
   }
@@ -480,13 +320,12 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
             categoryName: widget.categoryName,
           ),
         );
-        print(context.read<AddExpenseProvider>().expenseList);
       },
       backgroundColor: Theme.of(context).primaryColor,
       foregroundColor: Theme.of(context).colorScheme.onPrimary,
       icon: Icon(Icons.add, color: AppColors.textPrimary),
       label: Text(
-        'Add Transaction',
+        "addTransaction".tr,
         style: TextStyle(
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
@@ -495,147 +334,40 @@ class _CategoryTransactionViewState extends State<CategoryTransactionView> {
     );
   }
 
-  void _showTransactionDetails(Transaction transaction) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        padding: EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Handle bar
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            SizedBox(height: 24),
-
-            // Transaction details
-            Text(
-              'Transaction Details',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            SizedBox(height: 20),
-
-            _buildDetailRow('Title', transaction.title),
-            _buildDetailRow(
-              'Amount',
-              '${transaction.amount > 0 ? '+' : '-'}\$${transaction.amount.abs().toStringAsFixed(2)}',
-            ),
-            _buildDetailRow('Date', _formatFullDate(transaction.date)),
-            if (transaction.notes.isNotEmpty)
-              _buildDetailRow('Notes', transaction.notes),
-            if (transaction.tags.isNotEmpty)
-              _buildDetailRow('Tags', transaction.tags.join(', ')),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(label, style: Theme.of(context).textTheme.labelLarge),
-          ),
-          Expanded(
-            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
-          ),
-        ],
-      ),
-    );
-  }
-
   String _getMonthName(int month) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    return months[month - 1];
+    final locale = Get.locale?.languageCode ?? 'en';
+    if (locale == 'bn') {
+      const months = [
+        'জানুয়ারি',
+        'ফেব্রুয়ারি',
+        'মার্চ',
+        'এপ্রিল',
+        'মে',
+        'জুন',
+        'জুলাই',
+        'আগস্ট',
+        'সেপ্টেম্বর',
+        'অক্টোবর',
+        'নভেম্বর',
+        'ডিসেম্বর'
+      ];
+      return months[month - 1];
+    } else {
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ];
+      return months[month - 1];    }
+
   }
-
-  String _formatDate(DateTime date) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${date.day} ${months[date.month - 1]}';
-  }
-
-  String _formatFullDate(DateTime date) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
-  }
-}
-
-class Transaction {
-  final String id;
-  final String title;
-  final double amount;
-  final DateTime date;
-  final String notes;
-  final List<String> tags;
-
-  Transaction({
-    required this.id,
-    required this.title,
-    required this.amount,
-    required this.date,
-    this.notes = '',
-    this.tags = const [],
-  });
 }

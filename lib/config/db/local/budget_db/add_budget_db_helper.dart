@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../../../models/tempm/budgetModel/budget_category_model.dart';
-import '../../../../models/tempm/budgetModel/budget_model.dart';
+import '../../../../models/budgetModel/budget_category_model.dart';
+import '../../../../models/budgetModel/budget_model.dart';
 
 
 class AddBudgetDbHelper {
@@ -54,7 +54,6 @@ class AddBudgetDbHelper {
   }
 
   // ------------------ Budget Methods ------------------
-
   Future<int> insertBudget(BudgetModel budget) async {
     final db = await database;
     return await db.insert('budgets', budget.toMap(),
@@ -73,7 +72,6 @@ class AddBudgetDbHelper {
   }
 
   // ------------------ Budget Category Methods ------------------
-
   Future<int> insertBudgetCategory(BudgetCategoryModel category) async {
     final db = await database;
     return await db.insert('budget_categories', category.toMap(),
@@ -91,7 +89,6 @@ class AddBudgetDbHelper {
   }
 
   // ------------------ Fetch Budgets with Categories ------------------
-
   Future<List<Map<String, dynamic>>> getBudgetsWithCategories() async {
     final db = await database;
     final result = await db.rawQuery('''
@@ -173,7 +170,66 @@ class AddBudgetDbHelper {
     );
   }
 
+// Add new category to existing budget
+  Future<int> addCategoryToExistingBudget({
+    required int budgetId,
+    required String categoryName,
+    required int allocatedAmount,
+  }) async {
+    final db = await database;
 
+    // Make sure the budget exists
+    final budgetExists = await db.query(
+      'budgets',
+      where: 'id = ?',
+      whereArgs: [budgetId],
+    );
+
+    if (budgetExists.isEmpty) {
+      throw Exception('Budget with ID $budgetId not found');
+    }
+
+    // Create the category
+    final category = {
+      'budgetId': budgetId,
+      'categoryName': categoryName,
+      'allocatedAmount': allocatedAmount,
+      'spent': 0,
+    };
+
+    return await db.insert('budget_categories', category,
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+// Update (add to) allocated amount of an existing category
+  Future<bool> updateCategoryAmount({
+    required int categoryId,
+    required int amountToAdd,
+  }) async {
+    final db = await database;
+
+    // Fetch current allocatedAmount
+    final result = await db.query(
+      'budget_categories',
+      columns: ['spent'],
+      where: 'id = ?',
+      whereArgs: [categoryId],
+    );
+
+    if (result.isEmpty) return false;
+
+    final currentAmount = result.first['spent'] as int;
+    final newAmount = currentAmount + amountToAdd;
+
+    final rowsAffected = await db.update(
+      'budget_categories',
+      {'spent': newAmount},
+      where: 'id = ?',
+      whereArgs: [categoryId],
+    );
+
+    return rowsAffected > 0;
+  }
 
 
 }

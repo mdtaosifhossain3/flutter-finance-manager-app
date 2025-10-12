@@ -1,13 +1,14 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
-import 'package:finance_manager_app/models/tempm/budgetModel/budget_model.dart';
+import 'package:finance_manager_app/models/budgetModel/budget_category_model.dart';
+import 'package:finance_manager_app/models/budgetModel/budget_model.dart';
 import 'package:finance_manager_app/providers/budget/budget_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
-import '../../../models/tempm/budgetModel/budget_category_model.dart';
+import '../../../data/budget/budget_categories.dart';
 
 class BudgetCardView extends StatefulWidget {
   final BudgetModel budget;
@@ -36,6 +37,12 @@ class _BudgetCardViewState extends State<BudgetCardView> {
     return Scaffold(
       appBar: customAppBar(
         title: "Budget Overview",
+          leading: Padding(
+            padding: const EdgeInsets.only(left:10.0),
+            child: IconButton(onPressed: (){
+              Get.back();
+            }, icon: Icon(Icons.arrow_back)),
+          ),
         actions: [
           Padding(
             padding: EdgeInsets.only(
@@ -53,6 +60,7 @@ class _BudgetCardViewState extends State<BudgetCardView> {
               ),
               onPressed: () {
                 context.read<BudgetProvider>().deleteBudget(widget.budget.id!);
+
                 Get.back();
               },
               icon: const Icon(Icons.delete),
@@ -114,7 +122,7 @@ class _BudgetCardViewState extends State<BudgetCardView> {
             borderRadius: BorderRadius.circular(16),
             // boxShadow: [
             //   BoxShadow(
-            //     color: Colors.blue.withOpacity(0.3),
+            //     color: Colors.blue.withValues(alpha:0.3),
             //     blurRadius: 10,
             //     offset: Offset(0, 4),
             //   ),
@@ -244,55 +252,128 @@ class _BudgetCardViewState extends State<BudgetCardView> {
       },
     );
   }
+  Future<void> showAddCategoryDialog(BuildContext context, int budgetId) async {
+    final TextEditingController amountController = TextEditingController();
+    String? selectedCategory;
 
-  // Widget _buildChartSection() {
-  //   return Container(
-  //     height: 280,
-  //     padding: EdgeInsets.all(20),
-  //     decoration: BoxDecoration(
-  //       color: Theme.of(context).cardColor,
-  //       borderRadius: BorderRadius.circular(16),
-  //       // boxShadow: [
-  //       //   BoxShadow(
-  //       //     color: Colors.grey.withOpacity(0.1),
-  //       //     blurRadius: 10,
-  //       //     offset: Offset(0, 2),
-  //       //   ),
-  //       // ],
-  //     ),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text(
-  //           'Spending Breakdown',
-  //           style: Theme.of(context).textTheme.titleLarge
-  //         ),
-  //         SizedBox(height: 16),
-  //         Expanded(
-  //           child: PieChart(
-  //             PieChartData(
-  //               sectionsSpace: 2,
-  //               centerSpaceRadius: 60,
-  //               sections: expenses.map((expense) {
-  //                 return PieChartSectionData(
-  //                   color: expense.color,
-  //                   value: expense.spent,
-  //                   title: '${((expense.spent / totalSpent) * 100).toInt()}%',
-  //                   radius: 45,
-  //                   titleStyle: TextStyle(
-  //                     fontSize: 12,
-  //                     fontWeight: FontWeight.bold,
-  //                     color: AppColors.textPrimary,
-  //                   ),
-  //                 );
-  //               }).toList(),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              backgroundColor: Theme.of(context).cardColor,
+              title: Text(
+                'Add Category to Budget',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Dropdown for selecting category
+                  Flexible(
+                    child: DropdownButtonFormField<String>(
+                      isExpanded: true, // ensures the dropdown takes full width
+                      decoration: InputDecoration(
+                        labelText: 'Select Category',
+                        labelStyle: Theme.of(context).textTheme.labelMedium,
+                        border: OutlineInputBorder(),
+                      ),
+                      value: selectedCategory,
+                      items: categories
+                          .map(
+                            (cat) => DropdownMenuItem(
+                          value: cat,
+                          child: Text(
+                            cat,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      )
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() => selectedCategory = value);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  // Amount input
+                  TextField(
+                    controller: amountController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Allocated Amount',
+                      labelStyle: Theme.of(context).textTheme.labelMedium,
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (selectedCategory == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please select a category'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
+                    final input = amountController.text.trim();
+                    final int? amount = int.tryParse(input);
+
+                    if (amount == null || amount <= 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please enter a valid amount'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
+                    // Add category to existing budget via provider
+                    await context.read<BudgetProvider>().addCategoryToExistingBudget(
+                      budgetId: budgetId,
+                      categoryName: selectedCategory!,
+                      allocatedAmount: amount,
+                    );
+
+                    Navigator.pop(context);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Category added successfully!'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Add',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
 
   Widget _buildExpensesList() {
     return Consumer<BudgetProvider>(
@@ -305,7 +386,7 @@ class _BudgetCardViewState extends State<BudgetCardView> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primaryBlue.withOpacity(0.1),
+                color: AppColors.primaryBlue.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: Offset(0, 2),
               ),
@@ -317,12 +398,14 @@ class _BudgetCardViewState extends State<BudgetCardView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Categories', style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    'Categories',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   IconButton(
                     style: IconButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.surface,
-                      foregroundColor: AppColors.primaryBlue
-                      ,
+                      foregroundColor: AppColors.primaryBlue,
                       padding: const EdgeInsets.all(8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -330,10 +413,11 @@ class _BudgetCardViewState extends State<BudgetCardView> {
                       elevation: 1,
                     ),
                     onPressed: () {
-
+                      showAddCategoryDialog(context, widget.budget.id!);
                     },
-                    icon: const Icon(Icons.add,size: 20,),
-                  ),                          ],
+                    icon: const Icon(Icons.add, size: 20),
+                  ),
+                ],
               ),
               SizedBox(height: 16),
               //...expenses.map((expense) => _buildExpenseItem(expense)),
@@ -353,123 +437,202 @@ class _BudgetCardViewState extends State<BudgetCardView> {
     );
   }
 
+  Future<void> showEditCategoryAmountDialog(
+    BuildContext context,
+    int categoryId,
+  ) async {
+    final TextEditingController amountController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          backgroundColor: Theme.of(context).cardColor,
+          title: Text(
+            'Add Spent',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          content: TextField(
+            controller: amountController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'Add Amount',
+              labelStyle: Theme.of(context).textTheme.labelMedium,
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              style: ButtonStyle(
+                foregroundColor: WidgetStatePropertyAll(
+                  Theme.of(context).colorScheme.onPrimary,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final input = amountController.text.trim();
+                if (input.isEmpty) return;
+
+                final int? amount = int.tryParse(input);
+                if (amount == null || amount <= 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a valid amount'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return;
+                }
+
+                // ✅ Update category amount via provider
+                await context.read<BudgetProvider>().updateCategoryAmount(
+                  categoryId: categoryId,
+                  amountToAdd: amount,
+                );
+
+                Navigator.pop(context);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Amount updated successfully!'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+              child: Text(
+                'Update',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildExpenseItem(BudgetCategoryModel expense) {
     final spentPercent = expense.allocatedAmount == 0
         ? 0.0
         : expense.spent / expense.allocatedAmount;
     return GestureDetector(
       onTap: () {
-        print("hi");
+        if (kDebugMode) {
+          print("hi");
+        }
       },
       child: Padding(
         padding: EdgeInsets.only(bottom: 16),
-        child: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: Colors.teal,
-                          shape: BoxShape.circle,
-                        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.teal,
+                        shape: BoxShape.circle,
                       ),
-                      SizedBox(width: 12),
-                      Text(
-                        expense.categoryName,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                    onPressed: () async {
-                      await context.read<BudgetProvider>().deleteCategory(
-                        expense.id!,
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Category deleted")),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.delete_outline,
-                      color: Colors.redAccent,
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 8),
-              // Progress Bar (spent / allocated)
-              LinearProgressIndicator(
-                value: spentPercent.clamp(0.0, 1.0),
-                minHeight: 8,
-                borderRadius: BorderRadius.circular(8),
-                backgroundColor: Colors.grey.shade300,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  spentPercent >= 1
-                      ? Colors.redAccent
-                      : Colors.greenAccent.shade700,
+                    SizedBox(width: 12),
+                    Text(
+                      expense.categoryName,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
                 ),
-              ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "৳${expense.spent} / ৳${expense.allocatedAmount}",
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-
-                  Row(
-                    children: [
-                      // Decrease
-                      IconButton(
-                        onPressed: () async {
-                          if (expense.spent > 0) {
-                            await context
-                                .read<BudgetProvider>()
-                                .subtractFromCategorySpent(
-                                  expense.id!,
-                                  5, // you can customize this step
-                                );
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.remove_circle_outline,
-                          color: Colors.orangeAccent,
-                        ),
-                      ),
-
-                      // Increase
-                      IconButton(
-                        onPressed: () async {
-                          await context
-                              .read<BudgetProvider>()
-                              .addToCategorySpent(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          height: 28,
+                          width: 28,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            shape: BoxShape.circle,
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              showEditCategoryAmountDialog(
+                                context,
                                 expense.id!,
-                                10, // same step value
                               );
-                        },
-                        icon: const Icon(
-                          Icons.add_circle_outline,
-                          color: Colors.green,
+                            },
+                            child: Icon(Icons.edit_rounded, size: 18),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        SizedBox(width: 10),
+                        Container(
+                          height: 28,
+                          width: 28,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            shape: BoxShape.circle,
+                          ),
+                          child: InkWell(
+                            onTap: () async {
+                              await context
+                                  .read<BudgetProvider>()
+                                  .deleteCategory(expense.id!);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Category deleted"),
+                                ),
+                              );
+                            },
+                            child: Icon(
+                              Icons.delete_rounded,
+                              size: 18,
+                              color: AppColors.error,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            // Progress Bar (spent / allocated)
+            LinearProgressIndicator(
+              value: spentPercent.clamp(0.0, 1.0),
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(8),
+              backgroundColor: AppColors.border,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                spentPercent >= 1
+                    ? Colors.redAccent
+                    : Colors.greenAccent.shade700,
               ),
-            ],
-          ),
+            ),
+
+            SizedBox(height: 10),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "৳${expense.spent} / ৳${expense.allocatedAmount}",
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

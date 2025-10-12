@@ -1,25 +1,28 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
-import 'package:finance_manager_app/models/tempm/categoryModel/transaction_model.dart';
+import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
 import 'package:finance_manager_app/providers/category/category_provider.dart';
-import 'package:finance_manager_app/providers/category/expense_provider.dart';
+import 'package:finance_manager_app/providers/category/transaction_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class TransactionFormPage extends StatefulWidget {
   const TransactionFormPage({
     super.key,
-    required this.categoryName,
-    required this.categoryIcon,
-    required this.categoryColor,
+    this.transactionModel,
+    this.categoryName,
+    this.categoryIcon,
+    this.categoryColor,
   });
-  final String categoryName;
-  final IconData categoryIcon;
-  final Color categoryColor;
+  final String? categoryName;
+  final IconData? categoryIcon;
+  final Color? categoryColor;
+  final TransactionModel? transactionModel;
 
   @override
-  _TransactionFormPageState createState() => _TransactionFormPageState();
+  State<TransactionFormPage> createState() => _TransactionFormPageState();
 }
 
 class _TransactionFormPageState extends State<TransactionFormPage> {
@@ -27,12 +30,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
   final _notesController = TextEditingController();
-
-  String? selectedCategory;
-  DateTime selectedDate = DateTime.now();
-  String selectedPaymentMethod = 'Cash';
-
-  bool isLoading = false;
 
   final List<String> paymentMethods = [
     'Cash',
@@ -46,6 +43,17 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   ];
 
   @override
+  void initState() {
+    context.read<AddExpenseProvider>().selectedDate =
+        widget.transactionModel?.date ?? DateTime.now();
+    context.read<AddExpenseProvider>().selectedPaymentMethod =
+        widget.transactionModel?.paymentMethod ?? "Cash";
+    _amountController.text = widget.transactionModel?.amount.toString() ?? "";
+    _notesController.text = widget.transactionModel?.notes.toString() ?? "";
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _titleController.dispose();
     _amountController.dispose();
@@ -56,7 +64,19 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar(title: "Add Transaction", centerTitle: true),
+      appBar: customAppBar(
+        title: "addTransaction".tr,
+        centerTitle: true,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: IconButton(
+            onPressed: () {
+              Get.back();
+            },
+            icon: Icon(Icons.arrow_back),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -99,12 +119,12 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Title (Optional)', style: Theme.of(context).textTheme.labelLarge),
+        Text('titleOptional'.tr, style: Theme.of(context).textTheme.labelLarge),
         SizedBox(height: 8),
         TextFormField(
           controller: _titleController,
           decoration: InputDecoration(
-            hintText: 'Enter transaction title',
+            hintText: 'titleHint'.tr,
             hintStyle: Theme.of(context).textTheme.bodySmall,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
 
@@ -127,7 +147,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Amount *', style: Theme.of(context).textTheme.titleSmall),
+        Text('amountRequired'.tr, style: Theme.of(context).textTheme.titleSmall),
         SizedBox(height: 8),
         TextFormField(
           controller: _amountController,
@@ -136,9 +156,9 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
           ],
           decoration: InputDecoration(
-            hintText: '0.00',
+            hintText: 'amountHint'.tr,
             hintStyle: TextStyle(color: Theme.of(context).hintColor),
-            prefixText: '\$ ',
+            prefixText: '৳ ',
             prefixStyle: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
@@ -159,13 +179,13 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
           style: TextStyle(fontSize: 16),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Amount is required';
+              return 'amountRequiredError'.tr;
             }
             if (double.tryParse(value) == null) {
-              return 'Enter a valid amount';
+              return 'amountValidError'.tr;
             }
             if (double.parse(value) <= 0) {
-              return 'Amount must be greater than 0';
+              return 'amountGreaterError'.tr;
             }
             return null;
           },
@@ -178,7 +198,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Date *', style: Theme.of(context).textTheme.bodyMedium),
+        Text('dateRequired'.tr, style: Theme.of(context).textTheme.bodyMedium),
         SizedBox(height: 8),
         GestureDetector(
           onTap: _selectDate,
@@ -199,7 +219,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  _formatDate(selectedDate),
+                  _formatDate(context.watch<AddExpenseProvider>().selectedDate),
                   style: TextStyle(
                     fontSize: 16,
                     color: Theme.of(context).colorScheme.onSecondary,
@@ -222,10 +242,10 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Payment Method *', style: Theme.of(context).textTheme.bodyMedium),
+        Text('paymentMethodRequired'.tr, style: Theme.of(context).textTheme.bodyMedium),
         SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: selectedPaymentMethod,
+          value: context.watch<AddExpenseProvider>().selectedPaymentMethod,
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
 
@@ -245,11 +265,9 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
           items: paymentMethods.map((String method) {
             return DropdownMenuItem<String>(value: method, child: Text(method));
           }).toList(),
-          onChanged: (String? value) {
-            setState(() {
-              selectedPaymentMethod = value!;
-            });
-          },
+          onChanged: context
+              .read<AddExpenseProvider>()
+              .setselectedPaymentMethod,
           icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).hintColor),
         ),
       ],
@@ -260,7 +278,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Notes (Optional)', style: Theme.of(context).textTheme.bodyMedium),
+        Text('notesOptional'.tr, style: Theme.of(context).textTheme.bodyMedium),
         SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
@@ -268,7 +286,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).dividerColor.withOpacity(0.05),
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: Offset(0, 2),
               ),
@@ -278,7 +296,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             controller: _notesController,
             maxLines: 3,
             decoration: InputDecoration(
-              hintText: 'Add any additional notes...',
+              hintText: 'notesHint'.tr,
               hintStyle: TextStyle(color: Theme.of(context).hintColor),
               border: InputBorder.none,
               contentPadding: EdgeInsets.all(16),
@@ -294,7 +312,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: isLoading ? null : _handleSubmit,
+        onPressed: _handleSubmit,
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).primaryColor,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -304,35 +322,14 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
           ),
           elevation: 2,
         ),
-        child: isLoading
-            ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).colorScheme.onPrimary,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Text(
-                    'Saving...',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              )
-            : Text(
-                'Save Transaction',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
-                ),
-              ),
+        child: Text(
+          'saveTransaction'.tr,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textPrimary,
+          ),
+        ),
       ),
     );
   }
@@ -340,7 +337,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate,
+      initialDate: context.read<AddExpenseProvider>().selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
       builder: (context, child) {
@@ -354,10 +351,10 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
         );
       },
     );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
+
+    if (picked != null) {
+      // Use current time when saving the picked date
+      context.read<AddExpenseProvider>().setSelectedDate(picked);
     }
   }
 
@@ -367,39 +364,38 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
 
   Future<void> _handleSubmit() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        isLoading = true;
-      });
-
-      // Simulate API call
-      await Future.delayed(Duration(seconds: 2));
-
       // Collect form data
-
+      final text = _amountController.text.trim();
+      final amount = int.tryParse(text) ?? 0;
       TransactionModel tn = TransactionModel(
-        type: context.read<CategoryProvider>().selectedType,
-        date: selectedDate,
+        type:
+            widget.transactionModel?.type ??
+            context.read<CategoryProvider>().selectedType,
+        date: context.read<AddExpenseProvider>().selectedDate,
         title: _titleController.text.isEmpty ? "" : _titleController.text,
-        categoryName: widget.categoryName,
-        amount: int.parse(_amountController.text),
-        paymentMethod: selectedPaymentMethod,
-        icon: widget.categoryIcon,
-        iconBgColor: widget.categoryColor.toARGB32(),
-        notes: _notesController.text.isEmpty ? "" : _notesController.text,
+        categoryName:
+            widget.transactionModel?.categoryName ?? widget.categoryName!,
+        amount: amount,
+        paymentMethod: context.read<AddExpenseProvider>().selectedPaymentMethod,
+        icon: widget.transactionModel?.icon ?? widget.categoryIcon!,
+        iconBgColor:
+            widget.transactionModel?.iconBgColor ??
+            widget.categoryColor!.toARGB32(),
+        notes: _notesController.text,
       );
 
-      context.read<AddExpenseProvider>().addExpense(tn);
+      widget.transactionModel != null
+          ? context.read<AddExpenseProvider>().updateTransaction(
+              widget.transactionModel!.id!,
+              tn,
+            )
+          : context.read<AddExpenseProvider>().addExpense(tn);
 
-      setState(() {
-        isLoading = false;
-      });
-
-      // Show success message
-      //  _showSuccessDialog(tn);
+      _showSuccessDialog(tn);
     }
   }
 
-  void _showSuccessDialog(Map<String, dynamic> data) {
+  void _showSuccessDialog(TransactionModel data) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -413,26 +409,27 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                 children: [
                   Icon(Icons.check_circle, color: AppColors.success, size: 28),
                   SizedBox(width: 12),
-                  Text('Success!'),
+                  Text('successTitle'.tr),
                 ],
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Transaction saved successfully!'),
+                  Text('successMessage'.tr),
                   SizedBox(height: 16),
                   Text(
-                    'Details:',
+                    'details'.tr,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
-                  Text('Amount: ৳${data['amount']}'),
-                  Text('Category: ${data['category']}'),
-                  Text('Payment: ${data['paymentMethod']}'),
-                  Text('Date: ${_formatDate(selectedDate)}'),
-                  if (data['title'] != null) Text('Title: ${data['title']}'),
-                  if (data['notes'] != null) Text('Notes: ${data['notes']}'),
+                  Text('${"amount".tr}: ৳${data.amount}'),
+                  Text('${"category".tr}: ${data.categoryName}'),
+                  Text('${"payment".tr}: ${data.paymentMethod}'),
+                  Text(
+                    '${"date".tr}: ${_formatDate(context.watch<AddExpenseProvider>().selectedDate)}',
+                  ),
+                  if (data.notes != null) Text('${"notes".tr}: ${data.notes}'),
                 ],
               ),
               actions: [
@@ -441,7 +438,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                     Navigator.of(context).pop();
                     _resetForm();
                   },
-                  child: Text('Add Another'),
+                  child: Text('addAnother'.tr),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -452,7 +449,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                     backgroundColor: AppColors.primaryBlue,
                     foregroundColor: AppColors.textPrimary,
                   ),
-                  child: Text('Done'),
+                  child: Text('done'.tr),
                 ),
               ],
             ),
@@ -467,10 +464,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     _titleController.clear();
     _amountController.clear();
     _notesController.clear();
-    setState(() {
-      selectedCategory = null;
-      selectedDate = DateTime.now();
-      selectedPaymentMethod = 'Cash';
-    });
+    context.read<AddExpenseProvider>().clearDate();
   }
 }
