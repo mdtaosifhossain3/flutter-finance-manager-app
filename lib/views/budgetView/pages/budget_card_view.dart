@@ -101,10 +101,10 @@ class _BudgetCardViewState extends State<BudgetCardView> {
       builder: (context, provider, child) {
         final categories = provider.categoriesByBudget[widget.budget.id];
 
-        final int totalSpent = categories!.fold(
+        final int totalSpent =categories != null ? categories.fold(
           0,
           (sum, cat) => sum + (cat.spent),
-        );
+        ) : 0;
 
         final int remaining = widget.budget.totalAmount - totalSpent;
 
@@ -192,10 +192,10 @@ class _BudgetCardViewState extends State<BudgetCardView> {
     return Consumer<BudgetProvider>(
       builder: (context, provider, child) {
         final categories = provider.categoriesByBudget[widget.budget.id];
-        final int totalSpent = categories!.fold(
+        final int totalSpent = categories != null ? categories.fold(
           0,
           (sum, cat) => sum + (cat.spent),
-        );
+        ):0;
         final double percentage = (totalSpent / widget.budget.totalAmount)
             .clamp(0.0, 1.0);
 
@@ -283,7 +283,7 @@ class _BudgetCardViewState extends State<BudgetCardView> {
                         border: OutlineInputBorder(),
                       ),
                       value: selectedCategory,
-                      items: categories
+                      items: categoryKeys
                           .map(
                             (cat) => DropdownMenuItem(
                           value: cat,
@@ -421,7 +421,7 @@ class _BudgetCardViewState extends State<BudgetCardView> {
               ),
               SizedBox(height: 16),
               //...expenses.map((expense) => _buildExpenseItem(expense)),
-              if (categories == null && categories!.isEmpty)
+              if (categories == null)
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),

@@ -1,60 +1,58 @@
-import 'package:get/get.dart';
-
-final List<String> categories = [
+final List<String> categoryKeys = [
   // Basic Needs
-  'budgetgroceries'.tr,
-  'utilities'.tr,
-  'rent_mortgage'.tr,
-  'transportation'.tr,
-  'fuel'.tr,
-  'bills_subscriptions'.tr,
-  'internet_phone'.tr,
+  'budgetgroceries',
+  'utilities',
+  'rent_mortgage',
+  'transportation',
+  'fuel',
+  'bills_subscriptions',
+  'internet_phone',
 
   // Food & Lifestyle
-  'dining_out'.tr,
-  'shopping'.tr,
-  'entertainment'.tr,
-  'travel'.tr,
-  'gym_fitness'.tr,
-  'hobbies'.tr,
-  'personal_care'.tr,
+  'dining_out',
+  'shopping',
+  'entertainment',
+  'travel',
+  'gym_fitness',
+  'hobbies',
+  'personal_care',
 
   // Health & Safety
-  'healthcare'.tr,
-  'medicine'.tr,
-  'insurance'.tr,
-  'emergency_fund'.tr,
+  'healthcare',
+  'medicine',
+  'insurance',
+  'emergency_fund',
 
   // Education & Growth
-  'education'.tr,
-  'courses_training'.tr,
-  'books_supplies'.tr,
-  'child_care'.tr,
+  'education',
+  'courses_training',
+  'books_supplies',
+  'child_care',
 
   // Financial Goals
-  'savings'.tr,
-  'investment'.tr,
-  'retirement_fund'.tr,
-  'loan_repayment'.tr,
-  'debt_payment'.tr,
-  'taxes'.tr,
+  'savings',
+  'investment',
+  'retirement_fund',
+  'loan_repayment',
+  'debt_payment',
+  'taxes',
 
   // Family & Home
-  'household_supplies'.tr,
-  'home_maintenance'.tr,
-  'pets'.tr,
-  'gifts_donations'.tr,
+  'household_supplies',
+  'home_maintenance',
+  'pets',
+  'gifts_donations',
 
   // Work & Business
-  'business_expenses'.tr,
-  'office_supplies'.tr,
-  'freelancing_tools'.tr,
-  'transportation_work'.tr,
+  'business_expenses',
+  'office_supplies',
+  'freelancing_tools',
+  'transportation_work',
 
   // Miscellaneous
-  'charity'.tr,
-  'subscriptions_memberships'.tr,
-  'events_celebrations'.tr,
-  'luxury_wants'.tr,
-  'other'.tr,
+  'charity',
+  'subscriptions_memberships',
+  'events_celebrations',
+  'luxury_wants',
+  'other',
 ];

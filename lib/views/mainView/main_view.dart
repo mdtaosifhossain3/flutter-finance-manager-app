@@ -7,8 +7,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 
-import '../categoryView/category_view.dart';
-
 class MainView extends StatefulWidget {
   const MainView({super.key});
 
@@ -16,68 +14,64 @@ class MainView extends StatefulWidget {
   State<MainView> createState() => _MainViewState();
 }
 
-class _MainViewState extends State<MainView>
-    with SingleTickerProviderStateMixin {
-  late int currentPage;
-  late TabController tabController;
+class _MainViewState extends State<MainView> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  int _currentPage = 0;
+
+  static const int _tabCount = 4;
+  static const Duration _animationDuration = Duration(milliseconds: 500);
+  static const double _iconSize = 28;
+  static const double _tabHeight = 70;
+  static const double _tabWidth = 50;
 
   @override
   void initState() {
-    currentPage = 0;
-    tabController = TabController(length: 5, vsync: this);
-    tabController.animation?.addListener(() {
-      final value = tabController.animation!.value.round();
-      if (value != currentPage && mounted) {
-        changePage(value);
-      }
-    });
     super.initState();
+    _tabController = TabController(length: _tabCount, vsync: this);
+    _tabController.animation?.addListener(_onTabAnimationChange);
   }
 
-  void changePage(int newPage) {
-    setState(() {
-      currentPage = newPage;
-    });
+  void _onTabAnimationChange() {
+    final value = _tabController.animation!.value.round();
+    if (value != _currentPage && mounted) {
+      _changePage(value);
+    }
+  }
+
+  void _changePage(int newPage) {
+    setState(() => _currentPage = newPage);
+  }
+
+  void _onFabPressed() {
+    _changePage(2);
+    _tabController.animateTo(2);
   }
 
   @override
   void dispose() {
-    tabController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final Color unselectedColor = AppColors.textMuted;
-
     return Scaffold(
       body: BottomBar(
         clip: Clip.none,
         fit: StackFit.expand,
-        icon: (width, height) => Center(
-          child: IconButton(
-            padding: EdgeInsets.zero,
-            onPressed: null,
-            icon: Icon(
-              Icons.arrow_upward_rounded,
-              color: unselectedColor,
-              size: width,
-            ),
-          ),
-        ),
-        //borderRadius: BorderRadius.circular(500),
-        duration: Duration(milliseconds: 500),
+        icon: _buildBarIcon,
+       // borderRadius: BorderRadius.circular(500),
+        width: double.infinity,
+        duration: _animationDuration,
         curve: Curves.decelerate,
         showIcon: true,
-        width: MediaQuery.of(context).size.width,
-        barColor: Theme.of(context).scaffoldBackgroundColor,
+        barColor: Theme.of(context).dividerColor,
         start: 2,
         end: 0,
         offset: 0,
-
         barAlignment: Alignment.bottomCenter,
-        iconHeight: 40, // Increased from 30
-        iconWidth: 40, // Increased from 30
+        iconHeight: 40,
+        iconWidth: 40,
         reverse: false,
         hideOnScroll: true,
         scrollOpposite: false,
@@ -85,13 +79,12 @@ class _MainViewState extends State<MainView>
         onBottomBarHidden: () {},
         onBottomBarShown: () {},
         body: (context, controller) => TabBarView(
-          controller: tabController,
+          controller: _tabController,
           dragStartBehavior: DragStartBehavior.down,
           physics: const BouncingScrollPhysics(),
-          children: [
+          children: const [
             HomeView(),
             ReportView(),
-            CategoryView(),
             BudgetView(),
             SettingsPage(),
           ],
@@ -100,153 +93,72 @@ class _MainViewState extends State<MainView>
           alignment: Alignment.center,
           clipBehavior: Clip.none,
           children: [
-            TabBar(
-              dividerColor: Colors.transparent,
-              indicatorPadding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
-              controller: tabController,
-              indicator: UnderlineTabIndicator(
-                borderSide: BorderSide(color: Colors.transparent, width: 0),
-              ),
-              tabs: [
-                SizedBox(
-                  height: 70, // Increased from 55
-                  width: 50, // Increased from 40
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.home,
-                          color: currentPage == 0
-                              ? AppColors.primaryBlue
-                              : unselectedColor,
-                          size: 28, // Added explicit size
-                        ),
-                        Text(
-                          "Home",
-                          style: TextStyle(
-                            color: currentPage == 0
-                                ? AppColors.primaryBlue
-                                : unselectedColor,
-                            fontSize: 10, // Reduced font size for better fit
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 70, // Increased from 55
-                  width: 50, // Increased from 40
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.analytics,
-                          color: currentPage == 1
-                              ? AppColors.primaryBlue
-                              : unselectedColor,
-                          size: 28, // Added explicit size
-                        ),
-                        Text(
-                          "Report",
-                          style: TextStyle(
-                            color: currentPage == 1
-                                ? AppColors.primaryBlue
-                                : unselectedColor,
-                            fontSize: 10, // Reduced font size for better fit
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 70, // Increased from 55
-                  width: 50, // Increased from 40
-                  child: Center(
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.transparent,
-                      size: 28, // Added explicit size
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 70, // Increased from 55
-                  width: 50, // Increased from 40
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.wallet,
-                          color: currentPage == 3
-                              ? AppColors.primaryBlue
-                              : unselectedColor,
-                          size: 28, // Added explicit size
-                        ),
-                        Text(
-                          "Budget",
-                          style: TextStyle(
-                            color: currentPage == 3
-                                ? AppColors.primaryBlue
-                                : unselectedColor,
-                            fontSize: 10, // Reduced font size for better fit
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 70, // Increased from 55
-                  width: 50, // Increased from 40
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.settings,
-                          color: currentPage == 4
-                              ? AppColors.primaryBlue
-                              : unselectedColor, // Fixed color consistency
-                          size: 28, // Added explicit size
-                        ),
-                        Text(
-                          "Profile",
-                          style: TextStyle(
-                            color: currentPage == 4
-                                ? AppColors.primaryBlue
-                                : unselectedColor,
-                            fontSize: 10, // Reduced font size for better fit
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              top: -25, // Moved up slightly to accommodate larger bottom bar
-              child: FloatingActionButton(
-                backgroundColor: Theme.of(context).primaryColor,
-                foregroundColor: AppColors.textPrimary,
-                onPressed: () {
-                  changePage(2);
-                  tabController.animateTo(2);
-                }, // Added explicit size for consistency
-                elevation: 8,
-                child: Icon(
-                  Icons.add,
-                  size: 28,
-                ), // Added elevation for better visual separation
-              ),
-            ),
+            _buildTabBar(),
+            _buildFloatingActionButton(context),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildBarIcon(double width, double height) {
+    return Center(
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        onPressed: null,
+        icon: Icon(
+          Icons.arrow_upward_rounded,
+          color: AppColors.textMuted,
+          size: width,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return TabBar(
+      dividerColor: Colors.transparent,
+      indicatorPadding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
+      controller: _tabController,
+      indicator: const UnderlineTabIndicator(
+        borderSide: BorderSide(color: Colors.transparent, width: 0),
+      ),
+      tabs: [
+        _buildTabItem(Icons.home, 0),
+        _buildTabItem(Icons.analytics, 1),
+        _buildTabItem(Icons.wallet, 3),
+        _buildTabItem(Icons.settings, 4),
+      ],
+    );
+  }
+
+  Widget _buildTabItem(IconData icon, int pageIndex) {
+    final isActive = _currentPage == pageIndex;
+    final color = isActive ? AppColors.primaryBlue : AppColors.textMuted;
+
+    return SizedBox(
+      height: _tabHeight,
+      width: _tabWidth,
+      child: Center(
+        child: Icon(
+          icon,
+          color: color,
+          size: _iconSize,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFloatingActionButton(BuildContext context) {
+    return Positioned(
+      top: -25,
+
+      child: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: AppColors.textPrimary,
+        elevation: 8,
+        onPressed: _onFabPressed,
+        child: const Icon(Icons.add, size: _iconSize),
       ),
     );
   }

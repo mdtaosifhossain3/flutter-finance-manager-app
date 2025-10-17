@@ -27,6 +27,7 @@ class AddTransactionDbHelper{
   final String iconCodePoint = 'iconCodePoint';
   final String iconFontFamily = 'iconFontFamily';
   final String iconBgColor = 'iconBgColor';
+  final String categoryKey = 'categoryKey';
 
   Future<Database> getDB() async {
     myDB ??= await openDB();
@@ -51,6 +52,7 @@ class AddTransactionDbHelper{
           $paymentMethod TEXT NOT NULL,
           $iconCodePoint INTEGER NOT NULL,
           $iconFontFamily TEXT NOT NULL,
+          $categoryKey TEXT NOT NULL,
           $iconBgColor INTEGER NOT NULL)'''
         );
       },

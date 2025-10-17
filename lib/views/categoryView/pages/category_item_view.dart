@@ -1,3 +1,4 @@
+
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/card_widget.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
@@ -13,6 +14,7 @@ import '../../../models/categoryModel/transaction_model.dart';
 
 class CategoryItemView extends StatefulWidget {
   final String categoryName;
+  final String categoryKey;
   final IconData categoryIcon;
   final Color categoryColor;
 
@@ -21,6 +23,7 @@ class CategoryItemView extends StatefulWidget {
     required this.categoryName,
     required this.categoryIcon,
     required this.categoryColor,
+    required this.categoryKey,
   });
 
   @override
@@ -35,8 +38,9 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
   Widget build(BuildContext context) {
     final provider = context.watch<CategoryItemProvider>();
     List<TransactionModel> transactionModel = provider.filteredTransactions(
-      selectedCategory: widget.categoryName,
+      selectedCategory: widget.categoryKey,
     );
+
 
     return Scaffold(
       appBar: customAppBar(title: widget.categoryName,leading: Padding(
@@ -66,6 +70,8 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
             ),
             // Transaction List
             _buildTransactionListView(transactionModel),
+
+
           ],
         ),
       ),
@@ -318,6 +324,7 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
             categoryColor: widget.categoryColor,
             categoryIcon: widget.categoryIcon,
             categoryName: widget.categoryName,
+            categoryKey: widget.categoryKey,
           ),
         );
       },

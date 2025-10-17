@@ -5,6 +5,7 @@ class HelperFunctions {
   HelperFunctions._();
   // Add your helper functions here
  static String formatDateToMonthDay(DateTime date) {
+
     final DateFormat formatter = DateFormat('MMMM d');
     return formatter.format(date);
   }
@@ -59,14 +60,29 @@ class HelperFunctions {
   // Method to get localized date
   static String convertToBanglaDigits(String number) {
     const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-    return number.split('').map((digit) => banglaDigits[int.parse(digit)]).join('');
+
+    final locale = Get.locale?.languageCode ?? 'en';
+
+    if (locale == 'bn') {
+      return number.split('').map((digit) => banglaDigits[int.parse(digit)]).join('');
+    } else {
+      return number;
+    }
   }
 
   static String recievedIntAndconvertToBanglaDigits(int number) {
+    final locale = Get.locale?.languageCode ?? 'en';
     const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-    return number.toString().split('').map((digit) {
-      return banglaDigits[int.parse(digit)];
-    }).join('');
+
+    if (locale == 'bn') {
+      return number.toString().split('').map((digit) {
+        return banglaDigits[int.parse(digit)];
+      }).join('');    }
+
+    else {
+      return number.toString();
+    }
+
   }
 
 

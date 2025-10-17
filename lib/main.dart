@@ -9,6 +9,8 @@ import 'package:finance_manager_app/providers/homeProvider/home_provider.dart';
 import 'package:finance_manager_app/providers/languageProvider/language_translator_provider.dart';
 import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
+import 'package:finance_manager_app/views/mainView/Myhomepage.dart';
+import 'package:finance_manager_app/views/mainView/main_view.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/get_navigation.dart';
@@ -73,7 +75,7 @@ class MyApp extends StatelessWidget {
       translations: AppTranslations(),
       locale: context.watch<LanguageTranslatorProvider>().locale,
       fallbackLocale: const Locale('en', 'US'),
-      home: SplashView(),
+      home:MyHomePage(),
     );
   }
 }

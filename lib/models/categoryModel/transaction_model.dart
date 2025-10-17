@@ -13,6 +13,7 @@ class TransactionModel {
   final String paymentMethod;
   final IconData icon;
   final int iconBgColor;
+  final String categoryKey;
 
   TransactionModel({
     this.id,
@@ -25,6 +26,8 @@ class TransactionModel {
     required this.paymentMethod,
     required this.icon,
     required this.iconBgColor,
+    required this.categoryKey,
+
   });
 
   // Convert to Map for SQLite
@@ -41,6 +44,8 @@ class TransactionModel {
       'iconCodePoint': icon.codePoint,
       'iconFontFamily': icon.fontFamily,
       'iconBgColor': iconBgColor,
+      'categoryKey': categoryKey,
+
     };
   }
   Map<String, dynamic> toMapForUpdate() => {
@@ -54,6 +59,8 @@ class TransactionModel {
     'iconCodePoint': icon.codePoint,
     'iconFontFamily': icon.fontFamily,
     'iconBgColor': iconBgColor,
+    'categoryKey': categoryKey,
+
   };
 
   // Create from Map (SQLite row)
@@ -68,10 +75,12 @@ class TransactionModel {
       notes: map['notes'],
       paymentMethod: map['paymentMethod'],
       iconBgColor: map['iconBgColor'],
+      categoryKey: map['categoryKey'],
       icon: IconData(
         map['iconCodePoint'],
         fontFamily: map['iconFontFamily'],
       ),
+
     );
   }
 }

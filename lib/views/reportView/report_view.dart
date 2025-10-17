@@ -48,7 +48,7 @@ class _ReportViewState extends State<ReportView> {
               MonthlyBudgetChartWidget(),
               SizedBox(height: 24),
               LastFiveDaysPeriodChartWidget(),
-              SizedBox(height: 120),
+            SizedBox(height: 120),
             ],
           ),
         ),

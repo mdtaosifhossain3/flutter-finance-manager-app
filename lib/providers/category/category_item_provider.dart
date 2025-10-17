@@ -17,7 +17,7 @@ class CategoryItemProvider extends ChangeNotifier {
 
       final matchesCategory =
           selectedCategory == null ||
-          transaction.categoryName == selectedCategory;
+          transaction.categoryKey == selectedCategory;
 
       return matchesMonth && matchesCategory;
     }).toList()..sort((a, b) => b.date.compareTo(a.date));

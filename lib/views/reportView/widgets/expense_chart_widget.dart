@@ -87,6 +87,7 @@ class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
                           .filterCategories
                           .take(5) // 👈 only first 5
                           .map((category) {
+                            print(category);
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4),
                               child: Row(

@@ -4,7 +4,6 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
     'en_US': {
-      'settings': 'Hello', 'welcome': 'Welcome',
       'reportTitle': 'Report',
       'search': 'Super AI search',
       'income': 'Income',
@@ -17,9 +16,9 @@ class AppTranslations extends Translations {
 
       "expensesTitle": "Expenses",
       "outOfText": "Out of",
-      "periodDay": "D",
-      "periodWeek": "W",
-      "periodMonth": "M",
+      "periodDay": "Day",
+      "periodWeek": "Week",
+      "periodMonth": "Month",
       "historyTitle": "History",
       "seeAllButton": "See All",
       "noTransactions": "No transactions yet",
@@ -220,7 +219,64 @@ class AppTranslations extends Translations {
 
 
       // -------------------------------Budget Category-------------------------------
-// Category Groups
+      "budgetOverview": "Budget Overview",
+      "noBudgetsYet": "No budgets yet",
+
+      // -------------------------------Budget Card -------------------------------
+      "overspent": "overspent",
+      "of": "of",
+      "left": "left",
+      "overspentMessage": "You've exceeded your budget. Consider reducing spending.",
+      "budgetLimitWarning": "You're close to your budget limit. Spend carefully.",
+      "doingGreatMessage": "You're doing great! Keep it up.",
+      // -------------------------------Budget Card View-------------------------------
+      "allocated": "Allocated",
+      "remaining": "Remaining",
+      "budgetProgress": "Budget Progress",
+      "addCategoryToBudget": "Add Category to Budget",
+      "allocatedAmount": "Allocated Amount",
+      "categoryAddedSuccess": "Category added successfully!",
+      "noCategoriesYet": "No categories yet",
+      "addSpent": "Add Spent",
+      "addAmount": "Add Amount",
+      "amountUpdatedSuccess": "Amount updated successfully!",
+      "categoryDeleted": "Category deleted",
+
+      // -------------------------------Budget Create-------------------------------
+        "createBudget": "Create Budget",
+        "createNewBudget": "Create New Budget",
+        "setSpendingLimits": "Set spending limits and track your expenses",
+        "budgetTitle": "Budget Title",
+        "budgetTitleHint": "e.g., Monthly Groceries",
+        "budgetTitleError": "Please enter a budget title",
+        "budgetAmount": "Budget Amount",
+        "budgetAmountHint": "0.00",
+        "budgetAmountError": "Please enter budget amount",
+        "budgetAmountValidError": "Please enter a valid amount",
+        "categories": "Categories",
+        "selectCategory": "Select a category",
+        "pleaseAddCategory": "Please add at least one category",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "selectDate": "Select date",
+        "startDateError": "Please select start date",
+        "endDateError": "End date must be after start date",
+        "cancel": "Cancel",
+        "createBudgetButton": "Create Budget",
+        "addCategory": "Add",
+        "categoryAmount": "Amount",
+        "delete": "Delete",
+        "pleaseSelectCategory": "Please select a category",
+        "pleaseEnterValidAmount": "Please enter a valid amount",
+        "budgetCreatedSuccess": "Budget created successfully!",
+        "dateFormat": "dd/mm/yyyy",
+
+        // Snackbar messages
+        "selectStartDate": "Please select a start date",
+        "selectEndDate": "Please select an end date",
+        "addOneCategory": "Please add at least one category",
+
+      // Category Groups
       'basic_needs': 'Basic Needs',
       'food_lifestyle': 'Food & Lifestyle',
       'health_safety': 'Health & Safety',
@@ -270,9 +326,65 @@ class AppTranslations extends Translations {
       'events_celebrations': 'Events & Celebrations',
       'luxury_wants': 'Luxury / Wants',
 
+
+      // -------------------------------Setting View -------------------------------
+
+      // Settings Page
+      "settings": "Settings",
+
+      // General Settings
+      "generalAppSettings": "🔧 General App Settings",
+      "appTheme": "App Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System",
+      "appLanguage": "App Language",
+      "bangla": "Bangla",
+      "english": "English",
+      "notifications": "Notifications",
+      "notificationsDescription": "Reminders, budget alerts, bill due dates",
+      "budgetAlerts": "Budget Alerts",
+      "budgetAlertsDescription": "Get notified when approaching budget limits",
+      "billReminders": "Bill Reminders",
+      "billRemindersDescription": "Notify before bill due dates",
+      "logout": "Logout",
+
+      // Finance Settings
+      "financeSpecificSettings": "💰 Finance-Specific Settings",
+      "defaultAccount": "Default Account",
+      "defaultAccountDescription": "Choose which wallet/account opens by default",
+      "mainWallet": "Main Wallet",
+      "automaticTransactionImport": "Automatic Transaction Import",
+      "automaticTransactionImportDescription": "Sync transactions from bank/CSV files",
+
+      // Privacy & Security
+      "privacySecurity": "🔒 Privacy & Security",
+      "appLock": "App Lock",
+      "appLockDescription": "PIN, fingerprint, or FaceID protection",
+      "autoLockTimer": "Auto-Lock Timer",
+      "1 minute": "1 minute",
+      "5 minutes": "5 minutes",
+      "15 minutes": "15 minutes",
+      "30 minutes": "30 minutes",
+      "never": "Never",
+      "clearLocalData": "Clear Local Data",
+      "resetApp": "Reset App",
+      "exportData": "Export Data",
+
+      // Other Settings
+      "otherSettings": "🌐 Other Settings",
+      "rateUs": "Rate Us",
+      "shareApp": "Share App",
+      "contactSupport": "Contact Support",
+      "faq": "FAQ",
+      "about": "About",
+      "feedback": "Feedback",
+      "termsPolicies": "Terms & Policies",
+      "versionInfo": "Version Info",
+      "versionInfoDescription": "Build version and update checker",
+
     },
     'bn_BD': {
-      'settings': 'হ্যালো', 'welcome': 'স্বাগতম',
       'reportTitle': 'রিপোর্ট',
       'search': 'অনুসন্ধান করুন',
       'income': 'আয়',
@@ -488,7 +600,64 @@ class AppTranslations extends Translations {
       "paypal": "পেপ্যাল",
       "check": "চেক",
 
-      // -------------------------------Budget Category-------------------------------
+      // -------------------------------Budget OverView-------------------------------
+
+        "budgetOverview": "বাজেট ওভারভিউ",
+        "noBudgetsYet": "এখনও কোনো বাজেট নেই",
+
+      // -------------------------------Budget Card -------------------------------
+      "of": "এর",
+      "left": "বাকি",
+      "overspentMessage": "আপনি আপনার বাজেট ছাড়িয়ে গেছেন। খরচ কমানোর কথা বিবেচনা করুন।",
+      "budgetLimitWarning": "আপনি আপনার বাজেট সীমার কাছাকাছি আছেন। সতর্কতার সাথে খরচ করুন।",
+      "doingGreatMessage": "আপনি দুর্দান্ত করছেন! এভাবেই চালিয়ে যান।",
+      // -------------------------------Budget Card View -------------------------------
+      "allocated": "বরাদ্দকৃত",
+      "remaining": "অবশিষ্ট",
+      "budgetProgress": "বাজেট অগ্রগতি",
+      "addCategoryToBudget": "বাজেটে ক্যাটাগরি যোগ করুন",
+      "allocatedAmount": "বরাদ্দকৃত টাকা",
+      "categoryAddedSuccess": "ক্যাটাগরি সফলভাবে যোগ করা হয়েছে!",
+      "noCategoriesYet": "এখনও কোন ক্যাটাগরি নেই",
+      "addSpent": "খরচ যোগ করুন",
+      "addAmount": "টাকা যোগ করুন",
+      "amountUpdatedSuccess": "টাকা সফলভাবে আপডেট করা হয়েছে!",
+      "categoryDeleted": "ক্যাটাগরি মুছে ফেলা হয়েছে",
+
+      // -------------------------------Budget Create -------------------------------
+      "createBudget": "বাজেট তৈরি করুন",
+        "createNewBudget": "নতুন বাজেট তৈরি করুন",
+        "setSpendingLimits": "খরচের সীমা নির্ধারণ করুন এবং আপনার ব্যয় ট্র্যাক করুন",
+        "budgetTitle": "বাজেটের শিরোনাম",
+        "budgetTitleHint": "যেমন, মাসিক বাজার খরচ",
+        "budgetTitleError": "বাজেটের শিরোনাম লিখুন",
+        "budgetAmount": "বাজেটের টাকা",
+        "budgetAmountHint": "০.০০",
+        "budgetAmountError": "বাজেটের টাকার পরিমাণ লিখুন",
+        "budgetAmountValidError": "সঠিক টাকার পরিমাণ লিখুন",
+        "categories": "ক্যাটাগরি সমূহ",
+        "selectCategory": "একটি ক্যাটাগরি নির্বাচন করুন",
+        "pleaseAddCategory": "অন্তত একটি ক্যাটাগরি যোগ করুন",
+        "startDate": "শুরুর তারিখ",
+        "endDate": "শেষের তারিখ",
+        "selectDate": "তারিখ নির্বাচন করুন",
+        "startDateError": "শুরুর তারিখ নির্বাচন করুন",
+        "endDateError": "শেষের তারিখ শুরুর তারিখের পরে হতে হবে",
+        "cancel": "বাতিল",
+        "createBudgetButton": "বাজেট তৈরি করুন",
+        "addCategory": "যোগ করুন",
+        "categoryAmount": "টাকা",
+        "delete": "মুছুন",
+        "pleaseSelectCategory": "একটি ক্যাটাগরি নির্বাচন করুন",
+        "pleaseEnterValidAmount": "সঠিক টাকার পরিমাণ লিখুন",
+        "budgetCreatedSuccess": "বাজেট সফলভাবে তৈরি হয়েছে!",
+        "dateFormat": "দিন/মাস/বছর",
+
+        // Snackbar messages
+        "selectStartDate": "শুরুর তারিখ নির্বাচন করুন",
+        "selectEndDate": "শেষের তারিখ নির্বাচন করুন",
+        "addOneCategory": "অন্তত একটি ক্যাটাগরি যোগ করুন",
+
       // Category Groups
       'basic_needs': 'মৌলিক চাহিদা',
       'food_lifestyle': 'খাবার ও লাইফস্টাইল',
@@ -538,6 +707,53 @@ class AppTranslations extends Translations {
       'subscriptions_memberships': 'সাবস্ক্রিপশন ও সদস্যতা',
       'events_celebrations': 'ইভেন্ট ও উদযাপন',
       'luxury_wants': 'বিলাসিতা / চাহিদা',
+
+
+      // ------------------------------- Setting View -------------------------------
+      // Settings Page
+      "settings": "সেটিংস",
+
+      // General Settings
+      "generalAppSettings": "🔧 সাধারণ অ্যাপ সেটিংস",
+      "appTheme": "অ্যাপ থিম",
+      "appLanguage": "অ্যাপ ভাষা",
+      "notifications": "নোটিফিকেশন",
+      "notificationsDescription": "রিমাইন্ডার, বাজেট অ্যালার্ট, বিলের তারিখ",
+      "budgetAlerts": "বাজেট অ্যালার্ট",
+      "budgetAlertsDescription": "বাজেট সীমার কাছাকাছি আসলে নোটিফিকেশন পান",
+      "billReminders": "বিল রিমাইন্ডার",
+      "billRemindersDescription": "বিলের তারিখের আগে নোটিফিকেশন",
+      "logout": "লগআউট",
+
+      // Finance Settings
+      "financeSpecificSettings": "💰 আর্থিক সেটিংস",
+      "defaultAccount": "ডিফল্ট অ্যাকাউন্ট",
+      "defaultAccountDescription": "ডিফল্টভাবে কোন ওয়ালেট/অ্যাকাউন্ট খুলবে তা নির্বাচন করুন",
+      "mainWallet": "মেইন ওয়ালেট",
+      "automaticTransactionImport": "স্বয়ংক্রিয় লেনদেন ইম্পোর্ট",
+      "automaticTransactionImportDescription": "ব্যাংক/CSV ফাইল থেকে লেনদেন সিঙ্ক করুন",
+
+      // Privacy & Security
+      "privacySecurity": "🔒 গোপনীয়তা ও নিরাপত্তা",
+      "appLock": "অ্যাপ লক",
+      "appLockDescription": "পিন, ফিঙ্গারপ্রিন্ট বা ফেসআইডি সুরক্ষা",
+      "autoLockTimer": "স্বয়ংক্রিয় লক টাইমার",
+      "clearLocalData": "লোকাল ডেটা ক্লিয়ার করুন",
+      "resetApp": "অ্যাপ রিসেট করুন",
+      "exportData": "ডেটা এক্সপোর্ট করুন",
+
+      // Other Settings
+      "otherSettings": "🌐 অন্যান্য সেটিংস",
+      "rateUs": "রেটিং দিন",
+      "shareApp": "অ্যাপ শেয়ার করুন",
+      "contactSupport": "সাপোর্টে যোগাযোগ করুন",
+      "faq": "প্রশ্নোত্তর",
+      "about": "সম্পর্কে",
+      "feedback": "ফিডব্যাক",
+      "termsPolicies": "শর্ত ও নীতি",
+      "versionInfo": "ভার্সন তথ্য",
+      "versionInfoDescription": "বিল্ড ভার্সন এবং আপডেট চেকার",
+
     },
 
 

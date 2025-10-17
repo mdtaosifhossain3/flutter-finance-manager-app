@@ -15,7 +15,7 @@ class BudgetView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(
-        title: 'Budget Overview',
+        title: 'budgetOverview'.tr,
         actions: [
           Padding(
             padding: EdgeInsets.only(
@@ -43,7 +43,7 @@ class BudgetView extends StatelessWidget {
         child: Consumer<BudgetProvider>(
           builder: (context, provider, child) {
             return provider.budgets.isEmpty
-                ? const Center(child: Text("No budgets yet"))
+                ?  Center(child: Text("noBudgetsYet".tr))
                 : ListView.builder(
                     padding: EdgeInsets.symmetric(
                       horizontal: MediaQuery.of(context).size.width * 0.04,

@@ -17,8 +17,10 @@ class CardWidget extends StatefulWidget {
 }
 
 class _CardWidgetState extends State<CardWidget> {
+
   @override
   Widget build(BuildContext context) {
+
     return InkWell(
       onTap: () {
         _showTransactionDetails(widget.transaction);
@@ -50,7 +52,7 @@ class _CardWidgetState extends State<CardWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.transaction.categoryName,
+                    widget.transaction.categoryKey.tr,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   SizedBox(height: 4),
@@ -121,6 +123,8 @@ class _CardWidgetState extends State<CardWidget> {
                   children: [
                     InkWell(
                       onTap: () async {
+                        Navigator.pop(context); // closes bottom sheet
+
                         Get.to(
                           TransactionFormPage(transactionModel: transaction),
                           transition: Transition.rightToLeft,
@@ -165,7 +169,7 @@ class _CardWidgetState extends State<CardWidget> {
               ],
             ),
             SizedBox(height: 20),
-            _buildDetailRow('category'.tr, transaction.categoryName),
+            _buildDetailRow('category'.tr, transaction.categoryKey.tr),
 
             _buildDetailRow('title'.tr, transaction.title),
             _buildDetailRow(
@@ -186,16 +190,23 @@ class _CardWidgetState extends State<CardWidget> {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 80,
-            child: Text(label, style: Theme.of(context).textTheme.labelLarge),
+          Text(
+            "$label:",
+            style: Theme.of(context)
+                .textTheme
+                .labelLarge
+                ?.copyWith(fontWeight: FontWeight.w600),
           ),
+          const SizedBox(width: 10),
           Expanded(
-            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
+            child: Text(
+              value,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
         ],
       ),

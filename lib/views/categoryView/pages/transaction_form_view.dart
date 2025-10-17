@@ -15,8 +15,10 @@ class TransactionFormPage extends StatefulWidget {
     this.categoryName,
     this.categoryIcon,
     this.categoryColor,
+    this.categoryKey,
   });
   final String? categoryName;
+  final String? categoryKey;
   final IconData? categoryIcon;
   final Color? categoryColor;
   final TransactionModel? transactionModel;
@@ -31,15 +33,16 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   final _amountController = TextEditingController();
   final _notesController = TextEditingController();
 
+  // Payment methods keys for translation
   final List<String> paymentMethods = [
-    'Cash',
-    'Bank Transfer',
-    'Credit Card',
-    'Debit Card',
-    'Mobile Wallet',
-    'PayPal',
-    'Crypto',
-    'Check',
+    'cash',
+    'bankTransfer',
+    'creditCard',
+    'debitCard',
+    'mobileWallet',
+    'paypal',
+    'crypto',
+    'check',
   ];
 
   @override
@@ -47,7 +50,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     context.read<AddExpenseProvider>().selectedDate =
         widget.transactionModel?.date ?? DateTime.now();
     context.read<AddExpenseProvider>().selectedPaymentMethod =
-        widget.transactionModel?.paymentMethod ?? "Cash";
+        widget.transactionModel?.paymentMethod ?? "cash";
     _amountController.text = widget.transactionModel?.amount.toString() ?? "";
     _notesController.text = widget.transactionModel?.notes.toString() ?? "";
     super.initState();
@@ -70,9 +73,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
         leading: Padding(
           padding: const EdgeInsets.only(left: 10.0),
           child: IconButton(
-            onPressed: () {
-              Get.back();
-            },
+            onPressed: () => Get.back(),
             icon: Icon(Icons.arrow_back),
           ),
         ),
@@ -94,7 +95,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                       _buildTitleField(),
                       SizedBox(height: 20),
                       _buildAmountField(),
-                      SizedBox(height: 20),
                       SizedBox(height: 20),
                       _buildDateField(),
                       SizedBox(height: 20),
@@ -119,7 +119,8 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('titleOptional'.tr, style: Theme.of(context).textTheme.labelLarge),
+        Text('titleOptional'.tr,
+            style: Theme.of(context).textTheme.labelLarge),
         SizedBox(height: 8),
         TextFormField(
           controller: _titleController,
@@ -127,7 +128,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             hintText: 'titleHint'.tr,
             hintStyle: Theme.of(context).textTheme.bodySmall,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
@@ -147,7 +147,8 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('amountRequired'.tr, style: Theme.of(context).textTheme.titleSmall),
+        Text('amountRequired'.tr,
+            style: Theme.of(context).textTheme.titleSmall),
         SizedBox(height: 8),
         TextFormField(
           controller: _amountController,
@@ -164,9 +165,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
               fontWeight: FontWeight.w500,
               color: Theme.of(context).primaryColor,
             ),
-            // border: InputBorder.none,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
@@ -178,15 +177,9 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
           ),
           style: TextStyle(fontSize: 16),
           validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'amountRequiredError'.tr;
-            }
-            if (double.tryParse(value) == null) {
-              return 'amountValidError'.tr;
-            }
-            if (double.parse(value) <= 0) {
-              return 'amountGreaterError'.tr;
-            }
+            if (value == null || value.isEmpty) return 'amountRequiredError'.tr;
+            if (double.tryParse(value) == null) return 'amountValidError'.tr;
+            if (double.parse(value) <= 0) return 'amountGreaterError'.tr;
             return null;
           },
         ),
@@ -207,13 +200,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                // BoxShadow(
-                //   color: Theme.of(context).dividerColor,
-                //   blurRadius: 8,
-                //   offset: Offset(0, 2),
-                // ),
-              ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -239,16 +225,18 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   }
 
   Widget _buildPaymentMethodField() {
+    final provider = context.watch<AddExpenseProvider>();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('paymentMethodRequired'.tr, style: Theme.of(context).textTheme.bodyMedium),
+        Text('paymentMethodRequired'.tr,
+            style: Theme.of(context).textTheme.bodyMedium),
         SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: context.watch<AddExpenseProvider>().selectedPaymentMethod,
+          value: provider.selectedPaymentMethod,
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
@@ -262,12 +250,15 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             fontSize: 16,
             color: Theme.of(context).colorScheme.onSecondary,
           ),
-          items: paymentMethods.map((String method) {
-            return DropdownMenuItem<String>(value: method, child: Text(method));
+          items: paymentMethods.map((methodKey) {
+            return DropdownMenuItem<String>(
+              value: methodKey,
+              child: Text(methodKey.tr), // ✅ localized text
+            );
           }).toList(),
-          onChanged: context
-              .read<AddExpenseProvider>()
-              .setselectedPaymentMethod,
+          onChanged: (value) {
+            if (value != null) provider.setselectedPaymentMethod(value);
+          },
           icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).hintColor),
         ),
       ],
@@ -286,7 +277,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
+                color: Theme.of(context).dividerColor.withOpacity(0.05),
                 blurRadius: 8,
                 offset: Offset(0, 2),
               ),
@@ -297,7 +288,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             maxLines: 3,
             decoration: InputDecoration(
               hintText: 'notesHint'.tr,
-              hintStyle: TextStyle(color: Theme.of(context).hintColor),
               border: InputBorder.none,
               contentPadding: EdgeInsets.all(16),
             ),
@@ -340,56 +330,55 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
       initialDate: context.read<AddExpenseProvider>().selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Theme.of(context).primaryColor,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: ColorScheme.light(primary: Theme.of(context).primaryColor),
+        ),
+        child: child!,
+      ),
     );
 
     if (picked != null) {
-      // Use current time when saving the picked date
       context.read<AddExpenseProvider>().setSelectedDate(picked);
     }
   }
 
   String _formatDate(DateTime date) {
-    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+    final locale = Get.locale?.languageCode ?? 'en';
+    if (locale == 'bn') {
+      final banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+      String d = date.day.toString().split('').map((e) => banglaDigits[int.parse(e)]).join();
+      String m = date.month.toString().split('').map((e) => banglaDigits[int.parse(e)]).join();
+      String y = date.year.toString().split('').map((e) => banglaDigits[int.parse(e)]).join();
+      return '$d/$m/$y';
+    } else {
+      return '${date.day.toString().padLeft(2,'0')}/${date.month.toString().padLeft(2,'0')}/${date.year}';
+    }
   }
 
   Future<void> _handleSubmit() async {
     if (_formKey.currentState!.validate()) {
-      // Collect form data
       final text = _amountController.text.trim();
       final amount = int.tryParse(text) ?? 0;
-      TransactionModel tn = TransactionModel(
-        type:
-            widget.transactionModel?.type ??
-            context.read<CategoryProvider>().selectedType,
+      final tn = TransactionModel(
+        type: widget.transactionModel?.type ?? context.read<CategoryProvider>().selectedType,
         date: context.read<AddExpenseProvider>().selectedDate,
-        title: _titleController.text.isEmpty ? "" : _titleController.text,
-        categoryName:
-            widget.transactionModel?.categoryName ?? widget.categoryName!,
+        title: _titleController.text,
+        categoryName: widget.transactionModel?.categoryName ?? widget.categoryName!,
         amount: amount,
         paymentMethod: context.read<AddExpenseProvider>().selectedPaymentMethod,
         icon: widget.transactionModel?.icon ?? widget.categoryIcon!,
-        iconBgColor:
-            widget.transactionModel?.iconBgColor ??
-            widget.categoryColor!.toARGB32(),
+        iconBgColor: widget.transactionModel?.iconBgColor ?? widget.categoryColor!.toARGB32(),
         notes: _notesController.text,
+
+          categoryKey:widget.transactionModel?.categoryKey ?? widget.categoryKey ?? widget.categoryKey!
       );
 
-      widget.transactionModel != null
-          ? context.read<AddExpenseProvider>().updateTransaction(
-              widget.transactionModel!.id!,
-              tn,
-            )
-          : context.read<AddExpenseProvider>().addExpense(tn);
+      if (widget.transactionModel != null) {
+        context.read<AddExpenseProvider>().updateTransaction(widget.transactionModel!.id!, tn);
+      } else {
+        context.read<AddExpenseProvider>().addExpense(tn);
+      }
 
       _showSuccessDialog(tn);
     }
@@ -399,63 +388,50 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return PopScope(
-          canPop: false,
-          child: Hero(
-            tag: 'transaction_success_dialog',
-            child: AlertDialog(
-              title: Row(
-                children: [
-                  Icon(Icons.check_circle, color: AppColors.success, size: 28),
-                  SizedBox(width: 12),
-                  Text('successTitle'.tr),
-                ],
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('successMessage'.tr),
-                  SizedBox(height: 16),
-                  Text(
-                    'details'.tr,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  Text('${"amount".tr}: ৳${data.amount}'),
-                  Text('${"category".tr}: ${data.categoryName}'),
-                  Text('${"payment".tr}: ${data.paymentMethod}'),
-                  Text(
-                    '${"date".tr}: ${_formatDate(context.watch<AddExpenseProvider>().selectedDate)}',
-                  ),
-                  if (data.notes != null) Text('${"notes".tr}: ${data.notes}'),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _resetForm();
-                  },
-                  child: Text('addAnother'.tr),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close dialog
-                    Navigator.of(context).pop(); // Return to previous screen
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryBlue,
-                    foregroundColor: AppColors.textPrimary,
-                  ),
-                  child: Text('done'.tr),
-                ),
-              ],
-            ),
+      builder: (_) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.check_circle, color: AppColors.success, size: 28),
+            SizedBox(width: 12),
+            Text('successTitle'.tr),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('successMessage'.tr),
+            SizedBox(height: 16),
+            Text('details'.tr, style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            Text('${"amount".tr}: ৳${data.amount}'),
+            Text('${"category".tr}: ${data.categoryName}'),
+            Text('${"payment".tr}: ${data.paymentMethod.tr}'), // ✅ localized here
+            Text('${"date".tr}: ${_formatDate(data.date)}'),
+            if (data.notes != null) Text('${"notes".tr}: ${data.notes}'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _resetForm();
+            },
+            child: Text('addAnother'.tr),
           ),
-        );
-      },
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryBlue,
+              foregroundColor: AppColors.textPrimary,
+            ),
+            child: Text('done'.tr),
+          ),
+        ],
+      ),
     );
   }
 

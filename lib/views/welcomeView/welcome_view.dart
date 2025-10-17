@@ -1,4 +1,5 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/views/mainView/Myhomepage.dart';
 import 'package:finance_manager_app/views/mainView/main_view.dart';
 import 'package:flutter/material.dart';
 
@@ -115,7 +116,7 @@ class _WelcomeScreenState extends State<WelcomeView>
     return Center(
       child: ScaleTransition(
         scale: _illustrationAnimation,
-        child: Image.asset("assets/images/welcome_image.png", width: 350),
+        child: Image.asset("assets/images/welcome_image.png",),
       ),
     );
   }
@@ -168,7 +169,7 @@ class _WelcomeScreenState extends State<WelcomeView>
               height: 56,
               child: ElevatedButton(
                 onPressed: () {
-                  Get.to(MainView());
+                  Get.offAll(MyHomePage());
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryBlue,
@@ -217,7 +218,7 @@ class _WelcomeScreenState extends State<WelcomeView>
               height: 56,
               child: OutlinedButton(
                 onPressed: () {
-                  Get.to(MainView());
+                  Get.offAll(MyHomePage( ));
                 },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white.withValues(alpha: 0.8),

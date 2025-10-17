@@ -39,6 +39,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
                         border: Border.all(
                           color: Theme.of(context).dividerColor,
                           width: 1,
@@ -126,9 +127,9 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildGeneralSettings() {
-    return _buildSection('🔧 General App Settings', [
+    return _buildSection('generalAppSettings'.tr, [
       _buildDropdownSetting(
-        'App Theme',
+        'appTheme'.tr,
         context
             .watch<ThemeProvider>()
             .themeMode
@@ -140,7 +141,7 @@ class _SettingsPageState extends State<SettingsPage> {
         (value) => context.read<ThemeProvider>().setTheme(value!),
       ),
       _buildDropdownSetting(
-        'App Language',
+        'appLanguage'.tr,
         context.watch<LanguageTranslatorProvider>().locale.languageCode == 'bn'
             ? 'Bangla'
             : 'English',
@@ -153,38 +154,38 @@ class _SettingsPageState extends State<SettingsPage> {
         },
       ),
       _buildSwitchSetting(
-        'Notifications',
-        'Reminders, budget alerts, bill due dates',
+        'notifications'.tr,
+        'notificationsDescription'.tr,
         notificationsEnabled,
         (value) => setState(() => notificationsEnabled = value),
       ),
       _buildSwitchSetting(
-        'Budget Alerts',
-        'Get notified when approaching budget limits',
+        'budgetAlerts'.tr,
+        'budgetAlertsDescription'.tr,
         budgetAlertsEnabled,
         (value) => setState(() => budgetAlertsEnabled = value),
       ),
       _buildSwitchSetting(
-        'Bill Reminders',
-        'Notify before bill due dates',
+        'billReminders'.tr,
+        'billRemindersDescription'.tr,
         billRemindersEnabled,
         (value) => setState(() => billRemindersEnabled = value),
       ),
-      _buildActionSetting('Logout', Icons.logout, AppColors.error, () {}),
+      _buildActionSetting('logout'.tr, Icons.logout, AppColors.error, () {}),
     ]);
   }
 
   Widget _buildFinanceSettings() {
-    return _buildSection('💰 Finance-Specific Settings', [
+    return _buildSection('financeSpecificSettings'.tr, [
       _buildClickableSetting(
-        'Default Account',
-        'Choose which wallet/account opens by default',
-        'Main Wallet',
+        'defaultAccount'.tr,
+        'defaultAccountDescription'.tr,
+        'mainWallet'.tr,
         () {},
       ),
       _buildSwitchSetting(
-        'Automatic Transaction Import',
-        'Sync transactions from bank/CSV files',
+        'automaticTransactionImport'.tr,
+        'automaticTransactionImportDescription'.tr,
         autoImportEnabled,
         (value) => setState(() => autoImportEnabled = value),
       ),
@@ -192,28 +193,28 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildPrivacySettings() {
-    return _buildSection('🔒 Privacy & Security', [
+    return _buildSection('privacySecurity'.tr, [
       _buildSwitchSetting(
-        'App Lock',
-        'PIN, fingerprint, or FaceID protection',
+        'appLock'.tr,
+        'appLockDescription'.tr,
         appLockEnabled,
         (value) => setState(() => appLockEnabled = value),
       ),
       _buildDropdownSetting(
-        'Auto-Lock Timer',
+        'autoLockTimer'.tr,
         autoLockTimer,
-        ['1 minute', '5 minutes', '15 minutes', '30 minutes', 'Never'],
+        ['1 minute', '5 minutes', '15 minutes', '30 minutes', 'never'],
         (value) => setState(() => autoLockTimer = value!),
       ),
       _buildActionSetting(
-        'Clear Local Data',
+        'clearLocalData'.tr,
         Icons.delete_outline,
         AppColors.warning,
         () {},
       ),
-      _buildActionSetting('Reset App', Icons.restore, AppColors.error, () {}),
+      _buildActionSetting('resetApp'.tr, Icons.restore, AppColors.error, () {}),
       _buildActionSetting(
-        'Export Data',
+        'exportData'.tr,
         Icons.file_download,
         AppColors.primaryBlue,
         () {},
@@ -222,37 +223,37 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildOtherSettings() {
-    return _buildSection('🌐 Other Settings', [
+    return _buildSection('otherSettings'.tr, [
       _buildActionSetting(
-        'Rate Us',
+        'rateUs'.tr,
         Icons.star_outline,
         AppColors.warning,
         () {},
       ),
-      _buildActionSetting('Share App', Icons.share, AppColors.success, () {}),
+      _buildActionSetting('shareApp'.tr, Icons.share, AppColors.success, () {}),
       _buildActionSetting(
-        'Contact Support',
+        'contactSupport'.tr,
         Icons.support_agent,
         AppColors.primaryBlue,
         () {},
       ),
-      _buildActionSetting('FAQ', Icons.help_outline, Colors.purple, () {}),
-      _buildActionSetting('About', Icons.info_outline, Colors.grey, () {}),
+      _buildActionSetting('faq'.tr, Icons.help_outline, Colors.purple, () {}),
+      _buildActionSetting('about'.tr, Icons.info_outline, Colors.grey, () {}),
       _buildActionSetting(
-        'Feedback',
+        'feedback'.tr,
         Icons.feedback_outlined,
         Colors.teal,
         () {},
       ),
       _buildActionSetting(
-        'Terms & Policies',
+        'termsPolicies'.tr,
         Icons.description_outlined,
         Colors.indigo,
         () {},
       ),
       _buildClickableSetting(
-        'Version Info',
-        'Build version and update checker',
+        'versionInfo'.tr,
+        'versionInfoDescription'.tr,
         'v1.0.2 (Build 45)',
         () {},
       ),

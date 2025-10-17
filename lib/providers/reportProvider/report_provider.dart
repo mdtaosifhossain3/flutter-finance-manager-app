@@ -26,7 +26,7 @@ class ReportProvider extends ChangeNotifier {
     final Map<String, Map<String, dynamic>> categoryTotals = {};
 
     for (var elm in transactionProvider.expenseList) {
-      final name = elm.categoryName;
+      final name = elm.categoryKey;
       final color = elm.iconBgColor;
       final amount = elm.amount;
 
