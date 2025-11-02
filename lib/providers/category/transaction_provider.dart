@@ -4,11 +4,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AddExpenseProvider extends ChangeNotifier {
+  //Transactiom DB
   AddTransactionDbHelper addTransactionDbHelper =
       AddTransactionDbHelper.getInstance;
-  List<TransactionModel> expenseList = [];
-  IconData categoryIconData = Icons.info;
+
+  //-----------------------------All The Income Expense List-----------------------------
+  List<TransactionModel> transactionData = [];
+
+  //Payment Method
   late String selectedPaymentMethod;
+  //date selector
   late DateTime selectedDate;
 
   void setselectedPaymentMethod(val) {
@@ -37,7 +42,7 @@ class AddExpenseProvider extends ChangeNotifier {
   Future<void> addExpense(TransactionModel tn) async {
     try {
       await addTransactionDbHelper.addItem(tn);
-      getAllExpenses();
+      getAllTransactions();
       notifyListeners();
     } catch (er) {
       if (kDebugMode) {
@@ -46,9 +51,9 @@ class AddExpenseProvider extends ChangeNotifier {
     }
   }
 
-  void getAllExpenses() async {
+  Future<void> getAllTransactions() async {
     final dt = await addTransactionDbHelper.getAllNotes();
-    expenseList = dt.map((e) => TransactionModel.fromMap(e)).toList();
+    transactionData = dt.map((e) => TransactionModel.fromMap(e)).toList();
     notifyListeners();
   }
 
@@ -67,16 +72,11 @@ class AddExpenseProvider extends ChangeNotifier {
 
   Future<void> updateTransaction(int itemId, TransactionModel tx) async {
     await addTransactionDbHelper.updateItem(itemID: itemId, tx: tx);
-    getAllExpenses();
+    getAllTransactions();
   }
 
   Future<void> deleteTransaction(int transactionID) async {
     await addTransactionDbHelper.deleteItem(transactionID);
-    getAllExpenses();
-  }
-
-  void setCategoryIcon(IconData iconData) {
-    categoryIconData = iconData;
-    notifyListeners();
+    getAllTransactions();
   }
 }

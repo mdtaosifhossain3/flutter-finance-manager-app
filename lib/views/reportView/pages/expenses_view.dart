@@ -28,12 +28,18 @@ class _ExpensesScreenState extends State<ExpensesView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar(title: "expensesTitle".tr,leading: Padding(
-        padding: const EdgeInsets.only(left:10.0),
-        child: IconButton(onPressed: (){
-          Get.back();
-        }, icon: Icon(Icons.arrow_back)),
-      )),
+      appBar: customAppBar(
+        title: "expensesTitle".tr,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: IconButton(
+            onPressed: () {
+              Get.back();
+            },
+            icon: Icon(Icons.arrow_back),
+          ),
+        ),
+      ),
       body: Column(
         children: [
           _buildSearchBar(),
@@ -53,7 +59,7 @@ class _ExpensesScreenState extends State<ExpensesView> {
                       final filteredTxns = provider.filteredTransactions;
 
                       return filteredTxns.isEmpty
-                          ?  Text("noTransactions".tr)
+                          ? Text("noTransactions".tr)
                           : Column(
                               children: filteredTxns
                                   .map((tx) => CardWidget(transaction: tx))
@@ -181,7 +187,9 @@ class _ExpensesScreenState extends State<ExpensesView> {
                   PieChartData(
                     sections: provider.filterCategories.map((category) {
                       double percentage = (category["amount"] / total) * 100;
-                      final a = HelperFunctions.convertToBanglaDigits(percentage.toStringAsFixed(0));
+                      final a = HelperFunctions.convertToBanglaDigits(
+                        percentage.toStringAsFixed(0),
+                      );
                       return PieChartSectionData(
                         color: Color(category["color"]),
                         value: percentage,

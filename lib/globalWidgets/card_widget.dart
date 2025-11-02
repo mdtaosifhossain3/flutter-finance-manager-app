@@ -17,22 +17,20 @@ class CardWidget extends StatefulWidget {
 }
 
 class _CardWidgetState extends State<CardWidget> {
-
   @override
   Widget build(BuildContext context) {
-
-    return InkWell(
-      onTap: () {
-        _showTransactionDetails(widget.transaction);
-      },
-      child: Container(
-        margin: EdgeInsets.only(bottom: 16),
-        padding: EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Theme.of(context).dividerColor),
-        ),
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Theme.of(context).dividerColor),
+      ),
+      child: InkWell(
+        onTap: () {
+          _showTransactionDetails(widget.transaction);
+        },
         child: Row(
           children: [
             Container(
@@ -80,6 +78,10 @@ class _CardWidgetState extends State<CardWidget> {
   }
 
   void _showTransactionDetails(TransactionModel transaction) {
+    print(transaction.id);
+    print(transaction.categoryName);
+    print(transaction.paymentMethod);
+
     showModalBottomSheet(
       context: context,
 
@@ -196,17 +198,13 @@ class _CardWidgetState extends State<CardWidget> {
         children: [
           Text(
             "$label:",
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge
-                ?.copyWith(fontWeight: FontWeight.w600),
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),

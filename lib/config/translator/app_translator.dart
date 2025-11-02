@@ -7,13 +7,19 @@ class AppTranslations extends Translations {
       'reportTitle': 'Report',
       'search': 'Super AI search',
       'income': 'Income',
+      "home": "Home",
+      "report": "Report",
+      "budget": "Budget",
+      "settings": "Settings",
+
       //-------------------------------Welcome View-------------------------------
-      "welcomeViewTitle":"Easy way to\nManage your Money",
-      "welcomeViewSubtitle": "Organize your spending, plan your savings, and stay stress-free.",
+      "welcomeViewTitle": "Easy way to\nManage your Money",
+      "welcomeViewSubtitle":
+          "Organize your spending, plan your savings, and stay stress-free.",
       "welcomeViewButtonOne": "Get Started",
       "welcomeViewButtonTwo": "Preview Demo",
-      //-------------------------------Home View-------------------------------
 
+      //-------------------------------Home View-------------------------------
       "expensesTitle": "Expenses",
       "outOfText": "Out of",
       "periodDay": "Day",
@@ -28,7 +34,6 @@ class AppTranslations extends Translations {
       "expenses": "Expenses",
       "monthlyBudget": "Monthly Budget",
       "6periods": "Last 6 Periods",
-      "budget": "Budget",
       "within": "Within",
       "risk": "Risk",
       "overspending": "Overspending",
@@ -177,46 +182,48 @@ class AppTranslations extends Translations {
       'other': 'Other',
       // -------------------------------Category Item -------------------------------
       "transactions": "Transactions",
-      "totalAmount":"Total Amount",
-      "addFirstTransaction":"Add your first transaction to get started",
+      "totalAmount": "Total Amount",
+      "addFirstTransaction": "Add your first transaction to get started",
       "addTransaction": "Add Transaction",
 
       // -------------------------------Category Card-------------------------------
-        "transactionDetails": "Transaction Details",
-      "title":"Title",
+      "transactionDetails": "Transaction Details",
+      "title": "Title",
 
       // -------------------------------Transaction Form Page -------------------------------
-        "titleOptional": "Title (Optional)",
-        "titleHint": "Enter transaction title",
-        "amountRequired": "Amount *",
-        "amountHint": "0.00",
-        "amountRequiredError": "Amount is required",
-        "amountValidError": "Enter a valid amount",
-        "amountGreaterError": "Amount must be greater than 0",
-        "dateRequired": "Date *",
-        "paymentMethodRequired": "Payment Method *",
-        "notesOptional": "Notes (Optional)",
-        "notesHint": "Add any additional notes...",
-        "saveTransaction": "Save Transaction",
-        "successTitle": "Success!",
-        "successMessage": "Transaction saved successfully!",
-        "details": "Details:",
-        "amount": "Amount",
-        "payment": "Payment",
-        "date": "Date",
-        "notes": "Notes",
-        "addAnother": "Add Another",
-        "done": "Done",
+      "titleOptional": "Title (Optional)",
+      "titleHint": "Enter transaction title",
+      "amountRequired": "Amount *",
+      "amountHint": "0.00",
+      "amountRequiredError": "Amount is required",
+      "amountValidError": "Enter a valid amount",
+      "amountGreaterError": "Amount must be greater than 0",
+      "dateRequired": "Date *",
+      "paymentMethodRequired": "Payment Method *",
+      "notesOptional": "Notes (Optional)",
+      "notesHint": "Add any additional notes...",
+      "saveTransaction": "Save Transaction",
+      "successTitle": "Success!",
+      "successMessage": "Transaction saved successfully!",
+      "details": "Details:",
+      "amount": "Amount",
+      "payment": "Payment",
+      "date": "Date",
+      "notes": "Notes",
+      "addAnother": "Add Another",
+      "done": "Done",
 
-        // Payment Methods
-        "cash": "Cash",
-        "bankTransfer": "Bank Transfer",
-        "creditCard": "Credit Card",
-        "debitCard": "Debit Card",
-        "mobileWallet": "Mobile Wallet",
-        "paypal": "PayPal",
-        "check": "Check",
-
+      // Payment Methods
+      "cash": "Cash",
+      "bankTransfer": "Bank Transfer",
+      "creditCard": "Credit Card",
+      "debitCard": "Debit Card",
+      "mobileWallet": "Mobile Wallet",
+      "check": "Check",
+      'bkash': "Bkash",
+      'nagad': "Nagad",
+      'rocket': "Rocket",
+      'upay': "Upay",
 
       // -------------------------------Budget Category-------------------------------
       "budgetOverview": "Budget Overview",
@@ -226,8 +233,10 @@ class AppTranslations extends Translations {
       "overspent": "overspent",
       "of": "of",
       "left": "left",
-      "overspentMessage": "You've exceeded your budget. Consider reducing spending.",
-      "budgetLimitWarning": "You're close to your budget limit. Spend carefully.",
+      "overspentMessage":
+          "You've exceeded your budget. Consider reducing spending.",
+      "budgetLimitWarning":
+          "You're close to your budget limit. Spend carefully.",
       "doingGreatMessage": "You're doing great! Keep it up.",
       // -------------------------------Budget Card View-------------------------------
       "allocated": "Allocated",
@@ -243,38 +252,38 @@ class AppTranslations extends Translations {
       "categoryDeleted": "Category deleted",
 
       // -------------------------------Budget Create-------------------------------
-        "createBudget": "Create Budget",
-        "createNewBudget": "Create New Budget",
-        "setSpendingLimits": "Set spending limits and track your expenses",
-        "budgetTitle": "Budget Title",
-        "budgetTitleHint": "e.g., Monthly Groceries",
-        "budgetTitleError": "Please enter a budget title",
-        "budgetAmount": "Budget Amount",
-        "budgetAmountHint": "0.00",
-        "budgetAmountError": "Please enter budget amount",
-        "budgetAmountValidError": "Please enter a valid amount",
-        "categories": "Categories",
-        "selectCategory": "Select a category",
-        "pleaseAddCategory": "Please add at least one category",
-        "startDate": "Start Date",
-        "endDate": "End Date",
-        "selectDate": "Select date",
-        "startDateError": "Please select start date",
-        "endDateError": "End date must be after start date",
-        "cancel": "Cancel",
-        "createBudgetButton": "Create Budget",
-        "addCategory": "Add",
-        "categoryAmount": "Amount",
-        "delete": "Delete",
-        "pleaseSelectCategory": "Please select a category",
-        "pleaseEnterValidAmount": "Please enter a valid amount",
-        "budgetCreatedSuccess": "Budget created successfully!",
-        "dateFormat": "dd/mm/yyyy",
+      "createBudget": "Create Budget",
+      "createNewBudget": "Create New Budget",
+      "setSpendingLimits": "Set spending limits and track your expenses",
+      "budgetTitle": "Budget Title",
+      "budgetTitleHint": "e.g., Monthly Groceries",
+      "budgetTitleError": "Please enter a budget title",
+      "budgetAmount": "Budget Amount",
+      "budgetAmountHint": "0.00",
+      "budgetAmountError": "Please enter budget amount",
+      "budgetAmountValidError": "Please enter a valid amount",
+      "categories": "Categories",
+      "selectCategory": "Select a category",
+      "pleaseAddCategory": "Please add at least one category",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "selectDate": "Select date",
+      "startDateError": "Please select start date",
+      "endDateError": "End date must be after start date",
+      "cancel": "Cancel",
+      "createBudgetButton": "Create Budget",
+      "addCategory": "Add",
+      "categoryAmount": "Amount",
+      "delete": "Delete",
+      "pleaseSelectCategory": "Please select a category",
+      "pleaseEnterValidAmount": "Please enter a valid amount",
+      "budgetCreatedSuccess": "Budget created successfully!",
+      "dateFormat": "dd/mm/yyyy",
 
-        // Snackbar messages
-        "selectStartDate": "Please select a start date",
-        "selectEndDate": "Please select an end date",
-        "addOneCategory": "Please add at least one category",
+      // Snackbar messages
+      "selectStartDate": "Please select a start date",
+      "selectEndDate": "Please select an end date",
+      "addOneCategory": "Please add at least one category",
 
       // Category Groups
       'basic_needs': 'Basic Needs',
@@ -326,11 +335,9 @@ class AppTranslations extends Translations {
       'events_celebrations': 'Events & Celebrations',
       'luxury_wants': 'Luxury / Wants',
 
-
       // -------------------------------Setting View -------------------------------
 
       // Settings Page
-      "settings": "Settings",
 
       // General Settings
       "generalAppSettings": "🔧 General App Settings",
@@ -352,10 +359,12 @@ class AppTranslations extends Translations {
       // Finance Settings
       "financeSpecificSettings": "💰 Finance-Specific Settings",
       "defaultAccount": "Default Account",
-      "defaultAccountDescription": "Choose which wallet/account opens by default",
+      "defaultAccountDescription":
+          "Choose which wallet/account opens by default",
       "mainWallet": "Main Wallet",
       "automaticTransactionImport": "Automatic Transaction Import",
-      "automaticTransactionImportDescription": "Sync transactions from bank/CSV files",
+      "automaticTransactionImportDescription":
+          "Sync transactions from bank/CSV files",
 
       // Privacy & Security
       "privacySecurity": "🔒 Privacy & Security",
@@ -382,18 +391,21 @@ class AppTranslations extends Translations {
       "termsPolicies": "Terms & Policies",
       "versionInfo": "Version Info",
       "versionInfoDescription": "Build version and update checker",
-
     },
     'bn_BD': {
       'reportTitle': 'রিপোর্ট',
       'search': 'অনুসন্ধান করুন',
       'income': 'আয়',
-
+      "home": "হোম",
+      "report": "রিপোর্ট",
+      "budget": "বাজেট",
+      "settings": "সেটিংস",
       //-------------------------------Welcome View-------------------------------
       "welcomeViewTitle": "টাকা ব্যবস্থাপনার\nসহজ সমাধান",
-        "welcomeViewSubtitle": "খরচ সংগঠিত করুন, সঞ্চয়ের পরিকল্পনা করুন এবং নিশ্চিন্তে থাকুন।",
-        "welcomeViewButtonOne": "শুরু করুণ",
-        "welcomeViewButtonTwo": "ডেমো দেখুন",
+      "welcomeViewSubtitle":
+          "খরচ সংগঠিত করুন, সঞ্চয়ের পরিকল্পনা করুন এবং নিশ্চিন্তে থাকুন।",
+      "welcomeViewButtonOne": "শুরু করুণ",
+      "welcomeViewButtonTwo": "ডেমো দেখুন",
 
       //-------------------------------Home View-------------------------------
       "expensesTitle": "খরচ",
@@ -406,14 +418,13 @@ class AppTranslations extends Translations {
       "noTransactions": "এখনও কোন লেনদেন নেই",
 
       // -------------------------------Report View-------------------------------
-        "spent": "খরচ",
-        "expenses": "ব্যয়",
-        "monthlyBudget": "মাসিক বাজেট",
-        "6periods": "গত ৬ মাস",
-        "budget": "বাজেট",
-        "within": "মধ্যে",
-        "risk": "ঝুঁকি",
-        "overspending": "বাজেট ছাড়ানো",
+      "spent": "খরচ",
+      "expenses": "ব্যয়",
+      "monthlyBudget": "মাসিক বাজেট",
+      "6periods": "গত ৬ মাস",
+      "within": "মধ্যে",
+      "risk": "ঝুঁকি",
+      "overspending": "বাজেট ছাড়ানো",
 
       // ------------------------------- Category Groups Expense-------------------------------
       'category': 'ক্যাটাগরি',
@@ -556,17 +567,16 @@ class AppTranslations extends Translations {
 
       // Final catch-all
       'other': 'অন্যান্য',
-      // -------------------------------Category Item -------------------------------
 
-        "transactions": "লেনদেনসমূহ",
-        "totalAmount": "মোট টাকা",
-        "addFirstTransaction": "প্রথম লেনদেন যোগ করুন",
-        "addTransaction": "ট্রানজেকশন যোগ করুন",
+      // -------------------------------Category Item -------------------------------
+      "transactions": "লেনদেনসমূহ",
+      "totalAmount": "মোট টাকা",
+      "addFirstTransaction": "প্রথম লেনদেন যোগ করুন",
+      "addTransaction": "ট্রানজেকশন যোগ করুন",
 
       // -------------------------------Category Card-------------------------------
-      "title":"শিরোনাম",
-      "transactionDetails":"লেনদেনের বিবরণ",
-
+      "title": "শিরোনাম",
+      "transactionDetails": "লেনদেনের বিবরণ",
 
       // ------------------------------- Transaction Form Page -------------------------------
       "titleOptional": "শিরোনাম (ঐচ্ছিক)",
@@ -597,19 +607,23 @@ class AppTranslations extends Translations {
       "creditCard": "ক্রেডিট কার্ড",
       "debitCard": "ডেবিট কার্ড",
       "mobileWallet": "মোবাইল ওয়ালেট",
-      "paypal": "পেপ্যাল",
       "check": "চেক",
+      'bkash': "বিকাশ",
+      'nagad': "নগদ",
+      'rocket': "রকেট",
+      'upay': "উপায়",
 
       // -------------------------------Budget OverView-------------------------------
-
-        "budgetOverview": "বাজেট ওভারভিউ",
-        "noBudgetsYet": "এখনও কোনো বাজেট নেই",
+      "budgetOverview": "বাজেট ওভারভিউ",
+      "noBudgetsYet": "এখনও কোনো বাজেট নেই",
 
       // -------------------------------Budget Card -------------------------------
       "of": "এর",
       "left": "বাকি",
-      "overspentMessage": "আপনি আপনার বাজেট ছাড়িয়ে গেছেন। খরচ কমানোর কথা বিবেচনা করুন।",
-      "budgetLimitWarning": "আপনি আপনার বাজেট সীমার কাছাকাছি আছেন। সতর্কতার সাথে খরচ করুন।",
+      "overspentMessage":
+          "আপনি আপনার বাজেট ছাড়িয়ে গেছেন। খরচ কমানোর কথা বিবেচনা করুন।",
+      "budgetLimitWarning":
+          "আপনি আপনার বাজেট সীমার কাছাকাছি আছেন। সতর্কতার সাথে খরচ করুন।",
       "doingGreatMessage": "আপনি দুর্দান্ত করছেন! এভাবেই চালিয়ে যান।",
       // -------------------------------Budget Card View -------------------------------
       "allocated": "বরাদ্দকৃত",
@@ -626,37 +640,38 @@ class AppTranslations extends Translations {
 
       // -------------------------------Budget Create -------------------------------
       "createBudget": "বাজেট তৈরি করুন",
-        "createNewBudget": "নতুন বাজেট তৈরি করুন",
-        "setSpendingLimits": "খরচের সীমা নির্ধারণ করুন এবং আপনার ব্যয় ট্র্যাক করুন",
-        "budgetTitle": "বাজেটের শিরোনাম",
-        "budgetTitleHint": "যেমন, মাসিক বাজার খরচ",
-        "budgetTitleError": "বাজেটের শিরোনাম লিখুন",
-        "budgetAmount": "বাজেটের টাকা",
-        "budgetAmountHint": "০.০০",
-        "budgetAmountError": "বাজেটের টাকার পরিমাণ লিখুন",
-        "budgetAmountValidError": "সঠিক টাকার পরিমাণ লিখুন",
-        "categories": "ক্যাটাগরি সমূহ",
-        "selectCategory": "একটি ক্যাটাগরি নির্বাচন করুন",
-        "pleaseAddCategory": "অন্তত একটি ক্যাটাগরি যোগ করুন",
-        "startDate": "শুরুর তারিখ",
-        "endDate": "শেষের তারিখ",
-        "selectDate": "তারিখ নির্বাচন করুন",
-        "startDateError": "শুরুর তারিখ নির্বাচন করুন",
-        "endDateError": "শেষের তারিখ শুরুর তারিখের পরে হতে হবে",
-        "cancel": "বাতিল",
-        "createBudgetButton": "বাজেট তৈরি করুন",
-        "addCategory": "যোগ করুন",
-        "categoryAmount": "টাকা",
-        "delete": "মুছুন",
-        "pleaseSelectCategory": "একটি ক্যাটাগরি নির্বাচন করুন",
-        "pleaseEnterValidAmount": "সঠিক টাকার পরিমাণ লিখুন",
-        "budgetCreatedSuccess": "বাজেট সফলভাবে তৈরি হয়েছে!",
-        "dateFormat": "দিন/মাস/বছর",
+      "createNewBudget": "নতুন বাজেট তৈরি করুন",
+      "setSpendingLimits":
+          "খরচের সীমা নির্ধারণ করুন এবং আপনার ব্যয় ট্র্যাক করুন",
+      "budgetTitle": "বাজেটের শিরোনাম",
+      "budgetTitleHint": "যেমন, মাসিক বাজার খরচ",
+      "budgetTitleError": "বাজেটের শিরোনাম লিখুন",
+      "budgetAmount": "বাজেটের টাকা",
+      "budgetAmountHint": "০.০০",
+      "budgetAmountError": "বাজেটের টাকার পরিমাণ লিখুন",
+      "budgetAmountValidError": "সঠিক টাকার পরিমাণ লিখুন",
+      "categories": "ক্যাটাগরি সমূহ",
+      "selectCategory": "একটি ক্যাটাগরি নির্বাচন করুন",
+      "pleaseAddCategory": "অন্তত একটি ক্যাটাগরি যোগ করুন",
+      "startDate": "শুরুর তারিখ",
+      "endDate": "শেষের তারিখ",
+      "selectDate": "তারিখ নির্বাচন করুন",
+      "startDateError": "শুরুর তারিখ নির্বাচন করুন",
+      "endDateError": "শেষের তারিখ শুরুর তারিখের পরে হতে হবে",
+      "cancel": "বাতিল",
+      "createBudgetButton": "বাজেট তৈরি করুন",
+      "addCategory": "যোগ করুন",
+      "categoryAmount": "টাকা",
+      "delete": "মুছুন",
+      "pleaseSelectCategory": "একটি ক্যাটাগরি নির্বাচন করুন",
+      "pleaseEnterValidAmount": "সঠিক টাকার পরিমাণ লিখুন",
+      "budgetCreatedSuccess": "বাজেট সফলভাবে তৈরি হয়েছে!",
+      "dateFormat": "দিন/মাস/বছর",
 
-        // Snackbar messages
-        "selectStartDate": "শুরুর তারিখ নির্বাচন করুন",
-        "selectEndDate": "শেষের তারিখ নির্বাচন করুন",
-        "addOneCategory": "অন্তত একটি ক্যাটাগরি যোগ করুন",
+      // Snackbar messages
+      "selectStartDate": "শুরুর তারিখ নির্বাচন করুন",
+      "selectEndDate": "শেষের তারিখ নির্বাচন করুন",
+      "addOneCategory": "অন্তত একটি ক্যাটাগরি যোগ করুন",
 
       // Category Groups
       'basic_needs': 'মৌলিক চাহিদা',
@@ -708,10 +723,8 @@ class AppTranslations extends Translations {
       'events_celebrations': 'ইভেন্ট ও উদযাপন',
       'luxury_wants': 'বিলাসিতা / চাহিদা',
 
-
       // ------------------------------- Setting View -------------------------------
       // Settings Page
-      "settings": "সেটিংস",
 
       // General Settings
       "generalAppSettings": "🔧 সাধারণ অ্যাপ সেটিংস",
@@ -728,10 +741,12 @@ class AppTranslations extends Translations {
       // Finance Settings
       "financeSpecificSettings": "💰 আর্থিক সেটিংস",
       "defaultAccount": "ডিফল্ট অ্যাকাউন্ট",
-      "defaultAccountDescription": "ডিফল্টভাবে কোন ওয়ালেট/অ্যাকাউন্ট খুলবে তা নির্বাচন করুন",
+      "defaultAccountDescription":
+          "ডিফল্টভাবে কোন ওয়ালেট/অ্যাকাউন্ট খুলবে তা নির্বাচন করুন",
       "mainWallet": "মেইন ওয়ালেট",
       "automaticTransactionImport": "স্বয়ংক্রিয় লেনদেন ইম্পোর্ট",
-      "automaticTransactionImportDescription": "ব্যাংক/CSV ফাইল থেকে লেনদেন সিঙ্ক করুন",
+      "automaticTransactionImportDescription":
+          "ব্যাংক/CSV ফাইল থেকে লেনদেন সিঙ্ক করুন",
 
       // Privacy & Security
       "privacySecurity": "🔒 গোপনীয়তা ও নিরাপত্তা",
@@ -753,9 +768,6 @@ class AppTranslations extends Translations {
       "termsPolicies": "শর্ত ও নীতি",
       "versionInfo": "ভার্সন তথ্য",
       "versionInfoDescription": "বিল্ড ভার্সন এবং আপডেট চেকার",
-
     },
-
-
   };
 }

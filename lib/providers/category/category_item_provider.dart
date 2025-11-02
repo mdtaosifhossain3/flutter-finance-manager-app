@@ -10,7 +10,7 @@ class CategoryItemProvider extends ChangeNotifier {
   CategoryItemProvider({required this.transactionProvider});
 
   List<TransactionModel> filteredTransactions({String? selectedCategory}) {
-    return transactionProvider.expenseList.where((transaction) {
+    return transactionProvider.transactionData.where((transaction) {
       final matchesMonth =
           transaction.date.year == selectedMonth.year &&
           transaction.date.month == selectedMonth.month;

@@ -25,7 +25,7 @@ class ReportProvider extends ChangeNotifier {
 
     final Map<String, Map<String, dynamic>> categoryTotals = {};
 
-    for (var elm in transactionProvider.expenseList) {
+    for (var elm in transactionProvider.transactionData) {
       final name = elm.categoryKey;
       final color = elm.iconBgColor;
       final amount = elm.amount;
@@ -117,7 +117,7 @@ class ReportProvider extends ChangeNotifier {
       final startOfMonth = DateTime(date.year, date.month, 1);
       final endOfMonth = DateTime(date.year, date.month + 1, 0);
 
-      final monthTxns = transactionProvider.expenseList.where((tx) {
+      final monthTxns = transactionProvider.transactionData.where((tx) {
         return tx.date.isAfter(
               startOfMonth.subtract(const Duration(days: 1)),
             ) &&
@@ -172,7 +172,7 @@ class ReportProvider extends ChangeNotifier {
     final startOfMonth = DateTime(now.year, now.month, 1);
     final endOfMonth = DateTime(now.year, now.month + 1, 0);
 
-    for (var tx in transactionProvider.expenseList) {
+    for (var tx in transactionProvider.transactionData) {
       if (tx.date.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
           tx.date.isBefore(endOfMonth.add(const Duration(days: 1)))) {
         if (tx.type == TransactionType.expense) {

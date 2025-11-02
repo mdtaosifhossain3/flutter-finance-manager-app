@@ -37,7 +37,7 @@ class HomeViewProvider extends ChangeNotifier {
   List<TransactionModel> filterTransactions(String filter) {
     final range = getRange(filter);
 
-    return transactionProvider.expenseList.where((tx) {
+    return transactionProvider.transactionData.where((tx) {
       return tx.date.isAfter(range.start) && tx.date.isBefore(range.end);
     }).toList();
   }

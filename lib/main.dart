@@ -1,6 +1,7 @@
 import 'package:finance_manager_app/config/routes/routes.dart';
 import 'package:finance_manager_app/config/theme/app_theme.dart';
 import 'package:finance_manager_app/config/translator/app_translator.dart';
+import 'package:finance_manager_app/providers/aiProvider/ai_provider.dart';
 import 'package:finance_manager_app/providers/budget/budget_provider.dart';
 import 'package:finance_manager_app/providers/category/category_item_provider.dart';
 import 'package:finance_manager_app/providers/category/category_provider.dart';
@@ -9,21 +10,28 @@ import 'package:finance_manager_app/providers/homeProvider/home_provider.dart';
 import 'package:finance_manager_app/providers/languageProvider/language_translator_provider.dart';
 import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
-import 'package:finance_manager_app/views/mainView/Myhomepage.dart';
-import 'package:finance_manager_app/views/mainView/main_view.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
+late AddExpenseProvider addExpenseProvider;
+// This is the global ServiceLocator
+GetIt getIt = GetIt.instance;
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final addExpenseProvider = AddExpenseProvider();
+  await addExpenseProvider.getAllTransactions();
+
+  // ✅ Register globally
+  getIt.registerSingleton<AddExpenseProvider>(addExpenseProvider);
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LanguageTranslatorProvider()),
-        ChangeNotifierProvider(
-          create: (_) => AddExpenseProvider()..getAllExpenses(),
-        ),
+        ChangeNotifierProvider.value(value: addExpenseProvider),
 
         ChangeNotifierProxyProvider<AddExpenseProvider, HomeViewProvider>(
           create: (context) => HomeViewProvider(
@@ -51,6 +59,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => BudgetProvider()..loadBudgets()),
+        ChangeNotifierProvider(create: (_) => AiProvider()),
       ],
       child: MyApp(),
     ),
@@ -75,7 +84,7 @@ class MyApp extends StatelessWidget {
       translations: AppTranslations(),
       locale: context.watch<LanguageTranslatorProvider>().locale,
       fallbackLocale: const Locale('en', 'US'),
-      home:MyHomePage(),
+      home: SplashView(),
     );
   }
 }

@@ -34,7 +34,7 @@ class _CategorySelectionPageState extends State<CategoryView>
   }
 
   /// Get the currently selected categories
-// inside CategoryView State
+  // inside CategoryView State
   List<CategoryData> get currentCategories {
     final provider = context.watch<CategoryProvider>();
     final allCategories = provider.selectedType == TransactionType.expense
@@ -65,10 +65,17 @@ class _CategorySelectionPageState extends State<CategoryView>
     return Scaffold(
       appBar: customAppBar(
         title: 'category'.tr,
+        leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
         actions: [
           Padding(
-            padding:
-            EdgeInsets.only(right: MediaQuery.of(context).size.width * 0.03),
+            padding: EdgeInsets.only(
+              right: MediaQuery.of(context).size.width * 0.03,
+            ),
             child: IconButton(
               style: IconButton.styleFrom(
                 backgroundColor: Theme.of(context).cardColor,
@@ -111,7 +118,8 @@ class _CategorySelectionPageState extends State<CategoryView>
       final isSelected = provider.selectedType == type;
       return Expanded(
         child: GestureDetector(
-          onTap: () => context.read<CategoryProvider>().changeSelectedType(type),
+          onTap: () =>
+              context.read<CategoryProvider>().changeSelectedType(type),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
@@ -121,12 +129,12 @@ class _CategorySelectionPageState extends State<CategoryView>
               borderRadius: BorderRadius.circular(20),
               boxShadow: isSelected
                   ? [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                )
-              ]
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
                   : null,
             ),
             child: Text(
@@ -155,7 +163,11 @@ class _CategorySelectionPageState extends State<CategoryView>
       ),
       child: Row(
         children: [
-          _tabButton('expenses', TransactionType.expense, AppColors.primaryBlue),
+          _tabButton(
+            'expenses',
+            TransactionType.expense,
+            AppColors.primaryBlue,
+          ),
           _tabButton('income', TransactionType.income, Colors.blue),
         ],
       ),
@@ -169,46 +181,52 @@ class _CategorySelectionPageState extends State<CategoryView>
       duration: const Duration(milliseconds: 250),
       child: provider.isSearchBarShowed
           ? Container(
-        key: const ValueKey('search_bar'),
-        margin: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * 0.04,
-          vertical: 12,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: TextField(
-          onChanged: provider.setSearchQuery,
-          style: Theme.of(context).textTheme.bodyLarge,
-          decoration: InputDecoration(
-            hintText: 'search'.tr,
-            hintStyle: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(color: AppColors.textMuted),
-            prefixIcon:
-            const Icon(Icons.search, color: AppColors.textMuted),
-            suffixIcon: provider.searchQuery.isNotEmpty
-                ? IconButton(
-              icon: const Icon(Icons.close, color: AppColors.textMuted),
-              onPressed: () => provider.setSearchQuery(''),
+              key: const ValueKey('search_bar'),
+              margin: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.04,
+                vertical: 12,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextField(
+                onChanged: provider.setSearchQuery,
+                style: Theme.of(context).textTheme.bodyLarge,
+                decoration: InputDecoration(
+                  hintText: 'search'.tr,
+                  hintStyle: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: AppColors.textMuted,
+                  ),
+                  suffixIcon: provider.searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(
+                            Icons.close,
+                            color: AppColors.textMuted,
+                          ),
+                          onPressed: () => provider.setSearchQuery(''),
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 8,
+                  ),
+                ),
+              ),
             )
-                : null,
-            border: InputBorder.none,
-            contentPadding:
-            const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-          ),
-        ),
-      )
           : const SizedBox.shrink(),
     );
   }
@@ -247,10 +265,7 @@ class _CategorySelectionPageState extends State<CategoryView>
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            child: Text(title, style: Theme.of(context).textTheme.bodyMedium),
           ),
           LayoutBuilder(
             builder: (context, constraints) {
@@ -280,12 +295,14 @@ class _CategorySelectionPageState extends State<CategoryView>
 
   Widget _buildCategoryItem(CategoryData category) {
     return GestureDetector(
-      onTap: () => Get.to(() => CategoryItemView(
-        categoryName: category.name,
-        categoryIcon: category.icon,
-        categoryColor: category.color,
-        categoryKey: category.key,
-      )),
+      onTap: () => Get.to(
+        () => CategoryItemView(
+          categoryName: category.name,
+          categoryIcon: category.icon,
+          categoryColor: category.color,
+          categoryKey: category.key,
+        ),
+      ),
       child: ClipRect(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

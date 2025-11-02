@@ -160,10 +160,5 @@ final List<CategoryData> incomeCategories = [
   ),
 
   // Final catch-all
-  CategoryData(
-    'other',
-    Icons.category,
-    Color(0xFF636E72),
-    'income miscellaneous',
-  ),
+  CategoryData('others', Icons.category, Color(0xFF636E72), 'miscellaneous'),
 ];

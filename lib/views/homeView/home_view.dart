@@ -1,16 +1,18 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/card_widget.dart';
 import 'package:finance_manager_app/providers/homeProvider/home_provider.dart';
+import 'package:finance_manager_app/services/dailogue_service.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
+import 'package:finance_manager_app/views/notificationView/notification_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 import 'dart:math' as math;
 
 import 'package:provider/provider.dart';
 
 import '../reportView/pages/expenses_view.dart';
-import 'home_view_model.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -23,6 +25,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   late AnimationController _progressController;
   late Animation<double> _progressAnimation;
 
+  Future<void> _requestNotificationPermission() async {
+    if (!await Permission.storage.isGranted) {
+      await Permission.storage.request();
+    }
+
+    DialogService.checkAndShowDialogs(context);
+    DialogService.showWeeklyDialog(context);
+    DialogService.showMonthlyDialog(context);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +46,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     // Start animation after a short delay
     Future.delayed(Duration(milliseconds: 200), () {
       _progressController.forward();
+    });
+
+    // Schedule async call after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _requestNotificationPermission();
     });
   }
 
@@ -124,16 +141,19 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 style: Theme.of(context).textTheme.labelSmall,
               ),
               Text(
-                HelperFunctions.getLocalizedDate().split(',')[1].trim(),                textAlign: TextAlign.center,
+                HelperFunctions.getLocalizedDate().split(',')[1].trim(),
+                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ],
           ),
           Row(
             children: [
-              // SizedBox(width: 10),
               GestureDetector(
-                onTap: () {},
+                onTap: () async {
+                  Get.to(NotificationCenterPage());
+                },
+
                 child: Container(
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -190,7 +210,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     );
                   },
                 ),
-      
+
                 // Center content
                 Column(
                   mainAxisSize: MainAxisSize.min,
@@ -201,15 +221,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      HelperFunctions.convertToBanglaDigits(context
-                          .watch<HomeViewProvider>()
-                          .getTotals()["expenses"]
-                          .toString(),),
+                      HelperFunctions.convertToBanglaDigits(
+                        context
+                            .watch<HomeViewProvider>()
+                            .getTotals()["expenses"]
+                            .toString(),
+                      ),
 
                       style: Theme.of(context).textTheme.headlineLarge,
                     ),
                     SizedBox(height: 4),
-                  
+
                     Text(
                       '${"outOfText".tr} ৳${HelperFunctions.convertToBanglaDigits(context.watch<HomeViewProvider>().getTotals()["income"].toString())}',
                       style: Theme.of(context).textTheme.labelMedium,
@@ -236,7 +258,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         borderRadius: BorderRadius.circular(25),
       ),
       child: Consumer<HomeViewProvider>(
-        builder: (context,provider,child) {
+        builder: (context, provider, child) {
           return Row(
             mainAxisSize: MainAxisSize.min,
             children: periods.map((period) {
@@ -248,9 +270,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   curve: Curves.easeInOut,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.surface.withValues(alpha: isSelected ? .97 : 0.0),
+                    color: Theme.of(context).colorScheme.surface.withValues(
+                      alpha: isSelected ? .97 : 0.0,
+                    ),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -265,7 +287,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               );
             }).toList(),
           );
-        }
+        },
       ),
     );
   }
@@ -277,7 +299,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("historyTitle".tr, style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              "historyTitle".tr,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             TextButton(
               onPressed: () {
                 Get.to(ExpensesView());
@@ -299,18 +324,19 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             final filteredTxns = provider.filterTransactions(provider.dwm);
 
             return filteredTxns.isEmpty
-                ?  Text("noTransactions".tr)
+                ? Text("noTransactions".tr)
                 : SizedBox(
-                  child: ListView.builder(
-                    reverse: true,
-                                itemCount: filteredTxns.length,
+                    child: ListView.builder(
+                      reverse: true,
+                      itemCount: filteredTxns.length,
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context,index){
-                    final tx = filteredTxns[index];
-                    return CardWidget(transaction:tx ,);
-                              }),
-                );
+                      itemBuilder: (context, index) {
+                        final tx = filteredTxns[index];
+                        return CardWidget(transaction: tx);
+                      },
+                    ),
+                  );
           },
         ),
       ],

@@ -1,6 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../../config/enums/enums.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:permission_handler/permission_handler.dart';
 
 class TransactionModel {
   final int? id;
@@ -27,7 +33,6 @@ class TransactionModel {
     required this.icon,
     required this.iconBgColor,
     required this.categoryKey,
-
   });
 
   // Convert to Map for SQLite
@@ -45,9 +50,9 @@ class TransactionModel {
       'iconFontFamily': icon.fontFamily,
       'iconBgColor': iconBgColor,
       'categoryKey': categoryKey,
-
     };
   }
+
   Map<String, dynamic> toMapForUpdate() => {
     'type': type == TransactionType.expense ? 1 : 0,
     'date': date.toIso8601String(),
@@ -60,7 +65,6 @@ class TransactionModel {
     'iconFontFamily': icon.fontFamily,
     'iconBgColor': iconBgColor,
     'categoryKey': categoryKey,
-
   };
 
   // Create from Map (SQLite row)
@@ -71,16 +75,12 @@ class TransactionModel {
       date: DateTime.parse(map['date']),
       title: map['title'],
       categoryName: map['categoryName'],
-      amount: map['amount'] ,
+      amount: map['amount'],
       notes: map['notes'],
       paymentMethod: map['paymentMethod'],
       iconBgColor: map['iconBgColor'],
       categoryKey: map['categoryKey'],
-      icon: IconData(
-        map['iconCodePoint'],
-        fontFamily: map['iconFontFamily'],
-      ),
-
+      icon: IconData(map['iconCodePoint'], fontFamily: map['iconFontFamily']),
     );
   }
 }

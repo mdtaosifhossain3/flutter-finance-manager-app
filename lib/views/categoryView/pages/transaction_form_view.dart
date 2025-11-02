@@ -40,11 +40,12 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     'creditCard',
     'debitCard',
     'mobileWallet',
-    'paypal',
-    'crypto',
     'check',
+    'bkash',
+    'nagad',
+    'rocket',
+    'upay',
   ];
-
   @override
   void initState() {
     context.read<AddExpenseProvider>().selectedDate =
@@ -53,6 +54,8 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
         widget.transactionModel?.paymentMethod ?? "cash";
     _amountController.text = widget.transactionModel?.amount.toString() ?? "";
     _notesController.text = widget.transactionModel?.notes.toString() ?? "";
+    _titleController.text = widget.transactionModel?.title.toString() ?? "";
+
     super.initState();
   }
 
@@ -66,6 +69,8 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.categoryName);
+    print(widget.categoryKey);
     return Scaffold(
       appBar: customAppBar(
         title: "addTransaction".tr,
@@ -119,8 +124,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('titleOptional'.tr,
-            style: Theme.of(context).textTheme.labelLarge),
+        Text('titleOptional'.tr, style: Theme.of(context).textTheme.labelLarge),
         SizedBox(height: 8),
         TextFormField(
           controller: _titleController,
@@ -147,8 +151,10 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('amountRequired'.tr,
-            style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          'amountRequired'.tr,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         SizedBox(height: 8),
         TextFormField(
           controller: _amountController,
@@ -230,8 +236,10 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('paymentMethodRequired'.tr,
-            style: Theme.of(context).textTheme.bodyMedium),
+        Text(
+          'paymentMethodRequired'.tr,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
         SizedBox(height: 8),
         DropdownButtonFormField<String>(
           value: provider.selectedPaymentMethod,
@@ -332,7 +340,9 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
       lastDate: DateTime.now(),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: ColorScheme.light(primary: Theme.of(context).primaryColor),
+          colorScheme: ColorScheme.light(
+            primary: Theme.of(context).primaryColor,
+          ),
         ),
         child: child!,
       ),
@@ -346,13 +356,25 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   String _formatDate(DateTime date) {
     final locale = Get.locale?.languageCode ?? 'en';
     if (locale == 'bn') {
-      final banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-      String d = date.day.toString().split('').map((e) => banglaDigits[int.parse(e)]).join();
-      String m = date.month.toString().split('').map((e) => banglaDigits[int.parse(e)]).join();
-      String y = date.year.toString().split('').map((e) => banglaDigits[int.parse(e)]).join();
+      final banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+      String d = date.day
+          .toString()
+          .split('')
+          .map((e) => banglaDigits[int.parse(e)])
+          .join();
+      String m = date.month
+          .toString()
+          .split('')
+          .map((e) => banglaDigits[int.parse(e)])
+          .join();
+      String y = date.year
+          .toString()
+          .split('')
+          .map((e) => banglaDigits[int.parse(e)])
+          .join();
       return '$d/$m/$y';
     } else {
-      return '${date.day.toString().padLeft(2,'0')}/${date.month.toString().padLeft(2,'0')}/${date.year}';
+      return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
     }
   }
 
@@ -361,21 +383,32 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
       final text = _amountController.text.trim();
       final amount = int.tryParse(text) ?? 0;
       final tn = TransactionModel(
-        type: widget.transactionModel?.type ?? context.read<CategoryProvider>().selectedType,
+        type:
+            widget.transactionModel?.type ??
+            context.read<CategoryProvider>().selectedType,
         date: context.read<AddExpenseProvider>().selectedDate,
         title: _titleController.text,
-        categoryName: widget.transactionModel?.categoryName ?? widget.categoryName!,
+        categoryName:
+            widget.transactionModel?.categoryName ?? widget.categoryName!,
         amount: amount,
         paymentMethod: context.read<AddExpenseProvider>().selectedPaymentMethod,
         icon: widget.transactionModel?.icon ?? widget.categoryIcon!,
-        iconBgColor: widget.transactionModel?.iconBgColor ?? widget.categoryColor!.toARGB32(),
+        iconBgColor:
+            widget.transactionModel?.iconBgColor ??
+            widget.categoryColor!.toARGB32(),
         notes: _notesController.text,
 
-          categoryKey:widget.transactionModel?.categoryKey ?? widget.categoryKey ?? widget.categoryKey!
+        categoryKey:
+            widget.transactionModel?.categoryKey ??
+            widget.categoryKey ??
+            widget.categoryKey!,
       );
 
       if (widget.transactionModel != null) {
-        context.read<AddExpenseProvider>().updateTransaction(widget.transactionModel!.id!, tn);
+        context.read<AddExpenseProvider>().updateTransaction(
+          widget.transactionModel!.id!,
+          tn,
+        );
       } else {
         context.read<AddExpenseProvider>().addExpense(tn);
       }
@@ -406,7 +439,9 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             SizedBox(height: 8),
             Text('${"amount".tr}: ৳${data.amount}'),
             Text('${"category".tr}: ${data.categoryName}'),
-            Text('${"payment".tr}: ${data.paymentMethod.tr}'), // ✅ localized here
+            Text(
+              '${"payment".tr}: ${data.paymentMethod.tr}',
+            ), // ✅ localized here
             Text('${"date".tr}: ${_formatDate(data.date)}'),
             if (data.notes != null) Text('${"notes".tr}: ${data.notes}'),
           ],
