@@ -18,12 +18,9 @@ class AiService {
           {
             "role": "system",
             "content":
-            "You are a finance assistant. Extract transaction details from user text and respond in JSON format with fields: title, type (income/expense), amount, category, paymentMethod, date, and notes."
+                "You are a finance assistant. Extract transaction details from user text and respond in JSON format with fields: title, type (income/expense), amount, category, paymentMethod, date, and notes.",
           },
-          {
-            "role": "user",
-            "content": text,
-          }
+          {"role": "user", "content": text},
         ],
         "temperature": 0.3,
       }),
@@ -38,7 +35,6 @@ class AiService {
         return null;
       }
     } else {
-      print('AI Error: ${response.body}');
       return null;
     }
   }

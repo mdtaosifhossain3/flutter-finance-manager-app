@@ -15,12 +15,6 @@ class ExpenseChartWidget extends StatefulWidget {
 
 class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
   @override
-  void initState() {
-    context.read<ReportProvider>().filterCategoryFunction();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     double total = context.watch<ReportProvider>().filterCategories.fold(
       0,
@@ -41,7 +35,10 @@ class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('expensesTitle'.tr, style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              'expensesTitle'.tr,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             SizedBox(height: 16),
             Row(
               children: [
@@ -87,7 +84,6 @@ class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
                           .filterCategories
                           .take(5) // 👈 only first 5
                           .map((category) {
-                            print(category);
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4),
                               child: Row(
@@ -102,7 +98,7 @@ class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    category["categoryName"],
+                                    "${category['categoryName']}".tr,
                                     style: Theme.of(
                                       context,
                                     ).textTheme.labelMedium,

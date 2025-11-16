@@ -1,3 +1,6 @@
+import 'package:finance_manager_app/data/category/category_item_data.dart';
+import 'package:finance_manager_app/data/category/income_item_data.dart';
+import 'package:finance_manager_app/models/categoryModel/category_item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -6,9 +9,6 @@ import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/providers/category/category_provider.dart';
 import 'package:finance_manager_app/views/categoryView/pages/category_item_view.dart';
 import '../../config/enums/enums.dart';
-import '../../data/category/expense_cateogries.dart';
-import '../../data/category/income_cateogries.dart';
-import '../../models/categoryModel/category_data_model.dart';
 
 class CategoryView extends StatefulWidget {
   const CategoryView({super.key});
@@ -33,13 +33,11 @@ class _CategorySelectionPageState extends State<CategoryView>
     super.dispose();
   }
 
-  /// Get the currently selected categories
-  // inside CategoryView State
-  List<CategoryData> get currentCategories {
+  List<CategoryItemModel> get currentCategoriesItem {
     final provider = context.watch<CategoryProvider>();
     final allCategories = provider.selectedType == TransactionType.expense
-        ? expenseCategories
-        : incomeCategories;
+        ? categoryItems
+        : incomeCategoryItems;
 
     final query = provider.searchQuery; // debounced/lowercased in your provider
     if (query.isEmpty) {
@@ -47,15 +45,6 @@ class _CategorySelectionPageState extends State<CategoryView>
     }
 
     return allCategories.where((cat) => cat.matches(query)).toList();
-  }
-
-  /// Group categories by their section/group
-  Map<String, List<CategoryData>> get groupedCategories {
-    final Map<String, List<CategoryData>> grouped = {};
-    for (var category in currentCategories) {
-      grouped.putIfAbsent(category.group, () => []).add(category);
-    }
-    return grouped;
   }
 
   @override
@@ -88,7 +77,7 @@ class _CategorySelectionPageState extends State<CategoryView>
               ),
               onPressed: provider.setIsSearchBarShowed,
               icon: Icon(
-                provider.isSearchBarShowed ? Icons.search : Icons.close,
+                provider.isSearchBarShowed ? Icons.close : Icons.search,
               ),
             ),
           ),
@@ -100,6 +89,7 @@ class _CategorySelectionPageState extends State<CategoryView>
           children: [
             _buildTabButtons(),
             if (provider.isSearchBarShowed) _buildSearchBar(),
+            SizedBox(height: 20),
             Expanded(child: _buildCategoryGrid()),
           ],
         ),
@@ -114,7 +104,7 @@ class _CategorySelectionPageState extends State<CategoryView>
   Widget _buildTabButtons() {
     final provider = context.watch<CategoryProvider>();
 
-    Widget _tabButton(String title, TransactionType type, Color color) {
+    Widget tabButton(String title, TransactionType type, Color color) {
       final isSelected = provider.selectedType == type;
       return Expanded(
         child: GestureDetector(
@@ -163,12 +153,8 @@ class _CategorySelectionPageState extends State<CategoryView>
       ),
       child: Row(
         children: [
-          _tabButton(
-            'expenses',
-            TransactionType.expense,
-            AppColors.primaryBlue,
-          ),
-          _tabButton('income', TransactionType.income, Colors.blue),
+          tabButton('expenses', TransactionType.expense, AppColors.primaryBlue),
+          tabButton('income', TransactionType.income, Colors.blue),
         ],
       ),
     );
@@ -192,7 +178,7 @@ class _CategorySelectionPageState extends State<CategoryView>
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -232,106 +218,96 @@ class _CategorySelectionPageState extends State<CategoryView>
   }
 
   Widget _buildCategoryGrid() {
-    final selectedType = context.watch<CategoryProvider>().selectedType;
+    final provider = context.watch<CategoryProvider>();
+    final selectedType = provider.selectedType;
+    final categories = currentCategoriesItem;
 
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      child: SingleChildScrollView(
-        key: ValueKey(selectedType),
-        physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * 0.04,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: groupedCategories.entries
-              .map((entry) => _buildCategorySection(entry.key, entry.value))
-              .toList(),
-        ),
-      ),
-    );
-  }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        int crossAxisCount = constraints.maxWidth > 800
+            ? 7
+            : constraints.maxWidth > 600
+            ? 6
+            : constraints.maxWidth > 400
+            ? 4
+            : 3;
 
-  Widget _buildCategorySection(String title, List<CategoryData> categories) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 24),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Text(title, style: Theme.of(context).textTheme.bodyMedium),
-          ),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final availableWidth = constraints.maxWidth;
-              const itemWidth = 80.0;
-              final crossAxisCount = (availableWidth / itemWidth).floor();
-
-              return GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount.clamp(2, 6),
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.7,
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
+          child: categories.isEmpty
+              ? Center(
+                  key: ValueKey(
+                    'empty_${selectedType}_${provider.searchQuery}',
+                  ),
+                  child: Text(
+                    'No categories found'.tr,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                )
+              : GridView.builder(
+                  key: ValueKey("${selectedType}_${provider.searchQuery}"),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 10,
+                  ),
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: categories.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.9,
+                  ),
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    return _CategoryTile(category: category);
+                  },
                 ),
-                itemCount: categories.length,
-                itemBuilder: (_, index) =>
-                    _buildCategoryItem(categories[index]),
-              );
-            },
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
+}
 
-  Widget _buildCategoryItem(CategoryData category) {
-    return GestureDetector(
+class _CategoryTile extends StatelessWidget {
+  final CategoryItemModel category;
+
+  const _CategoryTile({required this.category});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
       onTap: () => Get.to(
         () => CategoryItemView(
-          categoryName: category.name,
           categoryIcon: category.icon,
           categoryColor: category.color,
           categoryKey: category.key,
         ),
       ),
-      child: ClipRect(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: category.color.withValues(alpha: 0.15),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: category.color.withValues(alpha: 0.15),
+            child: Icon(category.icon, color: category.color, size: 26),
+          ),
+          const SizedBox(height: 6),
+          Flexible(
+            child: Text(
+              category.name,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                overflow: TextOverflow.ellipsis,
               ),
-              child: Icon(category.icon, color: category.color, size: 24),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
-            Flexible(
-              child: Text(
-                category.name,
-                maxLines: 2,
-                softWrap: true,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 13,
-                  height: 1.2,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

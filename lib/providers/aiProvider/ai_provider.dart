@@ -1,26 +1,23 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:finance_manager_app/config/enums/enums.dart';
-import 'package:finance_manager_app/data/category/expense_category_map.dart';
+import 'package:finance_manager_app/data/category/category_item_data.dart';
+import 'package:finance_manager_app/data/category/income_item_data.dart';
+import 'package:finance_manager_app/models/categoryModel/category_item_model.dart';
 import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
-import 'package:finance_manager_app/views/homeView/home_view.dart';
-import 'package:finance_manager_app/views/mainView/main_view.dart';
 import 'package:get/get.dart';
-import 'package:get/instance_manager.dart';
+
 import 'package:provider/provider.dart';
-import '../../models/categoryModel/category_data_model.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import '../../data/category/expense_cateogries.dart';
-import '../../data/category/income_cateogries.dart';
 
 class AiProvider with ChangeNotifier {
   // AiService can be wired here in future if external AI logic is moved out
-
   final stt.SpeechToText _speech = stt.SpeechToText();
   final TextEditingController textController = TextEditingController();
   final FocusNode focusNode = FocusNode();
@@ -72,7 +69,7 @@ class AiProvider with ChangeNotifier {
             parts.add(error.errorMsg);
           }
           parts.add(error.permanent ? 'Permanent' : 'Transient');
-          _speechErrorMessage = 'Speech error: ${parts.join(' — ')}';
+          _speechErrorMessage = '${"speech_error".tr}: ${parts.join(' — ')}';
           _speechEnabled = false;
           _isRecording = false;
           notifyListeners();
@@ -81,16 +78,20 @@ class AiProvider with ChangeNotifier {
 
       if (!_speechEnabled) {
         _speechErrorMessage ??=
-            'Speech recognition not available on this device.';
+            'speech_not_available'.tr;
       }
+    } on PlatformException catch (e) {
+      _speechEnabled = false;
+      _speechErrorMessage = '${e.message}';
     } catch (e) {
       _speechEnabled = false;
-      _speechErrorMessage = 'Speech initialization failed: ${e.toString()}';
+      _speechErrorMessage = '${"speech_init_failed".tr}: ${e.toString()}';
     }
     notifyListeners();
   }
 
   void toggleRecording() {
+    setSpeechError();
     if (!_speechEnabled) {
       HapticFeedback.vibrate();
       return;
@@ -156,153 +157,183 @@ Return only a **valid JSON array** (no comments or text outside the array) of on
     "title": string,                // short transaction title like "Lunch", "Bus Fare", "Bkash Send Money"
     "type": "income" or "expense",  // logical transaction type
     "amount": number,               // numeric value only, currency symbols removed
-    "categoryName": string,         // must match an existing category from the user’s expense/income category lists
+    "categoryName": string,         // must match one of the updated category keys below
     "date": string,                 // ISO8601 format: YYYY-MM-DD
     "notes": string,                // short optional context
     "paymentMethod": string         // one of: cash, bankTransfer, creditCard, debitCard, mobileWallet, check, bkash, nagad, rocket, upay
   }
 ]
 
-### RULES:
+---
 
-1. **Language & Context**
-   - The user may mix Bangla, English, or Banglish (e.g., "আমি আজ ২০০ টাকা লাঞ্চ খরচ করছি", "500tk lunch dilam", "Paid 200 taka for bus").
-   - Detect meaning, numbers, and dates from all languages.
-   - Ensure JSON keys remain in English.
+### 🔹 Updated Category Mapping
+Use these category keys exactly:
 
-2. **Multiple Transactions**
-   - If the user mentions multiple payments in one message (e.g., “Lunch 200 and bus 50”), return separate objects.
-   - Each object must include all required fields.
+| Category Key | Keywords (Bangla + English + Banglish) |
+|---------------|----------------------------------------|
+| **health_fitness** | doctor, medicine, hospital, gym, yoga, ফার্মেসি, ডাক্তার, ব্যায়াম |
+| **food_dining** | lunch, dinner, খাবার, restaurant, pizza, snacks, coffee, tea, juice, ভাত, রেস্টুরেন্ট |
+| **bills_utilities** | electricity, gas, internet, water bill, mobile bill,recharge,topup,call,রিচার্জ বিদ্যুৎ, বিল, ওয়াইফাই, ফোন বিল |
+| **beauty** | salon, parlor, spa, beauty, haircut, makeup, skin care, পার্লার |
+| **housing** | rent, apartment, flat, house, utility, repair, ভাড়া, বাসা, বাড়ি |
+| **transportation** | bus, cng, uber, rickshaw, taxi, car rent, গাড়ি ভাড়া, পরিবহন |
+| **entertainment** | movie, concert, netflix, youtube, game, সিনেমা, গান, শো |
+| **shopping** | clothes, dress, shoes, fashion, market, shop, dress, কেনাকাটা |
+| **groceries** | grocery, bazar, vegetables, fruits, rice, fish, মুদিখানা, বাজার |
+| **education** | tuition, course, exam, book, school, college, পড়াশোনা |
+| **personal** | family, friend, gift, home, relative, personal, নিজের জন্য |
+| **investment** | investment, savings, deposit, fund, mutual fund, crypto, বিনিয়োগ |
+| **marketing_advertising** | marketing, ads, advertising, promotion, প্রচার |
+| **travel_accommodation** | travel, trip, hotel, ticket, flight, tour, ভ্রমণ, যাত্রা |
+| **office_supplies_equipment** | office, equipment, stationery, printer, laptop, desk |
+| **insurance** | insurance, premium, policy, বীমা |
+| **subscription_services** | subscription, netflix, spotify, membership, সাবস্ক্রিপশন |
+| **fuel_mileage** | fuel, petrol, diesel, gas, refill, car fuel, তেল |
+| **charity_donations** | donation, zakat, charity, gift money, অনুদান, দান |
+| **kids** | child, kids, baby, toy, স্কুলের খরচ, বাচ্চা |
+| **repairs** | repair, maintenance, fixing, service, মেরামত |
+| **pets** | pet, dog, cat, food, পশু |
+| **sports** | cricket, football, training, খেলা |
+| **salary** | salary, pay, income, payment, job, মাসিক বেতন |
+| **business** | business, sale, trade, purchase, deal, ব্যবসা |
+| **sales_revenue** | sold, sale, sales income, বিক্রি |
+| **service_income** | service, project, task, consulting, সেবা |
+| **freelance_contracts** | freelance, contract, remote work, ফ্রিল্যান্স |
+| **investment_returns** | profit, return, dividend, লাভ, শেয়ার আয় |
+| **rental_income** | rent income, property, tenant, lease |
+| **asset_sales** | asset sold, equipment sale, property sale |
+| **royalties_licensing** | royalties, license, copyright, ads revenue |
+| **interest_dividends** | bank interest, dividend, interest, সুদ |
+| **side_income** | side job, part-time, commission, tutoring, extra income |
+| **commissions_affiliates** | commission, affiliate, referral, bonus income |
+| **refunds_reimbursements** | refund, reimbursement, cashback, ফেরত টাকা |
+| **gifts** | gift, received gift, উপহার |
+| **grants_subsidies** | grant, scholarship, government aid, ভর্তুকি |
+| **miscellaneous** | anything else unmatched |
 
-3. **Date Handling**
-   - Understand natural language expressions like:
-     - “আজ”, “আজকে”, “today” → today
-     - “গতকাল”, “yesterday” → yesterday
-     - “৩ দিন আগে”, “3 days ago” → 3 days before today
-     - “১৫ই অক্টোবর”, “on 15 Oct”, “October 15” → specific date
-   - Output all dates in ISO8601 format (YYYY-MM-DD).
-   - Assume today’s date is ${DateTime.now().toIso8601String().split('T').first} if none given.
+---
 
-4. **Type Detection**
-   - Expense indicators → “spent”, “paid”, “bought”, “খরচ”, “দিলাম”, “send”, “gave”, “bill”, “transfer”, “cash out”, “donated”.
-   - Income indicators → “received”, “got”, “earned”, “salary”, “income”, “payment”, “bonus”, “refund”, “পেলাম”, “আয়”.
-   - Default to “expense” if unclear.
+### 🔹 Detection Rules
 
-5. **Amount Extraction**
-   - Extract numeric value and remove words like “৳”, “tk”, “taka”, “BDT”.
-   - Handle Bangla numerals (e.g., “৫০০ টাকা” → 500).
-   - Each transaction must have an amount.
+#### 1. Language & Context
+- Handle mixed Bangla, English, Banglish.
+- Keep JSON keys in English.
 
-6. **Category Detection**
-   - Infer categoryName using the following mapping logic:
-     - food_dining → “ভাত”, “Lunch”, “Dinner”, “খাবার”, “Pizza”, “Restaurant”,“Groceries”
-     - transportation → “Bus”, “CNG”, “Uber”, “Rickshaw”, “গাড়ি ভাড়া”
-     - bills_utilities → “Electricity”, “Gas”, “Internet”, “Mobile Bill”, “বিদ্যুৎ বিল”
-     - health_fitness → “Doctor”, “Medicine”, “Hospital”, “Gym”, “ফার্মেসি”, "Yoga","Sports"
-     - education → “Tuition”, “Course”, “Exam”, “School”, “Book”, “কলেজ”
-     - entertainment → “Movie”, “Concert”, “Game”, “Netflix”, “সিনেমা”
-     - shopping → “Clothes”, “Mobile”, “Gift”, “Market”, “Dress”
-     - family_personal → “Family”, “Friend”, “Gift”, “Child”, “Relative”, “Home”
-     - investments_finance → “Bkash Send”, “Nagad Cash Out”, “Loan Repayment”, “Savings”, “Investment”
-     - primary_income → “Salary”, “Freelance”, “Project”, “Bonus”, “Payment Received”
-     - miscellaneous → if no clear match
-     - investments → 'stocks','dividends','crypto','mutual_funds','bonds','real_estate'
-     - rental_assets → 'rental','vehicle_rent','property_lease',','equipment_hire'
-     - side_income → 'part_time','commission','consulting','tutoring','affiliate_marketing','online_sales','content_creation'
-     - other_income → 'bonus','incomegifts','refund','donations','awards_prizes','cashback_rewards','lottery_gambling','interest_income'
-     - passive_income → 'royalties','ads_revenue','licensing','divine_donations'
+#### 2. Multiple Transactions
+- If multiple payments mentioned (e.g. “Lunch 200 and bus 50”), return multiple JSON objects.
 
-   - Always choose the closest valid category name from the known category lists.
+#### 3. Date Handling
+- Understand expressions like:
+  - “আজ”, “today” → today
+  - “গতকাল”, “yesterday” → yesterday
+  - “৩ দিন আগে”, “3 days ago” → N days ago
+  - “১৫ই অক্টোবর”, “October 15” → exact date
+- Default to today’s date → `${DateTime.now().toIso8601String().split('T').first}`
 
-7. **Payment Method Detection**
-   - Match common keywords:
-     - “bkash”, “বিকাশ” → bkash
-     - “nagad”, “নগদ” → nagad
-     - “rocket”, “রকেট” → rocket
-     - “upay”, “উপায়” → upay
-     - “bank”, “transfer”, “cheque”, “bankTransfer” → bankTransfer
-     - “credit card”, “credit” → creditCard
-     - “debit card”, “debit” → debitCard
-     - “wallet”, “mobile wallet” → mobileWallet
-     - Otherwise default → cash
+#### 4. Type Detection
+- Expense words: spent, paid, bought, খরচ, দিলাম, send, bill, cash out, donated
+- Income words: received, got, earned, salary, income, payment, bonus, পেলাম, আয়
+- Default: expense
 
-8. **Notes**
-   - Include any extra details that describe purpose, person, or situation (e.g., “for mother”, “office lunch”, “friend paid”).
+#### 5. Amount Extraction
+- Extract numeric part only
+- Remove symbols: “৳”, “tk”, “taka”, “BDT”
+- Convert Bangla numerals (e.g. “৫০০” → 500)
 
-9. **Output**
-   - Always return a JSON array, even for one transaction.
-   - No explanations, no comments, no markdown — only JSON.
-10. **Ttle**
-  - Must Needed
-  - lowerCase
-  - if the word is two or more then joind with _ (example: ads_revenue)
-  - Always choose the closest valid title from the known category lists.
+#### 6. Category Detection
+- Match using the keywords above
+- Choose closest valid category key
 
+#### 7. Payment Method Detection
+| Keyword | Output |
+|----------|---------|
+| bkash, বিকাশ | bkash |
+| nagad, নগদ | nagad |
+| rocket, রকেট | rocket |
+| upay, উপায় | upay |
+| bank, transfer, cheque | bankTransfer |
+| credit card, credit | creditCard |
+| debit card, debit | debitCard |
+| wallet, mobile wallet | mobileWallet |
+| otherwise | cash |
 
-### EXAMPLES:
+#### 8. Notes
+- Include short purpose or person if present.
 
-**Example 1 (Banglish):**
+#### 9. Title
+- Lowercase
+- Join multi-word titles with underscore, e.g. “bus fare” → `"bus_fare"`
+- Must be relevant to the category.
+
+#### 10. Output
+- Always return a **valid JSON array**
+- No extra text, no markdown, no comments.
+
+---
+
+### ✅ Example 1 (Banglish)
 Input: “Ajke lunch e 200tk diyechi bkash e.”
 Output:
 [
   {
-    "title": "Lunch",
+    "title": "lunch",
     "type": "expense",
     "amount": 200,
     "categoryName": "food_dining",
-    "date": "2025-11-02",
+    "date": "2025-11-05",
     "notes": "Ajke lunch e diyechi",
     "paymentMethod": "bkash"
   }
 ]
 
-**Example 2 (Bangla):**
+### ✅ Example 2 (Bangla)
 Input: “আমি আজ ১০০ টাকা বাসে খরচ করেছি নগদে।”
 Output:
 [
   {
-    "title": "Bus Fare",
+    "title": "bus_fare",
     "type": "expense",
     "amount": 100,
     "categoryName": "transportation",
-    "date": "2025-11-02",
+    "date": "2025-11-05",
     "notes": "বাসে খরচ করেছি",
     "paymentMethod": "nagad"
   }
 ]
 
-**Example 3 (English, Multiple):**
+### ✅ Example 3 (English, Multiple)
 Input: “Got 10000 salary today, spent 300 for lunch and 100 for bus.”
 Output:
 [
   {
-    "title": "Salary",
+    "title": "salary",
     "type": "income",
     "amount": 10000,
-    "categoryName": "primary_income",
-    "date": "2025-11-02",
+    "categoryName": "salary",
+    "date": "2025-11-05",
     "notes": "Received salary",
     "paymentMethod": "bankTransfer"
   },
   {
-    "title": "Lunch",
+    "title": "lunch",
     "type": "expense",
     "amount": 300,
     "categoryName": "food_dining",
-    "date": "2025-11-02",
+    "date": "2025-11-05",
     "notes": "",
     "paymentMethod": "cash"
   },
   {
-    "title": "Bus Fare",
+    "title": "bus_fare",
     "type": "expense",
     "amount": 100,
     "categoryName": "transportation",
-    "date": "2025-11-02",
+    "date": "2025-11-05",
     "notes": "",
     "paymentMethod": "cash"
   }
 ]
+
 ''';
 
     // Show loader for the whole processing duration and ensure it is
@@ -345,7 +376,6 @@ Output:
 
         // Decode the cleaned content
         final parsed = jsonDecode(cleaned);
-        print(parsed);
 
         // Ensure it's a list (AI might sometimes return a single object)
         final List<dynamic> transactions = parsed is List ? parsed : [parsed];
@@ -356,12 +386,12 @@ Output:
               item['categoryName']?.toString().trim() ?? 'miscellaneous';
           final isIncome = item['type']?.toString().toLowerCase() == 'income';
 
-          final categories = isIncome ? incomeCategories : expenseCategories;
+          final categories = isIncome ? incomeCategoryItems : categoryItems;
 
           // Enhanced category matching helper
-          CategoryData findBestCategory(
+          CategoryItemModel findBestCategory(
             String rawName,
-            List<CategoryData> cats,
+            List<CategoryItemModel> cats,
           ) {
             final q = rawName.trim().toLowerCase();
             if (q.isEmpty) return cats.first;
@@ -369,31 +399,15 @@ Output:
             // 1) Exact key match (categoryData.key)
             for (final c in cats) {
               //Find the Category
-              if (c.groupKey.toLowerCase() == q) {
-                if (item['title'] == c.key) return c;
+              if (c.key.toLowerCase() == q) {
+                return c;
               }
             }
 
-            // 1)Not Exact key match (categoryData.key)
-            for (final c in cats) {
-              //Find the Category
-              if (c.groupKey.toLowerCase() == q) {
-                if (item['title'] != c.key) {
-                  return CategoryData(
-                    'others',
-                    Icons.category,
-                    Color(0xFF636E72),
-                    'miscellaneous',
-                  );
-                }
-              }
-            }
-
-            return CategoryData(
-              'others',
+            return CategoryItemModel(
+              'miscellaneous',
               Icons.category,
               Color(0xFF636E72),
-              'miscellaneous',
             );
           }
 
@@ -415,7 +429,6 @@ Output:
             title: item['title'] ?? '',
             type: isIncome ? TransactionType.income : TransactionType.expense,
             amount: parseAmount(item['amount']),
-            categoryName: matchedCategory.groupKey,
             categoryKey: matchedCategory.key,
             // Parse date string; if time part is missing (parsed at midnight),
             // combine with current time so UI doesn't show 12:00 AM.
@@ -456,13 +469,80 @@ Output:
         _speechErrorMessage = 'AI request failed (${response.statusCode})';
         notifyListeners();
       }
+    } on TimeoutException {
+      // Timeout exception snackbar
+      Get.snackbar(
+        '',
+        'connection_timeout'.tr,
+        titleText: const SizedBox.shrink(),
+        messageText: Row(
+          children: [
+            const Icon(Icons.access_time, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'connection_timeout'.tr,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.orange[700],
+        colorText: Colors.white,
+        borderRadius: 12,
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 4),
+      );
+      _isLoading = false;
+      notifyListeners();
+    } on SocketException {
+      Get.snackbar(
+        '',
+        'no_internet_connection'.tr,
+        titleText: const SizedBox.shrink(),
+        messageText: Row(
+          children: [
+            const Icon(Icons.wifi_off, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'no_internet_connection'.tr,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.red[700],
+        colorText: Colors.white,
+        borderRadius: 12,
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 4),
+      );
+      _isLoading = false;
+      notifyListeners();
     } catch (e) {
       _speechErrorMessage = 'Error: $e';
       notifyListeners();
     } finally {
       // Always hide loader when work is done.
+
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  void setSpeechError() {
+    if (_speechErrorMessage != null && !Get.isSnackbarOpen) {
+      Get.snackbar(
+        'Speech Error ⚠️',
+        speechErrorMessage!,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(10),
+        borderRadius: 10,
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
@@ -479,6 +559,12 @@ Output:
     notifyListeners();
   }
 
+  void resetPreview() {
+    _showPreview = false;
+    _parsedDataEx = [];
+    notifyListeners();
+  }
+
   void clearInput() {
     textController.clear();
     notifyListeners();
@@ -491,8 +577,16 @@ Output:
     for (var tx in _parsedDataEx) {
       context.read<AddExpenseProvider>().addExpense(tx);
     }
+
     _isLoading = false;
+    textController.clear();
+
+    _parsedData = null;
+    _showPreview = false;
+
+    // Navigator.pop(context, _parsedData?.toMap());
+    // Get.to(MainView());
+
     notifyListeners();
-    Navigator.pop(context, _parsedData?.toMap());
   }
 }

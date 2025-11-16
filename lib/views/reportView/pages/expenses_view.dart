@@ -21,8 +21,8 @@ class _ExpensesScreenState extends State<ExpensesView> {
 
   @override
   void initState() {
-    context.read<ReportProvider>().filterCategoryFunction();
     super.initState();
+    context.read<ReportProvider>().filterCategoryFunction();
   }
 
   @override
@@ -56,7 +56,8 @@ class _ExpensesScreenState extends State<ExpensesView> {
                   SizedBox(height: 24),
                   Consumer<HomeViewProvider>(
                     builder: (context, provider, child) {
-                      final filteredTxns = provider.filteredTransactions;
+                      final filteredTxns =
+                          provider.filteredTransactionsForReport;
 
                       return filteredTxns.isEmpty
                           ? Text("noTransactions".tr)
@@ -222,9 +223,9 @@ class _ExpensesScreenState extends State<ExpensesView> {
         final filteredTxns = provider.filterTransactions(provider.dwm);
 
         return Align(
-          alignment: Alignment.centerLeft, // 👈 push whole wrap to right
+          alignment: Alignment.centerLeft,
           child: Wrap(
-            alignment: WrapAlignment.start, // 👈 items start from right
+            alignment: WrapAlignment.start,
             spacing: 16,
             runSpacing: 8,
             children: [
@@ -251,7 +252,7 @@ class _ExpensesScreenState extends State<ExpensesView> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        expense.categoryName,
+                        expense.categoryKey.tr,
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ],

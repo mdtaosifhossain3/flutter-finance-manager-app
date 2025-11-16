@@ -12,12 +12,10 @@ class TransactionFormPage extends StatefulWidget {
   const TransactionFormPage({
     super.key,
     this.transactionModel,
-    this.categoryName,
     this.categoryIcon,
     this.categoryColor,
     this.categoryKey,
   });
-  final String? categoryName;
   final String? categoryKey;
   final IconData? categoryIcon;
   final Color? categoryColor;
@@ -69,8 +67,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.categoryName);
-    print(widget.categoryKey);
     return Scaffold(
       appBar: customAppBar(
         title: "addTransaction".tr,
@@ -142,6 +138,11 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             contentPadding: EdgeInsets.all(16),
           ),
           style: TextStyle(fontSize: 16),
+          validator: (value) {
+            if (value == null || value.isEmpty) return 'titleRequiredError'.tr;
+
+            return null;
+          },
         ),
       ],
     );
@@ -242,7 +243,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
         ),
         SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: provider.selectedPaymentMethod,
+          initialValue: provider.selectedPaymentMethod,
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             focusedBorder: OutlineInputBorder(
@@ -285,7 +286,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).dividerColor.withOpacity(0.05),
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: Offset(0, 2),
               ),
@@ -333,9 +334,11 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   }
 
   Future<void> _selectDate() async {
+    final provider = context.read<AddExpenseProvider>();
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: context.read<AddExpenseProvider>().selectedDate,
+      initialDate: provider.selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
       builder: (context, child) => Theme(
@@ -349,7 +352,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     );
 
     if (picked != null) {
-      context.read<AddExpenseProvider>().setSelectedDate(picked);
+      provider.setSelectedDate(picked);
     }
   }
 
@@ -379,95 +382,64 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   }
 
   Future<void> _handleSubmit() async {
-    if (_formKey.currentState!.validate()) {
-      final text = _amountController.text.trim();
-      final amount = int.tryParse(text) ?? 0;
-      final tn = TransactionModel(
-        type:
-            widget.transactionModel?.type ??
-            context.read<CategoryProvider>().selectedType,
-        date: context.read<AddExpenseProvider>().selectedDate,
-        title: _titleController.text,
-        categoryName:
-            widget.transactionModel?.categoryName ?? widget.categoryName!,
-        amount: amount,
-        paymentMethod: context.read<AddExpenseProvider>().selectedPaymentMethod,
-        icon: widget.transactionModel?.icon ?? widget.categoryIcon!,
-        iconBgColor:
-            widget.transactionModel?.iconBgColor ??
-            widget.categoryColor!.toARGB32(),
-        notes: _notesController.text,
+    if (!_formKey.currentState!.validate()) return;
 
-        categoryKey:
-            widget.transactionModel?.categoryKey ??
-            widget.categoryKey ??
-            widget.categoryKey!,
-      );
+    final text = _amountController.text.trim();
+    final amount = int.tryParse(text) ?? 0;
+
+    final tn = TransactionModel(
+      type:
+          widget.transactionModel?.type ??
+          context.read<CategoryProvider>().selectedType,
+      date: context.read<AddExpenseProvider>().selectedDate,
+      title: _titleController.text,
+      amount: amount,
+      paymentMethod: context.read<AddExpenseProvider>().selectedPaymentMethod,
+      icon: widget.transactionModel?.icon ?? widget.categoryIcon!,
+      iconBgColor:
+          widget.transactionModel?.iconBgColor ??
+          widget.categoryColor!.toARGB32(),
+      notes: _notesController.text,
+      categoryKey:
+          widget.transactionModel?.categoryKey ??
+          widget.categoryKey ??
+          widget.categoryKey!,
+    );
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final addExpenseProvider = context.read<AddExpenseProvider>();
 
       if (widget.transactionModel != null) {
-        context.read<AddExpenseProvider>().updateTransaction(
+        await addExpenseProvider.updateTransaction(
           widget.transactionModel!.id!,
           tn,
         );
       } else {
-        context.read<AddExpenseProvider>().addExpense(tn);
+        await addExpenseProvider.addExpense(tn);
       }
 
-      _showSuccessDialog(tn);
-    }
-  }
+      if (!mounted) return;
 
-  void _showSuccessDialog(TransactionModel data) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.check_circle, color: AppColors.success, size: 28),
-            SizedBox(width: 12),
-            Text('successTitle'.tr),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('successMessage'.tr),
-            SizedBox(height: 16),
-            Text('details'.tr, style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text('${"amount".tr}: ৳${data.amount}'),
-            Text('${"category".tr}: ${data.categoryName}'),
-            Text(
-              '${"payment".tr}: ${data.paymentMethod.tr}',
-            ), // ✅ localized here
-            Text('${"date".tr}: ${_formatDate(data.date)}'),
-            if (data.notes != null) Text('${"notes".tr}: ${data.notes}'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _resetForm();
-            },
-            child: Text('addAnother'.tr),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryBlue,
-              foregroundColor: AppColors.textPrimary,
-            ),
-            child: Text('done'.tr),
-          ),
-        ],
-      ),
-    );
+      // Close the loading dialog
+      Navigator.of(context, rootNavigator: true).pop();
+
+      _resetForm();
+      Get.back();
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop(); // close loading
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('something_went_wrong'.tr)));
+      }
+    }
   }
 
   void _resetForm() {

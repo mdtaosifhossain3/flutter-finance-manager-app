@@ -10,7 +10,8 @@ import '../utils/helper_functions.dart';
 
 class CardWidget extends StatefulWidget {
   final TransactionModel transaction;
-  const CardWidget({super.key, required this.transaction});
+  final bool isTitle;
+  const CardWidget({super.key, required this.transaction,this.isTitle = false});
 
   @override
   State<CardWidget> createState() => _CardWidgetState();
@@ -50,7 +51,7 @@ class _CardWidgetState extends State<CardWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.transaction.categoryKey.tr,
+                    widget.isTitle ? widget.transaction.title :   widget.transaction.categoryKey.tr,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   SizedBox(height: 4),
@@ -78,10 +79,6 @@ class _CardWidgetState extends State<CardWidget> {
   }
 
   void _showTransactionDetails(TransactionModel transaction) {
-    print(transaction.id);
-    print(transaction.categoryName);
-    print(transaction.paymentMethod);
-
     showModalBottomSheet(
       context: context,
 

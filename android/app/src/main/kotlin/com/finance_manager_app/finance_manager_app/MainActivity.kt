@@ -1,4 +1,4 @@
-package com.finance_manager_app.finance_manager_app
+package com.finzycash.expensebudgetmanager
 
 import io.flutter.embedding.android.FlutterActivity
 

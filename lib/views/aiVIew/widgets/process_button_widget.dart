@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../config/myColors/app_colors.dart';
 
@@ -6,7 +7,11 @@ class ProcessButtonWidget extends StatelessWidget {
   final void Function()? onTap;
   final bool isLoading;
 
-  ProcessButtonWidget({super.key, required this.onTap, this.isLoading = false});
+  const ProcessButtonWidget({
+    super.key,
+    required this.onTap,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +34,7 @@ class ProcessButtonWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryBlue.withOpacity(0.3),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -41,7 +46,7 @@ class ProcessButtonWidget extends StatelessWidget {
                 Icon(Icons.auto_awesome, color: Colors.white),
                 const SizedBox(width: 12),
                 Text(
-                  'Process with AI',
+                  'process_with_ai'.tr,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

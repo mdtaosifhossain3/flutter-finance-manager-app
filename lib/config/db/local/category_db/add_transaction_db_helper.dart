@@ -6,13 +6,12 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../../../models/categoryModel/transaction_model.dart';
 
-
-class AddTransactionDbHelper{
+class AddTransactionDbHelper {
   AddTransactionDbHelper._();
 
   static final AddTransactionDbHelper getInstance = AddTransactionDbHelper._();
 
-  Database?myDB;
+  Database? myDB;
 
   // Table Data
   final String tableName = 'transaction_data';
@@ -23,7 +22,6 @@ class AddTransactionDbHelper{
   final String amount = 'amount';
   final String notes = 'notes';
   final String paymentMethod = 'paymentMethod';
-  final String categoryName = 'categoryName';
   final String iconCodePoint = 'iconCodePoint';
   final String iconFontFamily = 'iconFontFamily';
   final String iconBgColor = 'iconBgColor';
@@ -33,6 +31,7 @@ class AddTransactionDbHelper{
     myDB ??= await openDB();
     return myDB!;
   }
+
   Future<Database> openDB() async {
     Directory appDir = await getApplicationDocumentsDirectory();
     String dbPath = join(appDir.path, 'transaction_data.db');
@@ -46,23 +45,21 @@ class AddTransactionDbHelper{
           $type INTEGER NOT NULL,
           $date TEXT NOT NULL,
           $title TEXT NOT NULL,
-          $categoryName TEXT NOT NULL,
           $amount INTEGER NOT NULL,
           $notes TEXT,
           $paymentMethod TEXT NOT NULL,
           $iconCodePoint INTEGER NOT NULL,
           $iconFontFamily TEXT NOT NULL,
           $categoryKey TEXT NOT NULL,
-          $iconBgColor INTEGER NOT NULL)'''
-        );
+          $iconBgColor INTEGER NOT NULL)''');
       },
     );
   }
 
   ///insertion
-  Future<bool> addItem( TransactionModel ex) async {
+  Future<bool> addItem(TransactionModel ex) async {
     var db = await getDB();
-    int rowsEffected = await db.insert(tableName, ex.toMap() );
+    int rowsEffected = await db.insert(tableName, ex.toMap());
     return rowsEffected > 0;
   }
 
@@ -91,16 +88,9 @@ class AddTransactionDbHelper{
     return rowsAffected > 0;
   }
 
-
   //delete
-  Future<int> deleteItem(int itemId)  async{
+  Future<int> deleteItem(int itemId) async {
     final db = await getDB();
-    return await db.delete(
-      tableName,
-      where: "id = ?",
-      whereArgs: [itemId]
-    );
+    return await db.delete(tableName, where: "id = ?", whereArgs: [itemId]);
   }
-
-
 }

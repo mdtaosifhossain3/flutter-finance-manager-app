@@ -3,6 +3,10 @@ class RoutesName {
   static const welcomeView = "/welcome_view";
   static const loginView = "/login_view";
   static const registerView = "/register_view";
+  static const otepVerifyView = "/otep_verify_view";
+
+  static const mainView = "/main_view";
+
   static const forgetPasswordView = "/forgetPasswordView";
   static const resetPasswordView = "/resetPasswordView";
   static const homeView = "/";

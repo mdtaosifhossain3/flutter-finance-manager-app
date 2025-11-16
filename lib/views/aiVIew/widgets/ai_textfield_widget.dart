@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../config/myColors/app_colors.dart';
 
@@ -44,7 +45,7 @@ class _AiTextFieldWidgetState extends State<AiTextFieldWidget> {
         style: Theme.of(context).textTheme.bodyLarge,
         decoration: InputDecoration(
           hintText:
-              'Type or speak your transaction...\n\nExample: "Spent \$50 on groceries at Whole Foods"',
+              '${"input_placeholder".tr}...\n\n${"input_example".tr}',
           hintStyle: TextStyle(
             color: AppColors.textMuted.withValues(alpha: 0.6),
             fontSize: 15,

@@ -1,6 +1,10 @@
+import 'package:finance_manager_app/config/db/local/notification_db/notification_db_helper.dart';
+import 'package:finance_manager_app/models/notificationModel/notification_model.dart';
 import 'package:finance_manager_app/services/monthly_pdf_summary_service.dart';
 import 'package:finance_manager_app/services/weekly_pdf_summary_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DialogService {
@@ -9,7 +13,7 @@ class DialogService {
   static const _firstLaunchKey = 'is_first_launch';
 
   /// Call this on app startup or Home screen init
-  static Future<void> checkAndShowDialogs(BuildContext context) async {
+  static Future<void> checkAndShowDialogs() async {
     final prefs = await SharedPreferences.getInstance();
 
     final isFirstLaunch = prefs.getBool(_firstLaunchKey) ?? true;
@@ -20,20 +24,17 @@ class DialogService {
     }
 
     // Show dialogs for subsequent app opens
-    await _checkWeeklyDialog(context, prefs);
-    await _checkMonthlyDialog(context, prefs);
+    await _checkWeeklyDialog(prefs);
+    await _checkMonthlyDialog(prefs);
   }
 
-  static Future<void> _checkWeeklyDialog(
-    BuildContext context,
-    SharedPreferences prefs,
-  ) async {
+  static Future<void> _checkWeeklyDialog(SharedPreferences prefs) async {
     final lastShownString = prefs.getString(_weeklyKey);
     final now = DateTime.now();
 
     if (lastShownString != null) {
       final lastShown = DateTime.parse(lastShownString);
-      if (now.difference(lastShown).inDays < 1) return; // not yet 7 days
+      if (now.difference(lastShown).inDays < 7) return; // not yet 7 days
     } else {
       // No previous date, don't show on first real open
       await prefs.setString(_weeklyKey, now.toIso8601String());
@@ -42,12 +43,15 @@ class DialogService {
 
     await _showWeeklyDialog(context);
     await prefs.setString(_weeklyKey, now.toIso8601String());
+    final NotificationModel notificationModel = NotificationModel(
+      title: "weeklyFinancialSummaryTitle".tr,
+      body: "weeklyFinancialSummaryDescription".tr,
+      date: DateTime.now(),
+    );
+    NotificationDbHelper().insertNotification(notificationModel);
   }
 
-  static Future<void> _checkMonthlyDialog(
-    BuildContext context,
-    SharedPreferences prefs,
-  ) async {
+  static Future<void> _checkMonthlyDialog(SharedPreferences prefs) async {
     final lastShownString = prefs.getString(_monthlyKey);
     final now = DateTime.now();
 
@@ -62,121 +66,64 @@ class DialogService {
       return;
     }
 
-    await _showMonthlyDialog(context);
+    await _showMonthlyDialog();
     await prefs.setString(_monthlyKey, now.toIso8601String());
-  }
-
-  // Weekly Dialog
-  static Future<void> _showWeeklyDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("📅 Weekly Financial Summary"),
-        content: const Text(
-          "Here's your weekly financial summary! Take a look at your expenses this week.",
-        ),
-        actions: [
-          TextButton(
-            child: const Text("View Insights"),
-            onPressed: () {
-              WeeklyPdfGenerator.generateWeeklyReportPdf(DateTime.now());
-
-              Navigator.pop(context);
-              // Navigate to monthly report if you want
-              // Navigator.pushNamed(context, '/report');
-            },
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close"),
-          ),
-        ],
-      ),
+    final NotificationModel notificationModel = NotificationModel(
+      title: "monthlyFinancialReportTitle".tr,
+      body: "monthlyFinancialReportDescription".tr,
+      date: DateTime.now(),
     );
+    NotificationDbHelper().insertNotification(notificationModel);
   }
 
   // Weekly Dialog
-  static Future<void> showWeeklyDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("📅 Weekly Financial Summary"),
-        content: const Text(
-          "Here's your weekly financial summary! Take a look at your expenses this week.",
-        ),
+  static Future<void> _showWeeklyDialog(context) async {
+    await Get.dialog(
+      AlertDialog(
+        title: Text("weeklyFinancialSummaryTitle".tr),
+        content: Text("weeklyFinancialSummaryDescription".tr),
         actions: [
           TextButton(
             child: const Text("View Insights"),
             onPressed: () {
-              WeeklyPdfGenerator.generateWeeklyReportPdf(DateTime.now());
-              Navigator.pop(context);
-              // Navigate to monthly report if you want
-              // Navigator.pushNamed(context, '/report');
+              // ✅ Call your PDF generator
+              WeeklyPdfGenerator.generateWeeklyReportPdf(
+                DateTime.now(),
+                context,
+              );
+
+              Get.back(); // Close the dialog
             },
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close"),
-          ),
+          TextButton(onPressed: () => Get.back(), child: const Text("Close")),
         ],
       ),
+      barrierDismissible: false,
     );
   }
 
   // Monthly Dialog
-  static Future<void> _showMonthlyDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("📊 Monthly Financial Report"),
-        content: const Text(
-          "New month, new insights! Check your monthly income and spending summary.",
-        ),
+  static Future<void> _showMonthlyDialog() async {
+    await Get.dialog(
+      AlertDialog(
+        title: Text("monthlyFinancialReportTitle".tr),
+        content: Text("monthlyFinancialReportDescription".tr),
         actions: [
           TextButton(
-            child: const Text("View Insights"),
+            child: Text("viewInsights".tr),
             onPressed: () {
-              MonthlyPdfGenerator.generateMonthlyReportPdf(DateTime.now());
+              MonthlyPdfGenerator.generateMonthlyReportPdf(
+                DateTime.now(),
+                context,
+              );
 
-              Navigator.pop(context);
-              // Navigate to monthly report if you want
-              // Navigator.pushNamed(context, '/report');
+              Get.back();
             },
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close"),
-          ),
+          TextButton(onPressed: () => Get.back(), child: Text("close".tr)),
         ],
       ),
-    );
-  }
-
-  // Monthly Dialog
-  static Future<void> showMonthlyDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("📊 Monthly Financial Report"),
-        content: const Text(
-          "New month, new insights! Check your monthly income and spending summary.",
-        ),
-        actions: [
-          TextButton(
-            child: const Text("View Insights"),
-            onPressed: () {
-              MonthlyPdfGenerator.generateMonthlyReportPdf(DateTime.now());
-              Navigator.pop(context);
-              // Navigate to monthly report if you want
-              // Navigator.pushNamed(context, '/report');
-            },
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close"),
-          ),
-        ],
-      ),
+      barrierDismissible: false,
     );
   }
 }

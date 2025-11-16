@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:finance_manager_app/main.dart';
 import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
+import 'package:finance_manager_app/providers/category/transaction_provider.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,10 +9,15 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:open_filex/open_filex.dart';
+import 'package:provider/provider.dart';
 import '../../config/enums/enums.dart';
 
 class MonthlyPdfGenerator {
-  static Future<void> generateMonthlyReportPdf(DateTime month) async {
+  static Future<void> generateMonthlyReportPdf(DateTime month, context) async {
+    final addExpenseProvider = Provider.of<AddExpenseProvider>(
+      context,
+      listen: false,
+    );
     final transactions = addExpenseProvider.transactionData;
     // ✅ Filter only transactions for the selected month
     final monthlyTransactions = transactions
@@ -149,7 +154,7 @@ class MonthlyPdfGenerator {
               .map(
                 (t) => [
                   _formatDate(t.date),
-                  HelperFunctions.generateEnglishCategory(t.categoryKey),
+                  HelperFunctions.giveCategoryName(t.categoryKey),
                   t.type == TransactionType.income ? 'Income' : 'Expense',
                   '${t.amount}',
                   t.paymentMethod,

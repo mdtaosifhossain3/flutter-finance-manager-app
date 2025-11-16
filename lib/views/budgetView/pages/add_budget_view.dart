@@ -61,11 +61,15 @@ class _AddBudgetViewState extends State<AddBudgetView> {
       return;
     }
 
+    final iconDataMap = _getCategoryIconData(_currentCategory!);
+
     setState(() {
       _selectedCategories.add(
         BudgetCategoryModel(
           categoryName: _currentCategory!,
-          allocatedAmount: int.parse(amount),
+          spent: int.parse(amount),
+          icon: iconDataMap['icon'],
+          iconBgColor: iconDataMap['color'].value,
         ),
       );
       _currentCategory = null;
@@ -347,19 +351,22 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                               overflow: TextOverflow.visible,
                             ),
                             Text(
-                              '৳${categoryBudget.allocatedAmount.toStringAsFixed(2)}',
+                              '৳${categoryBudget.spent}',
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete_outline, color: Colors.red[400]),
+                        icon: Icon(
+                          Icons.delete_outline,
+                          color: Colors.red[400],
+                        ),
                         onPressed: () {
                           setState(() {
                             _selectedCategories.removeWhere(
-                                  (item) =>
-                              item.categoryName ==
+                              (item) =>
+                                  item.categoryName ==
                                   categoryBudget.categoryName,
                             );
                           });
@@ -381,7 +388,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
             Expanded(
               flex: 2,
               child: DropdownButtonFormField<String>(
-                value: _currentCategory,
+                initialValue: _currentCategory,
                 isExpanded: true,
                 itemHeight: null, // 👈 allows multiline items
                 decoration: InputDecoration(
@@ -398,27 +405,28 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                     .where(
                       (key) => !_selectedCategories.any(
                         (selected) => selected.categoryName == key,
-                  ),
-                )
+                      ),
+                    )
                     .map((key) {
-                  return DropdownMenuItem<String>(
-                    value: key,
-                    child: Row(
-                      children: [
-                        _getCategoryIcon(key),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            key.tr,
-                            softWrap: true,
-                            maxLines: 2,
-                            overflow: TextOverflow.visible,
-                          ),
+                      return DropdownMenuItem<String>(
+                        value: key,
+                        child: Row(
+                          children: [
+                            _getCategoryIcon(key),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                key.tr,
+                                softWrap: true,
+                                maxLines: 2,
+                                overflow: TextOverflow.visible,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                      );
+                    })
+                    .toList(),
                 onChanged: (value) {
                   setState(() {
                     _currentCategory = value;
@@ -431,8 +439,9 @@ class _AddBudgetViewState extends State<AddBudgetView> {
               flex: 1,
               child: TextFormField(
                 controller: _categoryAmountController,
-                keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
                 ],
@@ -523,9 +532,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
           Padding(
             padding: EdgeInsets.only(top: 8, left: 12),
             child: Text(
-              isStartDate
-                  ? 'startDateError'.tr
-                  : 'endDateError'.tr,
+              isStartDate ? 'startDateError'.tr : 'endDateError'.tr,
               style: TextStyle(color: AppColors.error, fontSize: 12),
             ),
           ),
@@ -597,60 +604,183 @@ class _AddBudgetViewState extends State<AddBudgetView> {
     Color color;
 
     switch (category.toLowerCase()) {
-      case 'groceries':
-        iconData = Icons.shopping_cart;
-        color = Colors.green;
+      case 'health_fitness':
+        iconData = Icons.fitness_center;
+        color = Colors.teal;
         break;
+
+      case 'food_dining':
+        iconData = Icons.restaurant;
+        color = Colors.red;
+        break;
+
+      case 'bills_utilities':
+        iconData = Icons.electrical_services;
+        color = Colors.orange;
+        break;
+
+      case 'phone':
+        iconData = Icons.phone_android;
+        color = Colors.blueGrey;
+        break;
+
+      case 'beauty':
+        iconData = Icons.brush;
+        color = Colors.pinkAccent;
+        break;
+
+      case 'housing':
+        iconData = Icons.home;
+        color = Colors.indigo;
+        break;
+
       case 'transportation':
         iconData = Icons.directions_car;
         color = Colors.blue;
         break;
+
       case 'entertainment':
         iconData = Icons.movie;
-        color = Colors.purple;
+        color = Colors.deepPurple;
         break;
-      case 'utilities':
-        iconData = Icons.electrical_services;
-        color = Colors.orange;
-        break;
-      case 'dining out':
-        iconData = Icons.restaurant;
-        color = Colors.red;
-        break;
+
       case 'shopping':
         iconData = Icons.shopping_bag;
         color = Colors.pink;
         break;
-      case 'healthcare':
-        iconData = Icons.local_hospital;
-        color = Colors.teal;
-        break;
-      case 'education':
-        iconData = Icons.school;
-        color = Colors.indigo;
-        break;
-      case 'travel':
-        iconData = Icons.flight;
-        color = Colors.cyan;
-        break;
-      case 'insurance':
-        iconData = Icons.security;
-        color = Colors.brown;
-        break;
-      case 'savings':
-        iconData = Icons.savings;
+
+      case 'groceries':
+        iconData = Icons.shopping_cart;
         color = Colors.green;
         break;
+
+      case 'education':
+        iconData = Icons.school;
+        color = Colors.deepOrange;
+        break;
+
+      case 'personal':
+        iconData = Icons.person;
+        color = Colors.cyan;
+        break;
+
       case 'investment':
-        iconData = Icons.trending_up;
+        iconData = Icons.show_chart;
         color = Colors.amber;
         break;
+
+      case 'living_expenses':
+        iconData = Icons.attach_money;
+        color = Colors.greenAccent;
+        break;
+
+      case 'marketing_advertising':
+        iconData = Icons.campaign;
+        color = Colors.redAccent;
+        break;
+
+      case 'travel_accommodation':
+        iconData = Icons.flight;
+        color = Colors.cyanAccent;
+        break;
+
+      case 'office_supplies_equipment':
+        iconData = Icons.work;
+        color = Colors.brown;
+        break;
+
+      case 'insurance':
+        iconData = Icons.verified_user;
+        color = Colors.brown.shade400;
+        break;
+
+      case 'subscription_services':
+        iconData = Icons.subscriptions;
+        color = Colors.purpleAccent;
+        break;
+
+      case 'fuel_mileage':
+        iconData = Icons.local_gas_station;
+        color = Colors.deepOrangeAccent;
+        break;
+
+      case 'charity_donations':
+        iconData = Icons.volunteer_activism;
+        color = Colors.redAccent;
+        break;
+
+      case 'kids':
+        iconData = Icons.child_friendly;
+        color = Colors.lightBlueAccent;
+        break;
+
+      case 'repairs':
+        iconData = Icons.build;
+        color = Colors.grey;
+        break;
+
+      case 'pets':
+        iconData = Icons.pets;
+        color = Colors.brown;
+        break;
+
+      case 'sports':
+        iconData = Icons.sports_soccer;
+        color = Colors.green.shade700;
+        break;
+
       default:
         iconData = Icons.category;
         color = Colors.grey;
     }
 
     return Icon(iconData, color: color, size: 20);
+  }
+
+  Map<String, dynamic> _getCategoryIconData(String category) {
+    switch (category.toLowerCase()) {
+      case 'health_fitness':
+        return {'icon': Icons.fitness_center, 'color': Colors.teal};
+
+      case 'food_dining':
+        return {'icon': Icons.restaurant, 'color': Colors.red};
+
+      case 'bills_utilities':
+        return {'icon': Icons.electrical_services, 'color': Colors.orange};
+
+      case 'phone':
+        return {'icon': Icons.phone_android, 'color': Colors.blueGrey};
+
+      case 'beauty':
+        return {'icon': Icons.brush, 'color': Colors.pinkAccent};
+
+      case 'housing':
+        return {'icon': Icons.home, 'color': Colors.indigo};
+
+      case 'transportation':
+        return {'icon': Icons.directions_car, 'color': Colors.blue};
+
+      case 'entertainment':
+        return {'icon': Icons.movie, 'color': Colors.deepPurple};
+
+      case 'shopping':
+        return {'icon': Icons.shopping_bag, 'color': Colors.pink};
+
+      case 'groceries':
+        return {'icon': Icons.shopping_cart, 'color': Colors.green};
+
+      case 'education':
+        return {'icon': Icons.school, 'color': Colors.deepOrange};
+
+      case 'personal':
+        return {'icon': Icons.person, 'color': Colors.cyan};
+
+      case 'investment':
+        return {'icon': Icons.show_chart, 'color': Colors.amber};
+
+      default:
+        return {'icon': Icons.category, 'color': Colors.grey};
+    }
   }
 
   Future<void> _selectDate(bool isStartDate) async {
@@ -719,9 +849,21 @@ class _AddBudgetViewState extends State<AddBudgetView> {
 
     if (locale == 'bn') {
       final banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-      String day = date.day.toString().split('').map((digit) => banglaDigits[int.parse(digit)]).join('');
-      String month = date.month.toString().split('').map((digit) => banglaDigits[int.parse(digit)]).join('');
-      String year = date.year.toString().split('').map((digit) => banglaDigits[int.parse(digit)]).join('');
+      String day = date.day
+          .toString()
+          .split('')
+          .map((digit) => banglaDigits[int.parse(digit)])
+          .join('');
+      String month = date.month
+          .toString()
+          .split('')
+          .map((digit) => banglaDigits[int.parse(digit)])
+          .join('');
+      String year = date.year
+          .toString()
+          .split('')
+          .map((digit) => banglaDigits[int.parse(digit)])
+          .join('');
       return '$day/$month/$year';
     } else {
       return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
@@ -766,34 +908,16 @@ class _AddBudgetViewState extends State<AddBudgetView> {
 
     if (_formKey.currentState!.validate() && datesValid) {
       // Create budget object
-      final budget = {
-        'title': _titleController.text.trim(),
-        'categories': _selectedCategories
-            .map(
-              (cat) => {
-            'category': cat.categoryName,
-            'amount': cat.allocatedAmount,
-          },
-        )
-            .toList(),
-        'totalAmount': _selectedCategories.fold(
-          0.0,
-              (sum, cat) => sum + cat.allocatedAmount,
-        ),
-        'startDate': _startDate,
-        'endDate': _endDate,
-        'notes': _notesController.text.trim(),
-        'createdAt': DateTime.now(),
-      };
 
-      // Create budget
-      final budgetId = await context.read<BudgetProvider>().addBudget(
-        BudgetModel(
-          title: _titleController.text.trim(),
-          totalAmount: int.parse(_amountController.text),
-          startDate: _startDate!,
-          endDate: _endDate!,
-        ),
+      final BudgetModel budgetModel = BudgetModel(
+        title: _titleController.text.trim(),
+        totalAmount: int.parse(_amountController.text),
+        startDate: _startDate!,
+        endDate: _endDate!,
+      );
+
+      context.read<BudgetProvider>().addBudget(
+        budgetModel,
         _selectedCategories,
       );
 
@@ -813,7 +937,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
       );
 
       // Navigate back with the created budget
-      Navigator.pop(context, budget);
+      Navigator.pop(context);
     }
   }
 }

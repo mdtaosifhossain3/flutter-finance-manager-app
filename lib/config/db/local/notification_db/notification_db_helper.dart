@@ -24,7 +24,7 @@ class NotificationDbHelper {
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE notifications(
-            id INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             body TEXT,
             date TEXT,

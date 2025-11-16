@@ -19,8 +19,6 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
   Widget build(BuildContext context) {
     return Consumer<ReportProvider>(
       builder: (context, provider, child) {
-
-
         return Container(
           padding: EdgeInsets.all(16),
           width: double.infinity,
@@ -38,12 +36,12 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
               SizedBox(height: 16),
               SizedBox(
                 height: 200,
-                width:MediaQuery.of(context).size.width * .82,
+                width: MediaQuery.of(context).size.width * .82,
                 child: LineChart(
                   LineChartData(
                     gridData: FlGridData(show: false),
                     borderData: FlBorderData(show: false),
-                    maxX: ( provider.montlydata.length - 1).toDouble(),
+                    maxX: (provider.montlydata.length - 1).toDouble(),
                     titlesData: FlTitlesData(
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
@@ -63,9 +61,13 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
                           interval: 1,
                           getTitlesWidget: (value, meta) {
                             final index = value.toInt();
-                            if (index < 0 || index >= provider.montlydata.length) return const SizedBox.shrink();
+                            if (index < 0 ||
+                                index >= provider.montlydata.length) {
+                              return const SizedBox.shrink();
+                            }
 
-                            final month =  provider.montlydata[index]['months'] ?? '';
+                            final month =
+                                provider.montlydata[index]['months'] ?? '';
 
                             return SideTitleWidget(
                               axisSide: meta.axisSide,
@@ -91,8 +93,13 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
                     lineBarsData: [
                       // 💰 Income Line
                       LineChartBarData(
-                        spots: List.generate( provider.montlydata.length, (index) {
-                          final income =  provider.montlydata[index]['income']?.toDouble() ?? 0.0;
+                        spots: List.generate(provider.montlydata.length, (
+                          index,
+                        ) {
+                          final income =
+                              provider.montlydata[index]['income']
+                                  ?.toDouble() ??
+                              0.0;
                           return FlSpot(index.toDouble(), income);
                         }),
                         isCurved: true,
@@ -103,7 +110,7 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
                           show: true,
                           gradient: LinearGradient(
                             colors: [
-                              AppColors.primaryBlue.withOpacity(0.3),
+                              AppColors.primaryBlue.withValues(alpha: 0.3),
                               Colors.transparent,
                             ],
                             begin: Alignment.topCenter,
@@ -114,8 +121,13 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
 
                       // 💸 Expense Line
                       LineChartBarData(
-                        spots: List.generate( provider.montlydata.length, (index) {
-                          final expense =  provider.montlydata[index]['expenses']?.toDouble() ?? 0.0;
+                        spots: List.generate(provider.montlydata.length, (
+                          index,
+                        ) {
+                          final expense =
+                              provider.montlydata[index]['expenses']
+                                  ?.toDouble() ??
+                              0.0;
                           return FlSpot(index.toDouble(), expense);
                         }),
                         isCurved: true,
@@ -126,7 +138,7 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
                           show: true,
                           gradient: LinearGradient(
                             colors: [
-                              AppColors.error.withOpacity(0.3),
+                              AppColors.error.withValues(alpha: 0.3),
                               Colors.transparent,
                             ],
                             begin: Alignment.topCenter,

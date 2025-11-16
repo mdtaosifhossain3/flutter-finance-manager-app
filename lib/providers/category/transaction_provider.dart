@@ -4,12 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AddExpenseProvider extends ChangeNotifier {
-  //Transactiom DB
-  AddTransactionDbHelper addTransactionDbHelper =
-      AddTransactionDbHelper.getInstance;
+  AddTransactionDbHelper addTransactionDbHelper;
+  AddExpenseProvider({required this.addTransactionDbHelper});
 
   //-----------------------------All The Income Expense List-----------------------------
   List<TransactionModel> transactionData = [];
+  bool isLoading = false;
 
   //Payment Method
   late String selectedPaymentMethod;
@@ -51,11 +51,34 @@ class AddExpenseProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getAllTransactions() async {
+  // Future<List<TransactionModel>> getAllTransactions() async {
+  //   isLoading = true;
+  //   final dt = await addTransactionDbHelper.getAllNotes();
+  //   transactionData = dt.map((e) => TransactionModel.fromMap(e)).toList();
+  //   isLoading = false;
+  //   notifyListeners();
+
+  //   return dt.map((e) => TransactionModel.fromMap(e)).toList();
+  // }
+
+  Future<List<TransactionModel>> getAllTransactions() async {
+    isLoading = true;
     final dt = await addTransactionDbHelper.getAllNotes();
-    transactionData = dt.map((e) => TransactionModel.fromMap(e)).toList();
+    final transactions = dt.map((e) => TransactionModel.fromMap(e)).toList();
+
+    transactionData = transactions;
+    isLoading = false;
     notifyListeners();
+
+    return transactions;
   }
+
+  // Future<void> getAllInitialTransactions() async {
+  //   isLoading = true;
+  //   await addTransactionDbHelper.getAllNotes();
+  //   isLoading = false;
+  //   notifyListeners();
+  // }
 
   Future<void> selectDate(BuildContext context, selectedDate) async {
     final DateTime? picked = await showDatePicker(

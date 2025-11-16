@@ -1,19 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-
 import '../../../config/enums/enums.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:permission_handler/permission_handler.dart';
 
 class TransactionModel {
   final int? id;
   final TransactionType type;
   final DateTime date;
   final String title;
-  final String categoryName;
   final int amount;
   final String? notes;
   final String paymentMethod;
@@ -26,7 +18,6 @@ class TransactionModel {
     required this.type,
     required this.date,
     required this.title,
-    required this.categoryName,
     required this.amount,
     this.notes,
     required this.paymentMethod,
@@ -42,7 +33,6 @@ class TransactionModel {
       'type': type == TransactionType.expense ? 1 : 0,
       'date': date.toIso8601String(),
       'title': title,
-      'categoryName': categoryName,
       'amount': amount,
       'notes': notes,
       'paymentMethod': paymentMethod,
@@ -57,7 +47,6 @@ class TransactionModel {
     'type': type == TransactionType.expense ? 1 : 0,
     'date': date.toIso8601String(),
     'title': title,
-    'categoryName': categoryName,
     'amount': amount,
     'notes': notes,
     'paymentMethod': paymentMethod,
@@ -74,7 +63,6 @@ class TransactionModel {
       type: map['type'] == 1 ? TransactionType.expense : TransactionType.income,
       date: DateTime.parse(map['date']),
       title: map['title'],
-      categoryName: map['categoryName'],
       amount: map['amount'],
       notes: map['notes'],
       paymentMethod: map['paymentMethod'],

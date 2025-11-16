@@ -43,7 +43,7 @@ class BudgetView extends StatelessWidget {
         child: Consumer<BudgetProvider>(
           builder: (context, provider, child) {
             return provider.budgets.isEmpty
-                ?  Center(child: Text("noBudgetsYet".tr))
+                ? Center(child: Text("noBudgetsYet".tr))
                 : ListView.builder(
                     padding: EdgeInsets.symmetric(
                       horizontal: MediaQuery.of(context).size.width * 0.04,

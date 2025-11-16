@@ -224,152 +224,51 @@ class HelperFunctions {
     return double.tryParse(converted) ?? value;
   }
 
-  static String generateEnglishCategory(banglaCategoryName) {
-    Map<String, dynamic> data = {
-      // -------------------------------Category Groups Expense-------------------------------
-      'category': 'Categories',
-      'health_fitness': 'Health & Fitness',
-      'food_dining': 'Food & Dining',
-      'bills_utilities': 'Bills & Utilities',
-      'transportation': 'Transportation',
-      'entertainment': 'Entertainment',
-      'shopping': 'Shopping',
-      'education': 'Education',
-      'family_personal': 'Family & Personal',
-      'investments_finance': 'Investments & Finance',
-      'miscellaneous': 'Miscellaneous',
-
-      // Health & Fitness
-      'doctor': 'Doctor',
-      'medicine': 'Medicine',
-      'gym_exercise': 'Gym / Exercise',
-      'cycling': 'Cycling',
-      'yoga': 'Yoga',
-      'sports': 'Sports',
-
-      // Food & Dining
-      'groceries': 'Groceries',
-      'tea_coffee': 'Tea & Coffee',
-      'restaurants': 'Restaurants',
-      'snacks_fast_food': 'Snacks & Fast Food',
-      'drinks_beverages': 'Drinks & Beverages',
-      'home_cooking': 'Home Cooking',
-
-      // Bills & Utilities
-      'phone_bill': 'Phone Bill',
-      'water_bill': 'Water Bill',
-      'electricity_bill': 'Electricity Bill',
-      'gas_bill': 'Gas Bill',
-      'internet_wifi': 'Internet / WiFi',
-      'house_rent': 'House Rent',
-
-      // Transportation
-      'fuel': 'Fuel',
-      'parking': 'Parking',
-      'public_transport': 'Public Transport',
-      'taxi_ride_share': 'Taxi / Ride Share',
-      'vehicle_maintenance': 'Vehicle Maintenance',
-
-      // Entertainment
-      'movies': 'Movies',
-      'games': 'Games',
-      'music': 'Music',
-      'travel_trips': 'Travel & Trips',
-      'streaming_services': 'Streaming Services',
-      'events_shows': 'Events & Shows',
-
-      // Shopping
-      'clothes': 'Clothes',
-      'electronics': 'Electronics',
-      'books': 'Books',
-      'accessories': 'Accessories',
-      'gifts': 'Gifts',
-
-      // Education
-      'tuition_fees': 'Tuition Fees',
-      'courses': 'Courses',
-      'stationery': 'Stationery',
-      'books_study_materials': 'Books & Study Materials',
-
-      // Family & Personal
-      'child_care': 'Child Care',
-      'gifts_donations': 'Gifts & Donations',
-      'pets': 'Pets',
-      'personal_care': 'Personal Care',
-      'salon_beauty': 'Salon / Beauty',
-
-      // Investments & Finance
-      'savings': 'Savings',
-      'insurance': 'Insurance',
-      'loan_emi': 'Loan EMI',
-      'taxes': 'Taxes',
-
-      // Miscellaneous
-      'emergency': 'Emergency',
-      'charity': 'Charity',
-      'subscriptions': 'Subscriptions',
-      'repairs': 'Repairs',
-      'others': 'Others',
-
-      // -------------------------------Category Groups Income-------------------------------
-
-      // Income Groups
-      'primary_income': 'Primary Income',
-      'investments': 'Investments',
-      'rental_assets': 'Rental & Assets',
-      'side_income': 'Side Income',
-      'other_income': 'Other Income',
-      'passive_income': 'Passive Income',
-
-      // Primary Income
-      'salary': 'Salary',
-      'business': 'Business',
-      'freelance': 'Freelance',
-      'contract_work': 'Contract Work',
-      'overtime_pay': 'Overtime Pay',
-
-      // Investments
-      'stocks': 'Stocks',
-      'dividends': 'Dividends',
-      'crypto': 'Crypto',
-      'mutual_funds': 'Mutual Funds',
-      'bonds': 'Bonds',
-      'real_estate': 'Real Estate',
-
-      // Rental & Assets
-      'rental': 'Rental',
-      'vehicle_rent': 'Vehicle Rent',
-      'property_lease': 'Property Lease',
-      'equipment_hire': 'Equipment Hire',
-
-      // Side Income
-      'part_time': 'Part-time',
-      'commission': 'Commission',
-      'consulting': 'Consulting',
-      'tutoring': 'Tutoring',
-      'affiliate_marketing': 'Affiliate Marketing',
-      'online_sales': 'Online Sales',
-      'content_creation': 'Content Creation',
-
-      // Other Income
-      'bonus': 'Bonus',
-      'refund': 'Refund',
-      'donations': 'Donations',
-      'awards_prizes': 'Awards & Prizes',
-      'lottery_gambling': 'Lottery / Gambling',
-      'cashback_rewards': 'Cashback / Rewards',
-      'interest_income': 'Interest Income',
-
-      // Passive / Digital Income
-      'royalties': 'Royalties',
-      'ads_revenue': 'Ads Revenue',
-      'licensing': 'Licensing',
-      'divine_donations': 'Divine Donations',
-
-      // Final catch-all
-      'other': 'Other',
+  static String giveCategoryName(val) {
+    Map<String, String> items = {
+      "health_fitness": "Health",
+      "food_dining": "Food",
+      "bills_utilities": "Bills",
+      "phone": "Phone",
+      "beauty": "Beauty",
+      "housing": "Housing",
+      "transportation": "Transpor",
+      "entertainment": "Entertainment",
+      "shopping": "Shopping",
+      "groceries": "Groceries",
+      "education": "Education",
+      "personal": "Personal",
+      "investment": "Investment",
+      "living_expenses": "Living",
+      "marketing_advertising": "Marketing",
+      "travel_accommodation": "Travel",
+      "office_supplies_equipment": "Office",
+      "insurance": "Insurance",
+      "subscription_services": "Subscription",
+      "fuel_mileage": "Fuel",
+      "charity_donations": "Charity",
+      "kids": "Kids",
+      "repairs": "Repairs",
+      "pets": "Pets",
+      "sports": "Sports",
+      "salary": "Salary",
+      "business": "Business",
+      "sales_revenue": "Sales",
+      "service_income": "Service",
+      "freelance_contracts": "Freelance",
+      "investment_returns": "Investment Returns",
+      "rental_income": "Rental",
+      "asset_sales": "Asset",
+      "royalties_licensing": "Royalties",
+      "interest_dividends": "Profit",
+      "side_income": "Side Income",
+      "commissions_affiliates": "Commissions",
+      "refunds_reimbursements": "Refunds",
+      "gifts": "Gifts",
+      "grants_subsidies": "Grants",
+      "miscellaneous": "Others",
     };
 
-    return data[banglaCategoryName] ?? banglaCategoryName;
+    return items[val] ?? val.toString();
   }
 }

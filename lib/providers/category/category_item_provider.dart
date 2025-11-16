@@ -5,7 +5,7 @@ import 'transaction_provider.dart';
 
 class CategoryItemProvider extends ChangeNotifier {
   DateTime selectedMonth = DateTime.now();
-  final AddExpenseProvider transactionProvider;
+  AddExpenseProvider transactionProvider;
 
   CategoryItemProvider({required this.transactionProvider});
 

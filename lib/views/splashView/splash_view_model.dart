@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 class SplashViewModel {
   static redirectToOnboard() {
     Future.delayed(Duration(seconds: 3), () {
-      Get.offAllNamed(RoutesName.welcomeView);
+      Get.offAllNamed(RoutesName.mainView);
     });
   }
 }

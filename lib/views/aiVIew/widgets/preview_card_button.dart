@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../config/myColors/app_colors.dart';
 
@@ -6,7 +7,12 @@ class PreviewCardButton extends StatelessWidget {
   final void Function() editTransactionButton;
   final void Function() deleteTransactionButton;
   final void Function() saveTransactionButton;
-  const PreviewCardButton({super.key, required this.editTransactionButton, required this.deleteTransactionButton, required this.saveTransactionButton});
+  const PreviewCardButton({
+    super.key,
+    required this.editTransactionButton,
+    required this.deleteTransactionButton,
+    required this.saveTransactionButton,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,25 +22,25 @@ class PreviewCardButton extends StatelessWidget {
         Expanded(
           child: _buildActionButton(
             icon: Icons.edit,
-            label: 'Edit',
+            label: 'edit'.tr,
             color: AppColors.warning,
             onTap: editTransactionButton,
           ),
         ),
-        SizedBox(width: 14,),
+        SizedBox(width: 14),
         Expanded(
           child: _buildActionButton(
             icon: Icons.delete,
-            label: 'Delete',
+            label: 'delete'.tr,
             color: AppColors.error,
             onTap: deleteTransactionButton,
           ),
         ),
-        SizedBox(width: 14,),
+        SizedBox(width: 14),
         Expanded(
           child: _buildActionButton(
             icon: Icons.check,
-            label: 'Save',
+            label: 'save'.tr,
             color: AppColors.success,
             isPrimary: true,
             onTap: saveTransactionButton,
@@ -43,6 +49,7 @@ class PreviewCardButton extends StatelessWidget {
       ],
     );
   }
+
   Widget _buildActionButton({
     required IconData icon,
     required String label,
@@ -56,10 +63,12 @@ class PreviewCardButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isPrimary ? color : color.withOpacity(0.1),
+          color: isPrimary ? color : color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isPrimary ? Colors.transparent : color.withOpacity(0.3),
+            color: isPrimary
+                ? Colors.transparent
+                : color.withValues(alpha: 0.3),
           ),
         ),
         child: Row(

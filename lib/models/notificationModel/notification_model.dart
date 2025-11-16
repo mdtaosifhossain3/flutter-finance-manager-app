@@ -1,12 +1,12 @@
 class NotificationModel {
-  final int id;
+  final int? id;
   final String title;
   final String body;
   final DateTime date;
   final bool isWeekly;
 
   NotificationModel({
-    required this.id,
+    this.id,
     required this.title,
     required this.body,
     required this.date,

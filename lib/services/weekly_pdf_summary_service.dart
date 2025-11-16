@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:finance_manager_app/config/enums/enums.dart';
-import 'package:finance_manager_app/main.dart';
 import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
+import 'package:finance_manager_app/providers/category/transaction_provider.dart';
+import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -10,12 +11,18 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:permission_handler/permission_handler.dart';
-
-import '../utils/helper_functions.dart'; // where generateEnglishCategory() lives
+import 'package:provider/provider.dart';
 
 class WeeklyPdfGenerator {
-  static Future<void> generateWeeklyReportPdf(DateTime selectedDate) async {
+  static Future<void> generateWeeklyReportPdf(
+    DateTime selectedDate,
+    BuildContext context,
+  ) async {
+    final addExpenseProvider = Provider.of<AddExpenseProvider>(
+      context,
+      listen: false,
+    );
+
     final transactions = addExpenseProvider.transactionData;
 
     // ✅ Get start (Monday) and end (Sunday) of the week
@@ -50,7 +57,6 @@ class WeeklyPdfGenerator {
     } on TimeoutException {
       _showMessage('Time Out ');
     } catch (e) {
-      print(e);
       _showMessage('Failed to generate weekly report: $e');
     }
   }
@@ -168,7 +174,7 @@ class WeeklyPdfGenerator {
               .map(
                 (t) => [
                   _formatDate(t.date),
-                  HelperFunctions.generateEnglishCategory(t.categoryKey),
+                  HelperFunctions.giveCategoryName(t.categoryKey),
                   t.type == TransactionType.income ? 'Income' : 'Expense',
                   '${t.amount}',
                   t.paymentMethod,
@@ -199,27 +205,6 @@ class WeeklyPdfGenerator {
         ),
       ],
     );
-  }
-
-  static Future<String> _savePdf(
-    pw.Document pdf,
-    DateTime start,
-    DateTime end,
-  ) async {
-    final status = await Permission.storage.request();
-    if (!status.isGranted) throw Exception('Storage permission denied');
-
-    final downloadsDir = getExternalStorageDirectory();
-    // if (!await downloadsDir.exists()) {
-    //   await downloadsDir.create(recursive: true);
-    // }
-
-    final fileName =
-        'Weekly_Report_${DateFormat('yyyy_MM_dd').format(start)}_${DateFormat('dd').format(end)}.pdf';
-    final filePath = '$downloadsDir/$fileName';
-    final file = File(filePath);
-    await file.writeAsBytes(await pdf.save());
-    return filePath;
   }
 
   static int _calculateTotal(

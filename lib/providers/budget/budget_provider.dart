@@ -1,5 +1,5 @@
 import 'package:finance_manager_app/config/db/local/budget_db/add_budget_db_helper.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import '../../models/budgetModel/budget_category_model.dart';
 import '../../models/budgetModel/budget_model.dart';
@@ -39,9 +39,9 @@ class BudgetProvider with ChangeNotifier {
         BudgetCategoryModel(
           budgetId: budgetId,
           categoryName: cat.categoryName,
-          allocatedAmount: cat.allocatedAmount,
           spent: cat.spent,
-          //   color: cat.color
+          icon: cat.icon,
+          iconBgColor: cat.iconBgColor,
         ),
       );
     }
@@ -57,32 +57,6 @@ class BudgetProvider with ChangeNotifier {
   ) async {
     await _dbHelper.insertBudgetCategory(category);
     await loadBudgets();
-  }
-
-  Future<void> addToCategorySpent(int categoryId, int amountToAdd) async {
-    final success = await _dbHelper.addToCategorySpent(
-      categoryId: categoryId,
-      amountToAdd: amountToAdd,
-    );
-
-    if (success) {
-      // update local data immediately
-      for (var budgetId in _categoriesByBudget.keys) {
-        final categories = _categoriesByBudget[budgetId];
-        if (categories != null) {
-          final index = categories.indexWhere((c) => c.id == categoryId);
-          if (index != -1) {
-            final old = categories[index];
-            categories[index] = old.copyWith(
-              spent: old.spent + amountToAdd,
-            ); // ✅ update local
-            break;
-          }
-        }
-      }
-
-      notifyListeners(); // ✅ tell UI to rebuild
-    }
   }
 
   Future<void> deleteCategory(int categoryId) async {
@@ -106,13 +80,17 @@ class BudgetProvider with ChangeNotifier {
   Future<void> addCategoryToExistingBudget({
     required int budgetId,
     required String categoryName,
-    required int allocatedAmount,
+    required int spent,
+    required IconData icon,
+    required int iconBgColor,
   }) async {
     // Add to database
     await _dbHelper.addCategoryToExistingBudget(
       budgetId: budgetId,
       categoryName: categoryName,
-      allocatedAmount: allocatedAmount,
+      spent: spent,
+      icon: icon,
+      iconBgColor: iconBgColor,
     );
 
     // Reload budgets and categories

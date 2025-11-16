@@ -1,3 +1,4 @@
+import 'package:finance_manager_app/config/db/local/category_db/add_transaction_db_helper.dart';
 import 'package:finance_manager_app/config/routes/routes.dart';
 import 'package:finance_manager_app/config/theme/app_theme.dart';
 import 'package:finance_manager_app/config/translator/app_translator.dart';
@@ -9,42 +10,40 @@ import 'package:finance_manager_app/providers/category/transaction_provider.dart
 import 'package:finance_manager_app/providers/homeProvider/home_provider.dart';
 import 'package:finance_manager_app/providers/languageProvider/language_translator_provider.dart';
 import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
+import 'package:finance_manager_app/providers/reminderProvider/reminder_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/get_navigation.dart';
-import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
-late AddExpenseProvider addExpenseProvider;
-// This is the global ServiceLocator
-GetIt getIt = GetIt.instance;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final addExpenseProvider = AddExpenseProvider();
-  await addExpenseProvider.getAllTransactions();
-
-  // ✅ Register globally
-  getIt.registerSingleton<AddExpenseProvider>(addExpenseProvider);
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LanguageTranslatorProvider()),
-        ChangeNotifierProvider.value(value: addExpenseProvider),
+        ChangeNotifierProvider(
+          create: (_) => AddExpenseProvider(
+            addTransactionDbHelper: AddTransactionDbHelper.getInstance,
+          )..getAllTransactions(), // ✅ Load data once
+        ),
 
         ChangeNotifierProxyProvider<AddExpenseProvider, HomeViewProvider>(
           create: (context) => HomeViewProvider(
             transactionProvider: context.read<AddExpenseProvider>(),
           ),
-          update: (context, txProvider, previous) =>
-              HomeViewProvider(transactionProvider: txProvider),
+          update: (context, txProvider, previous) {
+            previous!.transactionProvider = txProvider; // <- update dependency
+            return previous; // <- return the SAME instance
+          },
         ),
-
         ChangeNotifierProxyProvider<AddExpenseProvider, CategoryItemProvider>(
           create: (context) => CategoryItemProvider(
             transactionProvider: context.read<AddExpenseProvider>(),
           ),
+
           update: (context, txProvider, previous) =>
               CategoryItemProvider(transactionProvider: txProvider),
         ),
@@ -53,11 +52,44 @@ void main() async {
           create: (context) => ReportProvider(
             transactionProvider: context.read<AddExpenseProvider>(),
           ),
-          update: (context, txProvider, previous) =>
-              ReportProvider(transactionProvider: txProvider),
+          update: (context, txProvider, previous) {
+            previous!.transactionProvider = txProvider; // <- update dependency
+            return previous; // <- return the SAME instance
+          },
         ),
+
+        // ChangeNotifierProxyProvider<AddExpenseProvider, ReportProvider>(
+        //   create: (context) {
+        //     final txProvider = context.read<AddExpenseProvider>();
+        //     final reportProvider = ReportProvider(
+        //       transactionProvider: txProvider,
+        //     );
+
+        //     Timer? debounceTimer;
+
+        //     // 🔁 Listen to AddExpenseProvider changes
+        //     txProvider.addListener(() {
+        //       // Cancel any running timer
+        //       debounceTimer?.cancel();
+
+        //       // Start a new timer
+        //       debounceTimer = Timer(const Duration(milliseconds: 400), () {
+        //         reportProvider.filterCategoryFunction();
+        //         reportProvider.getMonthlyTotals();
+        //         reportProvider.periodDatafunction();
+        //       });
+        //     });
+
+        //     return reportProvider;
+        //   },
+        //   update: (_, txProvider, reportProvider) {
+        //     reportProvider!.transactionProvider = txProvider;
+        //     return reportProvider;
+        //   },
+        // ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
+        ChangeNotifierProvider(create: (_) => ReminderProvider()),
         ChangeNotifierProvider(create: (_) => BudgetProvider()..loadBudgets()),
         ChangeNotifierProvider(create: (_) => AiProvider()),
       ],
@@ -84,7 +116,14 @@ class MyApp extends StatelessWidget {
       translations: AppTranslations(),
       locale: context.watch<LanguageTranslatorProvider>().locale,
       fallbackLocale: const Locale('en', 'US'),
-      home: SplashView(),
+      home: const SplashView(),
+      onUnknownRoute: (RouteSettings settings) {
+        return MaterialPageRoute(
+          builder: (context) => Scaffold(
+            body: Center(child: Text('Route not found: ${settings.name}')),
+          ),
+        );
+      },
     );
   }
 }

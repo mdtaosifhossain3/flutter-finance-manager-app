@@ -1,6 +1,7 @@
 import 'package:finance_manager_app/models/notificationModel/notification_model.dart';
 import 'package:finance_manager_app/services/weekly_pdf_summary_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../config/db/local/notification_db/notification_db_helper.dart';
 
 class NotificationCenterPage extends StatefulWidget {
@@ -28,7 +29,7 @@ class _NotificationCenterPageState extends State<NotificationCenterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Notifications"),
+        title: Text("notifications".tr),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_sweep_rounded),
@@ -40,7 +41,7 @@ class _NotificationCenterPageState extends State<NotificationCenterPage> {
         ],
       ),
       body: notifications.isEmpty
-          ? const Center(child: Text("No notifications yet"))
+          ? Center(child: Text("noNotifications".tr))
           : ListView.builder(
               itemCount: notifications.length,
               itemBuilder: (context, index) {
@@ -50,6 +51,7 @@ class _NotificationCenterPageState extends State<NotificationCenterPage> {
                     n.isWeekly
                         ? await WeeklyPdfGenerator.generateWeeklyReportPdf(
                             DateTime.now(),
+                            context,
                           )
                         : null;
                   },

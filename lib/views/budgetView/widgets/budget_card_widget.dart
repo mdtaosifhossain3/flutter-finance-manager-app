@@ -15,24 +15,31 @@ class BudgetCardWidget extends StatelessWidget {
     required this.budget,
     required this.provider,
   });
+
   @override
   Widget build(BuildContext context) {
-    // ✅ Collect categories by budgetId
+    // Collect categories by budgetId
     final List<BudgetCategoryModel> categories =
         provider.categoriesByBudget[budget.id] ?? [];
 
-    // ✅ Sum spent from all categories
+    // Sum spent from all categories
     final int totalSpent = categories.fold(0, (sum, cat) => sum + (cat.spent));
 
     final double percentage = (totalSpent / budget.totalAmount).clamp(0.0, 1.0);
-
     final bool isOverspent = totalSpent > budget.totalAmount;
     final int remaining = budget.totalAmount - totalSpent;
-    final int overspent = totalSpent - budget.totalAmount;
+
+    // Determine status color
+    Color getStatusColor() {
+      if (isOverspent) return AppColors.error;
+      if (percentage > 0.8) return Colors.orange;
+      return AppColors.success;
+    }
+
     return GestureDetector(
       onTap: () {
         Get.to(
-              () => BudgetCardView(
+          () => BudgetCardView(
             budget: budget,
             categories: categories,
             remaining: remaining,
@@ -42,69 +49,105 @@ class BudgetCardWidget extends StatelessWidget {
         );
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Theme.of(context).cardColor,
-              Theme.of(context).colorScheme.surface,
-            ],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outline,
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).shadowColor.withValues(alpha: 0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
+            // Header with title and badge
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  budget.title,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        budget.title,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.account_balance_wallet_outlined,
+                              size: 12,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '৳${HelperFunctions.convertToBanglaDigits(budget.totalAmount.toString())}',
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 11,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
+                ),
+                // Circular percentage indicator
+                Container(
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isOverspent
-                          ? AppColors.error.withValues(alpha: 0.5)
-                          : AppColors.success.withValues(alpha: 0.5),
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        getStatusColor().withValues(alpha: 0.2),
+                        getStatusColor().withValues(alpha: 0.1),
+                      ],
                     ),
                   ),
-                  child: Row(
+                  child: Stack(
+                    alignment: Alignment.center,
                     children: [
-                      Icon(
-                        isOverspent ? Icons.trending_up : Icons.trending_down,
-                        color: isOverspent
-                            ? AppColors.error
-                            : AppColors.success,
-                        size: 16,
+                      SizedBox(
+                        width: 42,
+                        height: 42,
+                        child: CircularProgressIndicator(
+                          value: percentage > 1.0 ? 1.0 : percentage,
+                          strokeWidth: 5,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).dividerColor.withValues(alpha: 0.2),
+                          color: getStatusColor(),
+                          strokeCap: StrokeCap.round,
+                        ),
                       ),
-                      const SizedBox(width: 4),
                       Text(
                         '${HelperFunctions.convertToBanglaDigits((percentage * 100).toInt().toString())}%',
                         style: TextStyle(
-                          color: isOverspent
-                              ? AppColors.error
-                              : AppColors.success,
-                          fontSize: 14,
+                          color: getStatusColor(),
+                          fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -113,101 +156,188 @@ class BudgetCardWidget extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
-            // Spent
-            Text(
-              '৳${HelperFunctions.convertToBanglaDigits(totalSpent.toString())}',
-              style: Theme.of(context).textTheme.headlineLarge,
+            // Enhanced progress bar with animation hint
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'budgetProgress'.tr,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w500,
+                        fontSize: 11,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Stack(
+                  children: [
+                    // Background track
+                    Container(
+                      height: 8,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).dividerColor.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    // Filled progress with gradient
+                    FractionallySizedBox(
+                      alignment: Alignment.centerLeft,
+                      widthFactor: percentage > 1.0 ? 1.0 : percentage,
+                      child: Container(
+                        height: 8,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              getStatusColor(),
+                              getStatusColor().withValues(alpha: 0.7),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: getStatusColor().withValues(alpha: 0.3),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 20),
 
-            // Remaining / Overspent
-            Text(
-              isOverspent
-                  ? '${'overspent'.tr} ৳${HelperFunctions.convertToBanglaDigits(overspent.toString())} ${'of'.tr} ৳${HelperFunctions.convertToBanglaDigits(budget.totalAmount.toString())}'
-                  : '৳${HelperFunctions.convertToBanglaDigits(remaining.toString())} ${'left'.tr} ${'of'.tr} ৳${HelperFunctions.convertToBanglaDigits(budget.totalAmount.toString())}',
-              style: TextStyle(
-                color: isOverspent ? AppColors.error : AppColors.success,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Progress bar
-            Container(
-              height: 8,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Theme.of(context).dividerColor,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: FractionallySizedBox(
-                alignment: Alignment.centerLeft,
-                widthFactor: percentage > 1.0 ? 1.0 : percentage,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: isOverspent
-                          ? [
-                        AppColors.error.withValues(alpha: 0.7),
-                        AppColors.error,
-                      ]
-                          : [
-                        AppColors.success.withValues(alpha: 0.7),
-                        AppColors.success,
+            // Spent and Remaining with icons
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Spent
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.error.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.trending_up_rounded,
+                            size: 18,
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'spent'.tr,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.color
+                                          ?.withValues(alpha: 0.6),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '৳${HelperFunctions.convertToBanglaDigits(totalSpent.toString())}',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: -0.5,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(4),
                   ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Message
-            totalSpent == 0
-                ? SizedBox.shrink()
-                : Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isOverspent
-                    ? AppColors.error.withValues(alpha: 0.1)
-                    : AppColors.success.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: isOverspent
-                      ? AppColors.error.withValues(alpha: 0.3)
-                      : AppColors.success.withValues(alpha: 0.3),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    isOverspent
-                        ? Icons.warning_rounded
-                        : Icons.check_circle_rounded,
-                    color: isOverspent
-                        ? AppColors.error
-                        : AppColors.success,
-                    size: 16,
+                  // Divider
+                  Container(
+                    width: 1,
+                    height: 40,
+                    color: Theme.of(
+                      context,
+                    ).dividerColor.withValues(alpha: 0.3),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
+                  // Remaining
                   Expanded(
-                    child: Text(
-                      isOverspent
-                          ? 'overspentMessage'.tr
-                          : percentage > 0.8
-                          ? 'budgetLimitWarning'.tr
-                          : 'doingGreatMessage'.tr,
-                      style: TextStyle(
-                        color: isOverspent
-                            ? AppColors.error
-                            : AppColors.success,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: getStatusColor().withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            isOverspent
+                                ? Icons.warning_rounded
+                                : Icons.savings_outlined,
+                            size: 18,
+                            color: getStatusColor(),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                isOverspent ? 'overspent'.tr : 'remaining'.tr,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.color
+                                          ?.withValues(alpha: 0.6),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '৳${HelperFunctions.convertToBanglaDigits(isOverspent ? (totalSpent - budget.totalAmount).toString() : remaining.toString())}',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: getStatusColor(),
+                                      letterSpacing: -0.5,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

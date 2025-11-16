@@ -1,8 +1,13 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
-import 'package:finance_manager_app/globalWidgets/card_widget.dart';
+import 'package:finance_manager_app/config/routes/routes_name.dart';
+import 'package:finance_manager_app/providers/category/transaction_provider.dart';
 import 'package:finance_manager_app/providers/homeProvider/home_provider.dart';
+import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
+import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:finance_manager_app/services/dailogue_service.dart';
+import 'package:finance_manager_app/services/weekly_pdf_summary_service.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
+import 'package:finance_manager_app/views/homeView/widgets/home_view_card_widget.dart';
 import 'package:finance_manager_app/views/notificationView/notification_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,15 +29,14 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   late AnimationController _progressController;
   late Animation<double> _progressAnimation;
+  late final pv = context.read<HomeViewProvider>();
 
   Future<void> _requestNotificationPermission() async {
-    if (!await Permission.storage.isGranted) {
-      await Permission.storage.request();
+    if (!await Permission.notification.isGranted) {
+      await Permission.notification.request();
     }
 
-    DialogService.checkAndShowDialogs(context);
-    DialogService.showWeeklyDialog(context);
-    DialogService.showMonthlyDialog(context);
+    DialogService.checkAndShowDialogs();
   }
 
   @override
@@ -64,9 +68,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     _progressAnimation =
         Tween<double>(
           begin: 0.0,
-          end:
-              context.read<HomeViewProvider>().getTotals()["expenses"]! /
-              context.read<HomeViewProvider>().getTotals()["income"]!,
+          end: pv.getTotals()["expenses"]! / pv.getTotals()["income"]!,
         ).animate(
           CurvedAnimation(
             parent: _progressController,
@@ -76,8 +78,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   void _onPeriodChanged(String period) {
-    if (context.read<HomeViewProvider>().dwm != period) {
-      context.read<HomeViewProvider>().setDWM(period);
+    if (pv.dwm != period) {
+      pv.setDWM(period);
 
       // Reset and restart animation with new values
       _progressController.reset();
@@ -151,7 +153,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             children: [
               GestureDetector(
                 onTap: () async {
-                  Get.to(NotificationCenterPage());
+                  Get.toNamed(RoutesName.notificationView);
                 },
 
                 child: Container(
@@ -175,6 +177,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildExpensesChart() {
+    final reportProvider = context.watch<ReportProvider>();
+    final totals = reportProvider.getCurrentMonthTotals();
+    int expense = totals["expense"] ?? 0;
+    int income = totals["income"] ?? 0;
+
+    int remaining = (income == 0 || expense == 0) ? 0 : income - expense;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -216,19 +224,31 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'expensesTitle'.tr,
+                      remaining < 0 ? 'overspent'.tr : 'remaining'.tr,
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     SizedBox(height: 8),
                     Text(
-                      HelperFunctions.convertToBanglaDigits(
-                        context
-                            .watch<HomeViewProvider>()
-                            .getTotals()["expenses"]
-                            .toString(),
-                      ),
+                      '${remaining < 0 ? '-' : ''}${HelperFunctions.convertToBanglaDigits(remaining.abs().toString())}',
 
-                      style: Theme.of(context).textTheme.headlineLarge,
+                      // HelperFunctions.convertToBanglaDigits(
+                      //   context
+                      //       .watch<HomeViewProvider>()
+                      //       .getTotals()["expenses"]
+                      //       .toString(),
+                      // ),
+                      //style: Theme.of(context).textTheme.headlineLarge,
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Poppins',
+                        color: remaining < 0
+                            ? AppColors.error
+                            : context.watch<ThemeProvider>().themeMode ==
+                                  ThemeMode.dark
+                            ? AppColors.textPrimary
+                            : AppColors.lightTextPrimary,
+                      ),
                     ),
                     SizedBox(height: 4),
 
@@ -320,23 +340,35 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         SizedBox(height: 14),
 
         Consumer<HomeViewProvider>(
-          builder: (context, provider, child) {
-            final filteredTxns = provider.filterTransactions(provider.dwm);
+          builder: (context, provider, _) {
+            final filteredTxns = provider.filteredTransactionsForHome;
 
-            return filteredTxns.isEmpty
-                ? Text("noTransactions".tr)
-                : SizedBox(
-                    child: ListView.builder(
+            // Show loading if initial data fetch is happening
+            if (context.watch<AddExpenseProvider>().isLoading) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            return AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              child: filteredTxns.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(child: Text("noTransactions".tr)),
+                    )
+                  : ListView.builder(
+                      key: ValueKey<String>(
+                        provider.dwm,
+                      ), // rebuild on period change
                       reverse: true,
                       itemCount: filteredTxns.length,
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         final tx = filteredTxns[index];
-                        return CardWidget(transaction: tx);
+                        return HomeViewCardWidget(transaction: tx);
                       },
                     ),
-                  );
+            );
           },
         ),
       ],

@@ -8,8 +8,15 @@ import '../../config/enums/enums.dart';
 import '../category/transaction_provider.dart';
 
 class ReportProvider extends ChangeNotifier {
-  final AddExpenseProvider transactionProvider;
-  ReportProvider({required this.transactionProvider});
+  AddExpenseProvider transactionProvider;
+  ReportProvider({required this.transactionProvider}) {
+    {
+      // Listen to updates from AddExpenseProvider
+      transactionProvider.addListener(() {
+        notifyListeners(); // <-- Rebuild home when transactions change
+      });
+    }
+  }
   String selectedPeriod = "periodMonth".tr;
   void setSelectedMonth(val) {
     selectedPeriod = val;

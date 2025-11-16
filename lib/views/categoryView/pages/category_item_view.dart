@@ -1,4 +1,3 @@
-
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/card_widget.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
@@ -9,26 +8,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
-import '../../../config/enums/enums.dart';
 import '../../../models/categoryModel/transaction_model.dart';
 
 class CategoryItemView extends StatefulWidget {
-  final String categoryName;
   final String categoryKey;
   final IconData categoryIcon;
   final Color categoryColor;
 
   const CategoryItemView({
     super.key,
-    required this.categoryName,
     required this.categoryIcon,
     required this.categoryColor,
     required this.categoryKey,
   });
 
   @override
-  State<CategoryItemView> createState() =>
-      _CategoryTransactionViewState();
+  State<CategoryItemView> createState() => _CategoryTransactionViewState();
 }
 
 class _CategoryTransactionViewState extends State<CategoryItemView> {
@@ -41,14 +36,19 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
       selectedCategory: widget.categoryKey,
     );
 
-
     return Scaffold(
-      appBar: customAppBar(title: widget.categoryName,leading: Padding(
-        padding: const EdgeInsets.only(left:10.0),
-        child: IconButton(onPressed: (){
-          Get.back();
-        }, icon: Icon(Icons.arrow_back)),
-      )),
+      appBar: customAppBar(
+        title: widget.categoryKey.tr,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: IconButton(
+            onPressed: () {
+              Get.back();
+            },
+            icon: Icon(Icons.arrow_back),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -70,8 +70,7 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
             ),
             // Transaction List
             _buildTransactionListView(transactionModel),
-
-
+            SizedBox(height: 80),
           ],
         ),
       ),
@@ -79,7 +78,7 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
     );
   }
 
-  Widget _buildCategoryHeader( tx, provider) {
+  Widget _buildCategoryHeader(tx, provider) {
     final totalAmount = tx.fold(
       0,
       (sum, transaction) => sum + transaction.amount,
@@ -130,7 +129,7 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
               ),
               SizedBox(width: 12),
               Text(
-                widget.categoryName,
+                widget.categoryKey.tr,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
             ],
@@ -150,14 +149,16 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
                     //   '${_getMonthName(provider.selectedMonth.month)} ${provider.selectedMonth.year}',
                     //   style: Theme.of(context).textTheme.labelSmall,
                     // ),
-                  //  SizedBox(height: 4),
+                    //  SizedBox(height: 4),
                     Text(
                       'totalAmount'.tr,
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                     SizedBox(height: 6),
                     Text(
-                      HelperFunctions.convertToBanglaDigits(totalAmount.toString()),
+                      HelperFunctions.convertToBanglaDigits(
+                        totalAmount.toString(),
+                      ),
                       style: Theme.of(context).textTheme.headlineLarge,
                     ),
                   ],
@@ -187,7 +188,9 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
                     ),
                     SizedBox(width: 6),
                     Text(
-                      HelperFunctions.convertToBanglaDigits(tx.length.toString()),
+                      HelperFunctions.convertToBanglaDigits(
+                        tx.length.toString(),
+                      ),
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                   ],
@@ -310,7 +313,7 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
         itemCount: transactionModel.length,
         itemBuilder: (context, index) {
           final transaction = transactionModel[index];
-          return CardWidget(transaction: transaction);
+          return CardWidget(transaction: transaction, isTitle: true);
         },
       ),
     );
@@ -323,7 +326,6 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
           TransactionFormPage(
             categoryColor: widget.categoryColor,
             categoryIcon: widget.categoryIcon,
-            categoryName: widget.categoryName,
             categoryKey: widget.categoryKey,
           ),
         );
@@ -356,7 +358,7 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
         'সেপ্টেম্বর',
         'অক্টোবর',
         'নভেম্বর',
-        'ডিসেম্বর'
+        'ডিসেম্বর',
       ];
       return months[month - 1];
     } else {
@@ -372,9 +374,9 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
         'Sep',
         'Oct',
         'Nov',
-        'Dec'
+        'Dec',
       ];
-      return months[month - 1];    }
-
+      return months[month - 1];
+    }
   }
 }

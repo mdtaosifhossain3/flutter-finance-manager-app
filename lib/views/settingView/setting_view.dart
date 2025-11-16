@@ -14,387 +14,334 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool notificationsEnabled = true;
-  bool budgetAlertsEnabled = true;
-  bool billRemindersEnabled = true;
-  bool autoImportEnabled = false;
-  bool appLockEnabled = true;
-  String autoLockTimer = '5 minutes';
-
   @override
   Widget build(BuildContext context) {
+    final items = <Map<String, dynamic>>[
+      {
+        'key': 'appTheme'.tr,
+        'icon': Icons.brightness_6,
+        'color': AppColors.primaryBlue,
+        'action': (BuildContext ctx) => _showThemeOptions(ctx),
+      },
+      {
+        'key': 'appLanguage'.tr,
+        'icon': Icons.language,
+        'color': Colors.deepPurple,
+        'action': (BuildContext ctx) => _showLanguageOptions(ctx),
+      },
+      {
+        'key': 'shareApp'.tr,
+        'icon': Icons.share,
+        'color': AppColors.success,
+        'action': (BuildContext ctx) {},
+      },
+      {
+        'key': 'contactSupport'.tr,
+        'icon': Icons.support_agent,
+        'color': AppColors.primaryBlue,
+        'action': (BuildContext ctx) {},
+      },
+      {
+        'key': 'faq'.tr,
+        'icon': Icons.help_outline,
+        'color': Colors.purple,
+        'action': (BuildContext ctx) {},
+      },
+      {
+        'key': 'about'.tr,
+        'icon': Icons.info_outline,
+        'color': Colors.grey,
+        'action': (BuildContext ctx) {},
+      },
+      {
+        'key': 'feedback'.tr,
+        'icon': Icons.feedback_outlined,
+        'color': Colors.teal,
+        'action': (BuildContext ctx) {},
+      },
+      {
+        'key': 'termsPolicies'.tr,
+        'icon': Icons.description_outlined,
+        'color': Colors.indigo,
+        'action': (BuildContext ctx) {},
+      },
+
+      {
+        'key': 'resetApp'.tr,
+        'icon': Icons.restore,
+        'color': AppColors.error,
+        'action': (BuildContext ctx) {},
+      },
+      {
+        'key': 'logout'.tr,
+        'icon': Icons.logout,
+        'color': AppColors.error,
+        'action': (BuildContext ctx) {},
+      },
+    ];
+
     return Scaffold(
       appBar: customAppBar(title: "settings".tr),
       body: SafeArea(
-        child: Column(
-          children: [
-            // _buildHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.04,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        border: Border.all(
-                          color: Theme.of(context).dividerColor,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Theme.of(
-                              context,
-                            ).shadowColor.withValues(alpha: 0.1),
-                            blurRadius: 10,
-                            offset: Offset(0, 2),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // determine columns responsively
+            int crossAxisCount = 2;
+            final w = constraints.maxWidth;
+            if (w > 900) {
+              crossAxisCount = 4;
+            } else if (w > 600) {
+              crossAxisCount = 3;
+            } else {
+              crossAxisCount = 2;
+            }
+
+            return Column(
+              children: [
+                // compact profile row
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  child: Card(
+                    elevation: 0.8,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    color: Theme.of(context).cardColor,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 56,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                                width: 1.2,
+                              ),
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'TH',
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Lets Fluttbiz',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '12123314',
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: AppColors.textMuted),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(minWidth: 72),
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 8,
+                                ),
+                                side: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: () {
+                                // navigate to edit profile or show dialog
+                              },
+                              label: const Text(
+                                'Free User',
+                                style: TextStyle(fontSize: 13),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            // User Avatar
-                            CircleAvatar(
-                              radius: 30,
-                              backgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.surface,
-                              child: Icon(
-                                Icons.person,
-                                size: 35,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            // User Info
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Taosif Hossain",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleLarge,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.phone,
-                                        size: 16,
-                                        color: AppColors.textMuted,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        "01747211887",
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.labelMedium,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ), //  _buildProfileCard(),
-                    SizedBox(height: 24),
-                    _buildGeneralSettings(),
-                    SizedBox(height: 24),
-                    _buildFinanceSettings(),
-                    SizedBox(height: 24),
-                    _buildPrivacySettings(),
-                    SizedBox(height: 24),
-                    _buildOtherSettings(),
-                    SizedBox(height: 120),
-                  ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ],
+
+                // grid of settings
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: MediaQuery.of(context).size.width * 0.04,
+                      vertical: 8,
+                    ),
+                    child: GridView.builder(
+                      itemCount: items.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: 14,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: 2.5,
+                      ),
+                      itemBuilder: (context, index) {
+                        final it = items[index];
+                        return _buildGridItem(
+                          title: it['key'],
+                          icon: it['icon'],
+                          color: it['color'],
+                          onTap: (BuildContext ctx) => it['action'](ctx),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 60),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildGeneralSettings() {
-    return _buildSection('generalAppSettings'.tr, [
-      _buildDropdownSetting(
-        'appTheme'.tr,
-        context
-            .watch<ThemeProvider>()
-            .themeMode
-            .toString()
-            .split('.')
-            .last
-            .capitalize!,
-        ['Light', 'Dark', 'System'],
-        (value) => context.read<ThemeProvider>().setTheme(value!),
-      ),
-      _buildDropdownSetting(
-        'appLanguage'.tr,
-        context.watch<LanguageTranslatorProvider>().locale.languageCode == 'bn'
-            ? 'Bangla'
-            : 'English',
-        ['Bangla', 'English'],
-        (value) {
-          if (value == null) return;
-          context.read<LanguageTranslatorProvider>().setLocale(
-            value == 'Bangla' ? Locale('bn', 'BD') : Locale('en', 'US'),
-          );
-        },
-      ),
-      _buildSwitchSetting(
-        'notifications'.tr,
-        'notificationsDescription'.tr,
-        notificationsEnabled,
-        (value) => setState(() => notificationsEnabled = value),
-      ),
-      _buildSwitchSetting(
-        'budgetAlerts'.tr,
-        'budgetAlertsDescription'.tr,
-        budgetAlertsEnabled,
-        (value) => setState(() => budgetAlertsEnabled = value),
-      ),
-      _buildSwitchSetting(
-        'billReminders'.tr,
-        'billRemindersDescription'.tr,
-        billRemindersEnabled,
-        (value) => setState(() => billRemindersEnabled = value),
-      ),
-      _buildActionSetting('logout'.tr, Icons.logout, AppColors.error, () {}),
-    ]);
-  }
+  Widget _buildGridItem({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required void Function(BuildContext) onTap,
+  }) {
+    return Material(
+      color: Theme.of(context).cardColor,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
 
-  Widget _buildFinanceSettings() {
-    return _buildSection('financeSpecificSettings'.tr, [
-      _buildClickableSetting(
-        'defaultAccount'.tr,
-        'defaultAccountDescription'.tr,
-        'mainWallet'.tr,
-        () {},
-      ),
-      _buildSwitchSetting(
-        'automaticTransactionImport'.tr,
-        'automaticTransactionImportDescription'.tr,
-        autoImportEnabled,
-        (value) => setState(() => autoImportEnabled = value),
-      ),
-    ]);
-  }
-
-  Widget _buildPrivacySettings() {
-    return _buildSection('privacySecurity'.tr, [
-      _buildSwitchSetting(
-        'appLock'.tr,
-        'appLockDescription'.tr,
-        appLockEnabled,
-        (value) => setState(() => appLockEnabled = value),
-      ),
-      _buildDropdownSetting(
-        'autoLockTimer'.tr,
-        autoLockTimer,
-        ['1 minute', '5 minutes', '15 minutes', '30 minutes', 'never'],
-        (value) => setState(() => autoLockTimer = value!),
-      ),
-      _buildActionSetting(
-        'clearLocalData'.tr,
-        Icons.delete_outline,
-        AppColors.warning,
-        () {},
-      ),
-      _buildActionSetting('resetApp'.tr, Icons.restore, AppColors.error, () {}),
-      _buildActionSetting(
-        'exportData'.tr,
-        Icons.file_download,
-        AppColors.primaryBlue,
-        () {},
-      ),
-    ]);
-  }
-
-  Widget _buildOtherSettings() {
-    return _buildSection('otherSettings'.tr, [
-      _buildActionSetting(
-        'rateUs'.tr,
-        Icons.star_outline,
-        AppColors.warning,
-        () {},
-      ),
-      _buildActionSetting('shareApp'.tr, Icons.share, AppColors.success, () {}),
-      _buildActionSetting(
-        'contactSupport'.tr,
-        Icons.support_agent,
-        AppColors.primaryBlue,
-        () {},
-      ),
-      _buildActionSetting('faq'.tr, Icons.help_outline, Colors.purple, () {}),
-      _buildActionSetting('about'.tr, Icons.info_outline, Colors.grey, () {}),
-      _buildActionSetting(
-        'feedback'.tr,
-        Icons.feedback_outlined,
-        Colors.teal,
-        () {},
-      ),
-      _buildActionSetting(
-        'termsPolicies'.tr,
-        Icons.description_outlined,
-        Colors.indigo,
-        () {},
-      ),
-      _buildClickableSetting(
-        'versionInfo'.tr,
-        'versionInfoDescription'.tr,
-        'v1.0.2 (Build 45)',
-        () {},
-      ),
-    ]);
-  }
-
-  Widget _buildSection(String title, List<Widget> children) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.headlineSmall),
-        SizedBox(height: 12),
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Theme.of(context).dividerColor, width: 1),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
-                blurRadius: 8,
-                offset: Offset(0, 2),
+        onTap: () => onTap(context),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 22),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: AppColors.textSecondary,
+                size: 18,
               ),
             ],
           ),
-          child: Column(
-            children: children.asMap().entries.map((entry) {
-              int index = entry.key;
-              Widget child = entry.value;
-              return Column(
-                children: [
-                  child,
-                  if (index < children.length - 1)
-                    Divider(height: 1, color: Theme.of(context).dividerColor),
-                ],
-              );
-            }).toList(),
-          ),
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildSwitchSetting(
-    String title,
-    String subtitle,
-    bool value,
-    Function(bool) onChanged,
-  ) {
-    return ListTile(
-      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
-      subtitle: Text(
-        subtitle,
-        style: Theme.of(
-          context,
-        ).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary),
-      ),
-      trailing: Switch(
-        value: value,
-        onChanged: onChanged,
-        activeColor: AppColors.primaryBlue,
-      ),
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-    );
-  }
-
-  Widget _buildDropdownSetting(
-    String title,
-    String value,
-    List<String> options,
-    Function(String?) onChanged,
-  ) {
-    return ListTile(
-      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
-      trailing: DropdownButton<String>(
-        value: value,
-        onChanged: onChanged,
-        underline: SizedBox(),
-        items: options.map((String option) {
-          return DropdownMenuItem<String>(
-            value: option,
-            child: Text(option, style: TextStyle(fontSize: 14)),
-          );
-        }).toList(),
-      ),
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-    );
-  }
-
-  Widget _buildActionSetting(
-    String title,
-    IconData icon,
-    Color color,
-    VoidCallback onTap,
-  ) {
-    return ListTile(
-      leading: Icon(icon, color: color, size: 24),
-      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
-      trailing: Icon(
-        Icons.arrow_forward_ios,
-        color: AppColors.textSecondary,
-        size: 16,
-      ),
-      onTap: onTap,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-    );
-  }
-
-  Widget _buildClickableSetting(
-    String title,
-    String subtitle,
-    String value,
-    VoidCallback onTap,
-  ) {
-    return ListTile(
-      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
-      subtitle: Text(
-        subtitle,
-        style: Theme.of(
-          context,
-        ).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary),
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            value,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary),
+  void _showThemeOptions(BuildContext context) {
+    final provider = context.read<ThemeProvider>();
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        final current = provider.themeMode.toString().split('.').last;
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Text('Light'),
+                trailing: current == 'light' ? Icon(Icons.check) : null,
+                onTap: () {
+                  provider.setTheme('Light');
+                  Navigator.pop(ctx);
+                },
+              ),
+              ListTile(
+                title: Text('Dark'),
+                trailing: current == 'dark' ? Icon(Icons.check) : null,
+                onTap: () {
+                  provider.setTheme('Dark');
+                  Navigator.pop(ctx);
+                },
+              ),
+              ListTile(
+                title: Text('System'),
+                trailing: current == 'system' ? Icon(Icons.check) : null,
+                onTap: () {
+                  provider.setTheme('System');
+                  Navigator.pop(ctx);
+                },
+              ),
+            ],
           ),
-          SizedBox(width: 8),
-          Icon(
-            Icons.arrow_forward_ios,
-            color: AppColors.textSecondary,
-            size: 16,
+        );
+      },
+    );
+  }
+
+  void _showLanguageOptions(BuildContext context) {
+    final provider = context.read<LanguageTranslatorProvider>();
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        final isBangla = provider.locale.languageCode == 'bn';
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Text('English'),
+                trailing: isBangla ? null : Icon(Icons.check),
+                onTap: () {
+                  provider.setLocale(Locale('en', 'US'));
+                  Navigator.pop(ctx);
+                },
+              ),
+              ListTile(
+                title: Text('Bangla'),
+                trailing: isBangla ? Icon(Icons.check) : null,
+                onTap: () {
+                  provider.setLocale(Locale('bn', 'BD'));
+                  Navigator.pop(ctx);
+                },
+              ),
+            ],
           ),
-        ],
-      ),
-      onTap: onTap,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        );
+      },
     );
   }
 }

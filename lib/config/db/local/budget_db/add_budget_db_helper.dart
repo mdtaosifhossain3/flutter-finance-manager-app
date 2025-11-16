@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../../../../models/budgetModel/budget_category_model.dart';
 import '../../../../models/budgetModel/budget_model.dart';
-
 
 class AddBudgetDbHelper {
   static final AddBudgetDbHelper _instance = AddBudgetDbHelper._internal();
@@ -44,8 +44,10 @@ class AddBudgetDbHelper {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             budgetId INTEGER NOT NULL,
             categoryName TEXT NOT NULL,
-            allocatedAmount INTEGER NOT NULL,
             spent INTEGER NOT NULL,
+            iconCodePoint INTEGER NOT NULL,
+            iconFontFamily TEXT NOT NULL,
+            iconBgColor INTEGER NOT NULL,
             FOREIGN KEY (budgetId) REFERENCES budgets (id) ON DELETE CASCADE
           )
         ''');
@@ -56,8 +58,11 @@ class AddBudgetDbHelper {
   // ------------------ Budget Methods ------------------
   Future<int> insertBudget(BudgetModel budget) async {
     final db = await database;
-    return await db.insert('budgets', budget.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.insert(
+      'budgets',
+      budget.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<List<BudgetModel>> getBudgets() async {
@@ -74,8 +79,11 @@ class AddBudgetDbHelper {
   // ------------------ Budget Category Methods ------------------
   Future<int> insertBudgetCategory(BudgetCategoryModel category) async {
     final db = await database;
-    return await db.insert('budget_categories', category.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.insert(
+      'budget_categories',
+      category.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<List<BudgetCategoryModel>> getCategoriesByBudget(int budgetId) async {
@@ -93,7 +101,7 @@ class AddBudgetDbHelper {
     final db = await database;
     final result = await db.rawQuery('''
       SELECT b.id as budgetId, b.title, b.totalAmount, b.startDate, b.endDate,
-             c.id as categoryId, c.categoryName, c.allocatedAmount
+             c.id as categoryId, c.categoryName
       FROM budgets b
       LEFT JOIN budget_categories c
       ON b.id = c.budgetId
@@ -101,8 +109,7 @@ class AddBudgetDbHelper {
     return result;
   }
 
-
-// Add amount to spent
+  // Add amount to spent
   Future<bool> addToCategorySpent({
     required int categoryId,
     required int amountToAdd,
@@ -131,7 +138,7 @@ class AddBudgetDbHelper {
     return rowsAffected > 0;
   }
 
-// Subtract amount from spent
+  // Subtract amount from spent
   Future<bool> subtractFromCategorySpent({
     required int categoryId,
     required int amountToSubtract,
@@ -148,7 +155,9 @@ class AddBudgetDbHelper {
     if (result.isEmpty) return false;
 
     final currentSpent = result.first['spent'] as int;
-    final newSpent = (currentSpent - amountToSubtract).clamp(0, double.infinity).toInt();
+    final newSpent = (currentSpent - amountToSubtract)
+        .clamp(0, double.infinity)
+        .toInt();
 
     final rowsAffected = await db.update(
       'budget_categories',
@@ -160,7 +169,7 @@ class AddBudgetDbHelper {
     return rowsAffected > 0;
   }
 
-// Delete category
+  // Delete category
   Future<int> deleteCategory(int categoryId) async {
     final db = await database;
     return await db.delete(
@@ -170,11 +179,13 @@ class AddBudgetDbHelper {
     );
   }
 
-// Add new category to existing budget
+  // Add new category to existing budget
   Future<int> addCategoryToExistingBudget({
     required int budgetId,
     required String categoryName,
-    required int allocatedAmount,
+    required int spent,
+    required IconData icon,
+    required int iconBgColor,
   }) async {
     final db = await database;
 
@@ -193,15 +204,20 @@ class AddBudgetDbHelper {
     final category = {
       'budgetId': budgetId,
       'categoryName': categoryName,
-      'allocatedAmount': allocatedAmount,
-      'spent': 0,
+      'spent': spent,
+      'iconCodePoint': icon.codePoint,
+      'iconFontFamily': icon.fontFamily ?? 'MaterialIcons',
+      'iconBgColor': iconBgColor,
     };
 
-    return await db.insert('budget_categories', category,
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.insert(
+      'budget_categories',
+      category,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-// Update (add to) allocated amount of an existing category
+  // Update (add to) allocated amount of an existing category
   Future<bool> updateCategoryAmount({
     required int categoryId,
     required int amountToAdd,
@@ -230,6 +246,4 @@ class AddBudgetDbHelper {
 
     return rowsAffected > 0;
   }
-
-
 }

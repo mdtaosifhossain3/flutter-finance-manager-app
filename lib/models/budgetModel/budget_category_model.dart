@@ -1,35 +1,37 @@
+import 'package:flutter/material.dart';
+
 class BudgetCategoryModel {
   final int? id; // auto-increment
   final int? budgetId; // FK -> budgets.id
   final String categoryName;
-  final int allocatedAmount;
   final int spent;
- // final int color;
+  final IconData icon;
+  final int iconBgColor;
 
   BudgetCategoryModel({
     this.id,
     this.budgetId,
     required this.categoryName,
-    required this.allocatedAmount,
     this.spent = 0,
- //   required this.color,
-
-
+    required this.icon,
+    required this.iconBgColor,
   });
 
   BudgetCategoryModel copyWith({
     int? id,
     int? budgetId,
     String? categoryName,
-    int? allocatedAmount,
     int? spent,
+    IconData? icon,
+    int? iconBgColor,
   }) {
     return BudgetCategoryModel(
       id: id ?? this.id,
       budgetId: budgetId ?? this.budgetId,
       categoryName: categoryName ?? this.categoryName,
-      allocatedAmount: allocatedAmount ?? this.allocatedAmount,
       spent: spent ?? this.spent,
+      icon: icon ?? this.icon,
+      iconBgColor: iconBgColor ?? this.iconBgColor,
     );
   }
 
@@ -38,10 +40,10 @@ class BudgetCategoryModel {
       'id': id,
       'budgetId': budgetId,
       'categoryName': categoryName,
-      'allocatedAmount': allocatedAmount,
       'spent': spent,
-   //   'color': color,
-
+      'iconCodePoint': icon.codePoint,
+      'iconFontFamily': icon.fontFamily ?? 'MaterialIcons',
+      'iconBgColor': iconBgColor,
     };
   }
 
@@ -50,10 +52,12 @@ class BudgetCategoryModel {
       id: map['id'],
       budgetId: map['budgetId'],
       categoryName: map['categoryName'],
-      allocatedAmount: map['allocatedAmount'],
       spent: map['spent'],
-     // color: map['color'],
-
+      iconBgColor: map['iconBgColor'],
+      icon: IconData(
+        map['iconCodePoint'],
+        fontFamily: map['iconFontFamily'] ?? 'MaterialIcons',
+      ),
     );
   }
 }

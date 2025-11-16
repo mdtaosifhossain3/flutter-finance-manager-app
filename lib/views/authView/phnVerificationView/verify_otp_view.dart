@@ -10,98 +10,107 @@ class VerifyOtpView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
+        title: Text(
+          "লগইন",
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        backgroundColor: AppColors.primaryBlue,
         leading: IconButton(
-          onPressed: () {
-            Get.back();
-          },
+          onPressed: () => Get.back(),
           icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
         ),
       ),
-      backgroundColor: AppColors.darkMainBackground,
+      backgroundColor: AppColors.darkCardBackground,
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.darkMainBackground,
-                AppColors.darkSecondaryBackground,
-              ],
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              //  Icon(Icons.wallet,size: 140,color: AppColors.primaryBlue,),
-              Image.asset("assets/images/playstore.png", height: 140),
-              SizedBox(height: 20),
-              Column(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "Phone  Verification ",
+                    "অ্যাকাউন্ট সক্রিয়করণ",
                     style: TextStyle(
                       fontSize: 24,
                       color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "Enter the OTP to activate your account",
+                    "অ্যাকাউন্ট সক্রিয় করতে অনুগ্রহ করে ওটিপি কোডটি প্রদান করুন",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16,
                       color: AppColors.textSecondary,
                     ),
                   ),
+                  SizedBox(height: 30),
+
+                  TextFormField(
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.phone_iphone),
+                      hintText: "ওটিপি লিখুন...",
+                      hintStyle: TextStyle(color: AppColors.textSecondary),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.border),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.primaryBlue),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    TextFormField(
-                      decoration: InputDecoration(
-                        hintText: "Enter Otp...",
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.border),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryBlue,
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.border),
+                      ),
+                      onPressed: () {
+                        Get.to(MainView());
+                      },
+                      child: Text(
+                        "নম্বর যাচাই করুন",
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryBlue,
-                          padding: EdgeInsetsGeometry.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        onPressed: () {
-                          Get.to(MainView());
-                        },
-                        child: Text(
-                          "Verify Phone Number",
-                          style: TextStyle(color: AppColors.textPrimary),
-                        ),
-                      ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "ওটিপি না পেলে কয়েক সেকেন্ড পর পুনরায় চেষ্টা করুন।",
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 14,
                     ),
-                  ],
-                ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

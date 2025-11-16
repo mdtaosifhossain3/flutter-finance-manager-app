@@ -5,7 +5,7 @@ import 'package:finance_manager_app/views/aiVIew/widgets/ai_textfield_widget.dar
 import 'package:finance_manager_app/views/aiVIew/widgets/preview_card_button.dart';
 import 'package:finance_manager_app/views/aiVIew/widgets/preview_card_widget.dart';
 import 'package:finance_manager_app/views/aiVIew/widgets/process_button_widget.dart';
-import 'package:finance_manager_app/views/aiVIew/widgets/suggestion_chips_widget.dart';
+import 'package:finance_manager_app/views/mainView/main_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -28,7 +28,8 @@ class _AiMoneyAssistantViewState extends State<AddWithAiScreen>
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
-    )..repeat(reverse: true);
+    );
+    // Don't start animation here - only start when recording
   }
 
   @override
@@ -37,43 +38,16 @@ class _AiMoneyAssistantViewState extends State<AddWithAiScreen>
     super.dispose();
   }
 
-  Widget _buildSpeechStatusBanner() {
-    final provider = Provider.of<AiProvider>(context);
-
-    // If speech is enabled, no need to show anything
-    if (provider.speechEnabled) return const SizedBox.shrink();
-
-    // Determine message
-    final message =
-        provider.speechErrorMessage ??
-        'Speech recognition not available on this device.';
-
-    // ⚠️ Show GetX Snackbar instead of a visible banner
-    Future.microtask(() {
-      if (!Get.isSnackbarOpen) {
-        Get.snackbar(
-          'Speech Error ⚠️',
-          message,
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
-          colorText: Colors.white,
-          margin: const EdgeInsets.all(10),
-          borderRadius: 10,
-          duration: const Duration(seconds: 3),
-          mainButton: TextButton(
-            onPressed: () => provider.initSpeech(),
-            child: const Text('Retry', style: TextStyle(color: Colors.white)),
-          ),
-        );
-      }
-    });
-
-    // Return nothing (no visible banner)
-    return const SizedBox.shrink();
-  }
-
   Widget _buildVoiceButton() {
     final provider = Provider.of<AiProvider>(context);
+
+    // Start/stop animation based on recording state
+    if (provider.isRecording && !_pulseController.isAnimating) {
+      _pulseController.repeat(reverse: true);
+    } else if (!provider.isRecording && _pulseController.isAnimating) {
+      _pulseController.stop();
+      _pulseController.reset();
+    }
 
     return AnimatedBuilder(
       animation: _pulseController,
@@ -139,9 +113,6 @@ class _AiMoneyAssistantViewState extends State<AddWithAiScreen>
       ),
       child: Column(
         children: [
-          _buildSpeechStatusBanner(),
-          SuggestionChipsWidget(textController: provider.textController),
-          const SizedBox(height: 32),
           AiTextFieldWidget(
             focusNode: provider.focusNode,
             textController: provider.textController,
@@ -163,23 +134,13 @@ class _AiMoneyAssistantViewState extends State<AddWithAiScreen>
       ),
       child: provider.isLoading
           ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 56,
-                    height: 56,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 4,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    'Analyzing...',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ],
+              child:  SizedBox(
+                width: 56,
+                height: 56,
+                child: CircularProgressIndicator(
+                  strokeWidth: 4,
+                  color: Colors.white,
+                ),
               ),
             )
           : Column(
@@ -203,6 +164,8 @@ class _AiMoneyAssistantViewState extends State<AddWithAiScreen>
               ],
             ),
     );
+
+
   }
 
   @override
@@ -211,9 +174,9 @@ class _AiMoneyAssistantViewState extends State<AddWithAiScreen>
 
     return Scaffold(
       appBar: customAppBar(
-        title: "AI Assistant",
+        title: "ai_assistant".tr,
         leading: IconButton(
-          onPressed: () => Get.back(),
+          onPressed: () => Get.to(MainView()),
           icon: Icon(Icons.arrow_back),
         ),
       ),
@@ -235,26 +198,13 @@ class _AiMoneyAssistantViewState extends State<AddWithAiScreen>
                 child: Container(
                   color: Colors.black.withValues(alpha: 0.55),
                   child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 56,
-                          height: 56,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 4,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                        Text(
-                          'Analyzing...',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
+                    child: SizedBox(
+                      width: 56,
+                      height: 56,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 4,
+                        color: Theme.of(context).primaryColor,
+                      ),
                     ),
                   ),
                 ),
@@ -272,8 +222,8 @@ class _AiMoneyAssistantViewState extends State<AddWithAiScreen>
 
                 if (text.isEmpty) {
                   Get.snackbar(
-                    'Empty Field ⚠️',
-                    'Fields can’t be empty.',
+                    'empty_field'.tr,
+                    'fields_empty_error'.tr,
                     snackPosition: SnackPosition.TOP,
                     backgroundColor: AppColors.error.withValues(alpha: 0.9),
                     colorText: Colors.white,
@@ -284,8 +234,8 @@ class _AiMoneyAssistantViewState extends State<AddWithAiScreen>
                   return;
                 } else if (!hasNumber) {
                   Get.snackbar(
-                    'Invalid Input ❌',
-                    'Please enter a valid transaction prompt (e.g., "Paid 500 for food").',
+                    'invalid_input'.tr,
+                    'invalid_prompt_error'.tr,
                     snackPosition: SnackPosition.TOP,
                     backgroundColor: AppColors.warning.withValues(alpha: 0.9),
                     colorText: Colors.white,
