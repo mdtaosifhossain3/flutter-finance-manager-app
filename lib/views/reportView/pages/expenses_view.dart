@@ -1,14 +1,12 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
-import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import '../../../globalWidgets/card_widget.dart';
-import '../../../providers/homeProvider/home_provider.dart';
 
 class ExpensesView extends StatefulWidget {
   const ExpensesView({super.key});
@@ -54,10 +52,9 @@ class _ExpensesScreenState extends State<ExpensesView> {
                   _buildDonutChart(),
 
                   SizedBox(height: 24),
-                  Consumer<HomeViewProvider>(
+                  Consumer<ReportProvider>(
                     builder: (context, provider, child) {
-                      final filteredTxns =
-                          provider.filteredTransactionsForReport;
+                      final filteredTxns = provider.filteredTransactions;
 
                       return filteredTxns.isEmpty
                           ? Text("noTransactions".tr)
@@ -78,7 +75,7 @@ class _ExpensesScreenState extends State<ExpensesView> {
   }
 
   Widget _buildSearchBar() {
-    return Consumer<HomeViewProvider>(
+    return Consumer<ReportProvider>(
       builder: (context, provider, child) {
         return Container(
           margin: EdgeInsets.symmetric(
@@ -125,15 +122,7 @@ class _ExpensesScreenState extends State<ExpensesView> {
           return Expanded(
             child: GestureDetector(
               onTap: () {
-                //  selectedPeriod = period;
                 context.read<ReportProvider>().setSelectedMonth(period);
-                if (period == "periodDay".tr) {
-                  context.read<HomeViewProvider>().setDWM("periodDay".tr);
-                } else if (period == "periodWeek".tr) {
-                  context.read<HomeViewProvider>().setDWM("periodWeek".tr);
-                } else {
-                  context.read<HomeViewProvider>().setDWM("periodMonth".tr);
-                }
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 12),
@@ -186,79 +175,53 @@ class _ExpensesScreenState extends State<ExpensesView> {
                 height: 200,
                 child: PieChart(
                   PieChartData(
-                    sections: provider.filterCategories.map((category) {
-                      double percentage = (category["amount"] / total) * 100;
-                      final a = HelperFunctions.convertToBanglaDigits(
-                        percentage.toStringAsFixed(0),
-                      );
-                      return PieChartSectionData(
-                        color: Color(category["color"]),
-                        value: percentage,
-                        title: '$a%',
-                        radius: 60,
-                        titleStyle: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      );
-                    }).toList(),
-                    sectionsSpace: 2,
-                    centerSpaceRadius: 20,
+                    sections: context
+                        .watch<ReportProvider>()
+                        .filterCategories
+                        .asMap()
+                        .entries
+                        .map((entry) {
+                          var category = entry.value;
+                          double percentage =
+                              (category["amount"] / total) * 100;
+
+                          // Only show percentage if it's above 5%
+                          bool showTitle = percentage >= 5;
+
+                          return PieChartSectionData(
+                            color: Color(category["color"]),
+                            value: percentage,
+                            title: showTitle
+                                ? '${percentage.toStringAsFixed(1)}%'
+                                : '',
+                            radius: 65,
+                            titleStyle: TextStyle(
+                              fontSize: 11,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withValues(alpha: 0.3),
+                                  blurRadius: 2,
+                                ),
+                              ],
+                            ),
+                            titlePositionPercentageOffset: 0.55,
+                          );
+                        })
+                        .toList(),
+                    sectionsSpace: 1,
+                    centerSpaceRadius: 35,
+                    pieTouchData: PieTouchData(
+                      touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                        // Optional: Add touch interaction here
+                      },
+                    ),
                   ),
                 ),
               ),
-              SizedBox(height: 20),
-              _buildChartLegend(),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildChartLegend() {
-    return Consumer<HomeViewProvider>(
-      builder: (context, provider, child) {
-        final filteredTxns = provider.filterTransactions(provider.dwm);
-
-        return Align(
-          alignment: Alignment.centerLeft,
-          child: Wrap(
-            alignment: WrapAlignment.start,
-            spacing: 16,
-            runSpacing: 8,
-            children: [
-              ...filteredTxns.map((expense) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.grey.withValues(alpha: 0.1),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: Color(expense.iconBgColor),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        expense.categoryKey.tr,
-                        style: Theme.of(context).textTheme.labelSmall,
-                      ),
-                    ],
-                  ),
-                );
-              }),
+              //   SizedBox(height: 20),
+              //   _buildChartLegend(),
             ],
           ),
         );

@@ -1,6 +1,8 @@
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
+import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:finance_manager_app/views/categoryView/pages/transaction_form_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import '../config/enums/enums.dart';
@@ -11,7 +13,11 @@ import '../utils/helper_functions.dart';
 class CardWidget extends StatefulWidget {
   final TransactionModel transaction;
   final bool isTitle;
-  const CardWidget({super.key, required this.transaction,this.isTitle = false});
+  const CardWidget({
+    super.key,
+    required this.transaction,
+    this.isTitle = false,
+  });
 
   @override
   State<CardWidget> createState() => _CardWidgetState();
@@ -37,12 +43,26 @@ class _CardWidgetState extends State<CardWidget> {
             Container(
               width: 48,
               height: 48,
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Color(widget.transaction.iconBgColor),
+                color:
+                    context.watch<ThemeProvider>().themeMode == ThemeMode.dark
+                    ? Color(
+                        widget.transaction.iconBgColor,
+                      ).withValues(alpha: 0.35)
+                    : Color(widget.transaction.iconBgColor),
                 //  borderRadius: BorderRadius.circular(12),
                 shape: BoxShape.circle,
               ),
-              child: Icon(widget.transaction.icon, color: Colors.white),
+              child: SvgPicture.asset(
+                "assets/functional_icons/${widget.transaction.icon}.svg",
+                width: 24,
+                height: 24,
+                colorFilter: ColorFilter.mode(
+                  Color(0xFFFFFFFF),
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
 
             SizedBox(width: 16),
@@ -51,7 +71,9 @@ class _CardWidgetState extends State<CardWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.isTitle ? widget.transaction.title :   widget.transaction.categoryKey.tr,
+                    widget.isTitle
+                        ? widget.transaction.title
+                        : widget.transaction.categoryKey.tr,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   SizedBox(height: 4),
@@ -69,7 +91,7 @@ class _CardWidgetState extends State<CardWidget> {
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
                 color: widget.transaction.type == TransactionType.expense
                     ? AppColors.error
-                    : AppColors.lightTextMuted,
+                    : Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ],

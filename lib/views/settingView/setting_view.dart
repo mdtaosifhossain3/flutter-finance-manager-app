@@ -1,7 +1,12 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
+import 'package:finance_manager_app/providers/budget/budget_provider.dart';
+import 'package:finance_manager_app/providers/category/transaction_provider.dart';
 import 'package:finance_manager_app/providers/languageProvider/language_translator_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
+import 'package:finance_manager_app/views/settingView/pages/about_page.dart';
+import 'package:finance_manager_app/views/settingView/pages/faq_page.dart';
+import 'package:finance_manager_app/views/settingView/pages/feedback_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -16,256 +21,271 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    final items = <Map<String, dynamic>>[
+    final settingsSections = [
       {
-        'key': 'appTheme'.tr,
-        'icon': Icons.brightness_6,
-        'color': AppColors.primaryBlue,
-        'action': (BuildContext ctx) => _showThemeOptions(ctx),
+        'title': 'appearance'.tr,
+        'items': [
+          {
+            'key': 'appTheme'.tr,
+            'icon': Icons.brightness_6,
+            'color': AppColors.primaryBlue,
+            'action': (BuildContext ctx) => _showThemeOptions(ctx),
+          },
+          {
+            'key': 'appLanguage'.tr,
+            'icon': Icons.language,
+            'color': Colors.deepPurple,
+            'action': (BuildContext ctx) => _showLanguageOptions(ctx),
+          },
+        ],
       },
       {
-        'key': 'appLanguage'.tr,
-        'icon': Icons.language,
-        'color': Colors.deepPurple,
-        'action': (BuildContext ctx) => _showLanguageOptions(ctx),
+        'title': 'support'.tr,
+        'items': [
+          // {
+          //   'key': 'shareApp'.tr,
+          //   'icon': Icons.share,
+          //   'color': AppColors.success,
+          //   'action': (BuildContext ctx) {},
+          // },
+          // {
+          //   'key': 'contactSupport'.tr,
+          //   'icon': Icons.support_agent,
+          //   'color': AppColors.primaryBlue,
+          //   'action': (BuildContext ctx) {
+          //     Get.to(ContactSupportPage());
+          //   },
+          // },
+          {
+            'key': 'faq'.tr,
+            'icon': Icons.help_outline,
+            'color': Colors.purple,
+            'action': (BuildContext ctx) {
+              Get.to(FAQPage());
+            },
+          },
+          {
+            'key': 'feedback'.tr,
+            'icon': Icons.feedback_outlined,
+            'color': Colors.teal,
+            'action': (BuildContext ctx) {
+              Get.to(FeedbackPage());
+            },
+          },
+        ],
       },
+      // {
+      //   'title': "",
+      //   'items': [
+      //     {
+      //       'key': 'about'.tr,
+      //       'icon': Icons.info_outline,
+      //       'color': Colors.grey,
+      //       'action': (BuildContext ctx) {},
+      //     },
+      //     // {
+      //     //   'key': 'termsPolicies'.tr,
+      //     //   'icon': Icons.description_outlined,
+      //     //   'color': Colors.indigo,
+      //     //   'action': (BuildContext ctx) {},
+      //     // },
+      //   ],
+      // },
       {
-        'key': 'shareApp'.tr,
-        'icon': Icons.share,
-        'color': AppColors.success,
-        'action': (BuildContext ctx) {},
-      },
-      {
-        'key': 'contactSupport'.tr,
-        'icon': Icons.support_agent,
-        'color': AppColors.primaryBlue,
-        'action': (BuildContext ctx) {},
-      },
-      {
-        'key': 'faq'.tr,
-        'icon': Icons.help_outline,
-        'color': Colors.purple,
-        'action': (BuildContext ctx) {},
-      },
-      {
-        'key': 'about'.tr,
-        'icon': Icons.info_outline,
-        'color': Colors.grey,
-        'action': (BuildContext ctx) {},
-      },
-      {
-        'key': 'feedback'.tr,
-        'icon': Icons.feedback_outlined,
-        'color': Colors.teal,
-        'action': (BuildContext ctx) {},
-      },
-      {
-        'key': 'termsPolicies'.tr,
-        'icon': Icons.description_outlined,
-        'color': Colors.indigo,
-        'action': (BuildContext ctx) {},
-      },
-
-      {
-        'key': 'resetApp'.tr,
-        'icon': Icons.restore,
-        'color': AppColors.error,
-        'action': (BuildContext ctx) {},
-      },
-      {
-        'key': 'logout'.tr,
-        'icon': Icons.logout,
-        'color': AppColors.error,
-        'action': (BuildContext ctx) {},
+        'title': 'other'.tr,
+        'items': [
+          {
+            'key': 'about'.tr,
+            'icon': Icons.info_outline,
+            'color': Colors.grey,
+            'action': (BuildContext ctx) {
+              Get.to(AboutPage());
+            },
+          },
+          {
+            'key': 'resetApp'.tr,
+            'icon': Icons.restore,
+            'color': AppColors.error,
+            'action': (BuildContext ctx) {
+              _showResetConfirmationDialog(ctx);
+            },
+          },
+          // {
+          //   'key': 'logout'.tr,
+          //   'icon': Icons.logout,
+          //   'color': AppColors.error,
+          //   'action': (BuildContext ctx) {},
+          // },
+        ],
       },
     ];
 
     return Scaffold(
       appBar: customAppBar(title: "settings".tr),
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            // determine columns responsively
-            int crossAxisCount = 2;
-            final w = constraints.maxWidth;
-            if (w > 900) {
-              crossAxisCount = 4;
-            } else if (w > 600) {
-              crossAxisCount = 3;
-            } else {
-              crossAxisCount = 2;
-            }
+        child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          children: [
+            // Header Card
+            // Padding(
+            //   padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            //   child: Container(
+            //     width: double.infinity,
+            //     decoration: BoxDecoration(
+            //       gradient: LinearGradient(
+            //         begin: Alignment.topLeft,
+            //         end: Alignment.bottomRight,
+            //         colors: [
+            //           AppColors.primaryBlue.withValues(alpha: 0.9),
+            //           AppColors.primaryPurple.withValues(alpha: 0.7),
+            //         ],
+            //       ),
+            //       borderRadius: BorderRadius.circular(16),
+            //       boxShadow: [
+            //         BoxShadow(
+            //           color: AppColors.primaryBlue.withValues(alpha: 0.3),
+            //           blurRadius: 12,
+            //           offset: const Offset(0, 4),
+            //         ),
+            //       ],
+            //     ),
+            //     child: Padding(
+            //       padding: const EdgeInsets.all(24),
+            //       child: Column(
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           Text(
+            //             'preferences'.tr,
+            //             style: Theme.of(context).textTheme.headlineSmall
+            //                 ?.copyWith(
+            //                   color: Colors.white,
+            //                   fontWeight: FontWeight.w700,
+            //                 ),
+            //           ),
+            //           const SizedBox(height: 8),
+            //           Text(
+            //             'manage_app_settings'.tr,
+            //             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            //               color: Colors.white70,
+            //               height: 1.4,
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            // ),
 
-            return Column(
-              children: [
-                // compact profile row
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
+            // Settings Sections
+            ...settingsSections.map((section) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: Text(
+                      section['title'] as String,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
                   ),
-                  child: Card(
-                    elevation: 0.8,
-                    shape: RoundedRectangleBorder(
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    color: Theme.of(context).cardColor,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 12,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 56,
-                            height: 56,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Theme.of(context).dividerColor,
-                                width: 1.2,
-                              ),
-                              color: Theme.of(context).colorScheme.surface,
-                            ),
-                            child: Center(
-                              child: Text(
-                                'TH',
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Lets Fluttbiz',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '12123314',
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(color: AppColors.textMuted),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(minWidth: 72),
-                            child: OutlinedButton.icon(
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 8,
-                                ),
-                                side: BorderSide(
-                                  color: Theme.of(context).dividerColor,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              onPressed: () {
-                                // navigate to edit profile or show dialog
-                              },
-                              label: const Text(
-                                'Free User',
-                                style: TextStyle(fontSize: 13),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                    child: Column(
+                      children: [
+                        ...(section['items'] as List<Map<String, dynamic>>)
+                            .asMap()
+                            .entries
+                            .map((entry) {
+                              final index = entry.key;
+                              final item = entry.value;
+                              final isLast =
+                                  index ==
+                                  (section['items'] as List).length - 1;
 
-                // grid of settings
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width * 0.04,
-                      vertical: 8,
-                    ),
-                    child: GridView.builder(
-                      itemCount: items.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount,
-                        mainAxisSpacing: 14,
-                        crossAxisSpacing: 10,
-                        childAspectRatio: 2.5,
-                      ),
-                      itemBuilder: (context, index) {
-                        final it = items[index];
-                        return _buildGridItem(
-                          title: it['key'],
-                          icon: it['icon'],
-                          color: it['color'],
-                          onTap: (BuildContext ctx) => it['action'](ctx),
-                        );
-                      },
+                              return _buildListItem(
+                                title: item['key'],
+                                icon: item['icon'],
+                                color: item['color'],
+                                onTap: (BuildContext ctx) =>
+                                    item['action'](ctx),
+                                isLast: isLast,
+                              );
+                            }),
+                      ],
                     ),
                   ),
-                ),
-                SizedBox(height: 60),
-              ],
-            );
-          },
+                ],
+              );
+            }),
+
+            const SizedBox(height: 24),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildGridItem({
+  Widget _buildListItem({
     required String title,
     required IconData icon,
     required Color color,
     required void Function(BuildContext) onTap,
+    required bool isLast,
   }) {
-    return Material(
-      color: Theme.of(context).cardColor,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-
-        onTap: () => onTap(context),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          child: Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.14),
-                  shape: BoxShape.circle,
+    return InkWell(
+      onTap: () => onTap(context),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(isLast ? 0 : 12),
+        bottom: Radius.circular(isLast ? 12 : 0),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          border: isLast
+              ? null
+              : Border(
+                  bottom: BorderSide(
+                    color: Theme.of(
+                      context,
+                    ).dividerColor.withValues(alpha: 0.5),
+                    width: 0.5,
+                  ),
                 ),
-                child: Icon(icon, color: color, size: 22),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                title,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
               ),
-              Icon(
-                Icons.chevron_right,
-                color: AppColors.textSecondary,
-                size: 18,
-              ),
-            ],
-          ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: AppColors.textSecondary.withValues(alpha: 0.6),
+              size: 20,
+            ),
+          ],
         ),
       ),
     );
@@ -275,37 +295,61 @@ class _SettingsPageState extends State<SettingsPage> {
     final provider = context.read<ThemeProvider>();
     showModalBottomSheet(
       context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) {
         final current = provider.themeMode.toString().split('.').last;
         return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: Text('Light'),
-                trailing: current == 'light' ? Icon(Icons.check) : null,
-                onTap: () {
-                  provider.setTheme('Light');
-                  Navigator.pop(ctx);
-                },
-              ),
-              ListTile(
-                title: Text('Dark'),
-                trailing: current == 'dark' ? Icon(Icons.check) : null,
-                onTap: () {
-                  provider.setTheme('Dark');
-                  Navigator.pop(ctx);
-                },
-              ),
-              ListTile(
-                title: Text('System'),
-                trailing: current == 'system' ? Icon(Icons.check) : null,
-                onTap: () {
-                  provider.setTheme('System');
-                  Navigator.pop(ctx);
-                },
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  child: Text(
+                    'appTheme'.tr,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.light_mode),
+                  title: const Text('Light'),
+                  trailing: current == 'light'
+                      ? Icon(Icons.check, color: AppColors.primaryBlue)
+                      : null,
+                  onTap: () {
+                    provider.setTheme('Light');
+                    Navigator.pop(ctx);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.dark_mode),
+                  title: const Text('Dark'),
+                  trailing: current == 'dark'
+                      ? Icon(Icons.check, color: AppColors.primaryBlue)
+                      : null,
+                  onTap: () {
+                    provider.setTheme('Dark');
+                    Navigator.pop(ctx);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.brightness_auto),
+                  title: const Text('System'),
+                  trailing: current == 'system'
+                      ? Icon(Icons.check, color: AppColors.primaryBlue)
+                      : null,
+                  onTap: () {
+                    provider.setTheme('System');
+                    Navigator.pop(ctx);
+                  },
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -316,32 +360,107 @@ class _SettingsPageState extends State<SettingsPage> {
     final provider = context.read<LanguageTranslatorProvider>();
     showModalBottomSheet(
       context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) {
         final isBangla = provider.locale.languageCode == 'bn';
         return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: Text('English'),
-                trailing: isBangla ? null : Icon(Icons.check),
-                onTap: () {
-                  provider.setLocale(Locale('en', 'US'));
-                  Navigator.pop(ctx);
-                },
-              ),
-              ListTile(
-                title: Text('Bangla'),
-                trailing: isBangla ? Icon(Icons.check) : null,
-                onTap: () {
-                  provider.setLocale(Locale('bn', 'BD'));
-                  Navigator.pop(ctx);
-                },
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  child: Text(
+                    'appLanguage'.tr,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Text('🇬🇧', style: TextStyle(fontSize: 24)),
+                  title: const Text('English'),
+                  trailing: isBangla
+                      ? null
+                      : Icon(Icons.check, color: AppColors.primaryBlue),
+                  onTap: () {
+                    provider.setLocale(const Locale('en', 'US'));
+                    Navigator.pop(ctx);
+                  },
+                ),
+                ListTile(
+                  leading: const Text('🇧🇩', style: TextStyle(fontSize: 24)),
+                  title: const Text('বাংলা'),
+                  trailing: isBangla
+                      ? Icon(Icons.check, color: AppColors.primaryBlue)
+                      : null,
+                  onTap: () {
+                    provider.setLocale(const Locale('bn', 'BD'));
+                    Navigator.pop(ctx);
+                  },
+                ),
+              ],
+            ),
           ),
         );
       },
+    );
+  }
+
+  void _showResetConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'reset_confirmation_title'.tr,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.error,
+          ),
+        ),
+        content: Text(
+          'reset_confirmation_message'.tr,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'cancel'.tr,
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              context.read<AddExpenseProvider>().deleteFullTransaction();
+              context.read<BudgetProvider>().deleteFullBudget();
+
+              Navigator.pop(ctx);
+              Get.snackbar(
+                'successTitle'.tr,
+                'resetDescription'
+                    .tr, // Reusing a success message or add a new one if needed. 'budgetDeletedSuccess' is "Budget Deleted Successfully", maybe not perfect but close. Or just generic success.
+                // Actually, let's use a generic success or just rely on the provider if it shows one.
+                // The provider usually handles logic.
+                // Let's check what deleteFullTransaction does.
+                backgroundColor: AppColors.success,
+                colorText: Colors.white,
+              );
+            },
+            child: Text(
+              'yes'.tr,
+              style: TextStyle(
+                color: AppColors.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,10 +1,26 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
-import 'package:finance_manager_app/config/routes/routes_name.dart';
+
+import 'package:finance_manager_app/services/otp/sent_otp_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-class SentOtpView extends StatelessWidget {
+class SentOtpView extends StatefulWidget {
   const SentOtpView({super.key});
+
+  @override
+  State<SentOtpView> createState() => _SentOtpViewState();
+}
+
+class _SentOtpViewState extends State<SentOtpView> {
+  final _formKey = GlobalKey<FormState>();
+  final _phoneController = TextEditingController();
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +28,7 @@ class SentOtpView extends StatelessWidget {
       backgroundColor: AppColors.darkCardBackground,
       appBar: AppBar(
         title: Text(
-          "রেজিস্ট্রেশন",
+          "registration".tr,
           style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w500,
@@ -22,117 +38,125 @@ class SentOtpView extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "মোবাইল নম্বর যাচাইকরণ",
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    "আপনার ফোন নম্বরটি নিবন্ধনের জন্য অনুগ্রহ করে প্রদান করুন",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  SizedBox(height: 30),
-
-                  TextFormField(
-                    decoration: InputDecoration(
-                      hintText: "রবি/এয়ারটেল নম্বর লিখুন...",
-                      hintStyle: TextStyle(color: AppColors.textSecondary),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: AppColors.border),
-                        borderRadius: BorderRadius.circular(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "mobile_verification".tr,
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w500,
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: AppColors.primaryBlue),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      prefixIcon: Icon(Icons.phone_iphone),
                     ),
-                    keyboardType: TextInputType.phone,
-                  ),
-
-                  SizedBox(height: 16),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "ইতিমধ্যে একটি অ্যাকাউন্ট আছে?",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textMuted,
+                    SizedBox(height: 10),
+                    Text(
+                      "enter_phone_number_desc".tr,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    TextFormField(
+                      controller: _phoneController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "please_enter_number".tr;
+                        }
+                        if (value.length != 11) {
+                          return "number_must_be_11_digits".tr;
+                        }
+                        if (!value.startsWith("01")) {
+                          return "enter_valid_bd_number".tr;
+                        }
+                        return null;
+                      },
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(11),
+                      ],
+                      decoration: InputDecoration(
+                        hintText: "enter_phone_hint".tr,
+                        hintStyle: TextStyle(color: AppColors.textSecondary),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.border),
+                          borderRadius: BorderRadius.circular(16),
                         ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.primaryBlue),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.redAccent),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.redAccent),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        prefixIcon: Icon(Icons.phone_iphone),
                       ),
-                      TextButton(
-                        onPressed: () => Get.toNamed(RoutesName.otepVerifyView),
+                      keyboardType: TextInputType.phone,
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryBlue,
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            await SendOTPService().sendOTP(
+                              context,
+                              _phoneController,
+                            );
+                            // Get.toNamed(RoutesName.otepVerifyView);
+                          }
+                        },
                         child: Text(
-                          "লগইন",
+                          "send_code".tr,
                           style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.primaryBlue,
+                            color: AppColors.textPrimary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryBlue,
-                        padding: EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      onPressed: () {
-                        Get.toNamed(RoutesName.otepVerifyView);
-                      },
-                      child: Text(
-                        "কোড পাঠান",
-                        style: TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    "আপনার নম্বর যাচাইয়ের জন্য একটি ওটিপি কোড পাঠানো হবে।",
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 14,
+                    SizedBox(height: 10),
+                    Text(
+                      "otp_will_be_sent".tr,
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

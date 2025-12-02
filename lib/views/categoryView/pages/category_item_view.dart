@@ -5,6 +5,7 @@ import 'package:finance_manager_app/providers/category/category_item_provider.da
 import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:finance_manager_app/views/categoryView/pages/transaction_form_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +13,7 @@ import '../../../models/categoryModel/transaction_model.dart';
 
 class CategoryItemView extends StatefulWidget {
   final String categoryKey;
-  final IconData categoryIcon;
+  final String categoryIcon;
   final Color categoryColor;
 
   const CategoryItemView({
@@ -28,6 +29,23 @@ class CategoryItemView extends StatefulWidget {
 
 class _CategoryTransactionViewState extends State<CategoryItemView> {
   List<TransactionModel> transactionModel = [];
+
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Calculate offset to show current month (index 6) as the first item
+    // Padding (16) + 6 * (Width(70) + Margin(12))
+    double offset = 16.0 + 6 * (70.0 + 12.0);
+    _scrollController = ScrollController(initialScrollOffset: offset);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,10 +139,14 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Theme.of(context).dividerColor),
                 ),
-                child: Icon(
-                  widget.categoryIcon,
-                  color: Theme.of(context).primaryColor,
-                  size: 20,
+                child: SvgPicture.asset(
+                  "assets/functional_icons/${widget.categoryIcon}.svg",
+                  colorFilter: ColorFilter.mode(
+                    Theme.of(context).primaryColor,
+                    BlendMode.srcIn,
+                  ),
+                  width: 24,
+                  height: 24,
                 ),
               ),
               SizedBox(width: 12),
@@ -149,7 +171,7 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
                     //   '${_getMonthName(provider.selectedMonth.month)} ${provider.selectedMonth.year}',
                     //   style: Theme.of(context).textTheme.labelSmall,
                     // ),
-                    //  SizedBox(height: 4),
+                    // SizedBox(height: 4),
                     Text(
                       'totalAmount'.tr,
                       style: Theme.of(context).textTheme.labelLarge,
@@ -171,7 +193,7 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
                 decoration: BoxDecoration(
                   color: Theme.of(
                     context,
-                  ).colorScheme.onPrimary.withValues(alpha: 0.2),
+                  ).colorScheme.onSurface.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: Theme.of(context).dividerColor,
@@ -183,7 +205,7 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
                   children: [
                     Icon(
                       Icons.receipt_long,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                       size: 16,
                     ),
                     SizedBox(width: 6),
@@ -191,7 +213,7 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
                       HelperFunctions.convertToBanglaDigits(
                         tx.length.toString(),
                       ),
-                      style: Theme.of(context).textTheme.labelLarge,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ],
                 ),
@@ -208,6 +230,7 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
       height: 80,
       margin: EdgeInsets.symmetric(vertical: 16),
       child: ListView.builder(
+        controller: _scrollController,
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 16),
         itemCount: 12,

@@ -15,6 +15,7 @@ class AddExpenseProvider extends ChangeNotifier {
   late String selectedPaymentMethod;
   //date selector
   late DateTime selectedDate;
+  DateTime currentMonth = DateTime.now(); // Track currently displayed month
 
   void setselectedPaymentMethod(val) {
     selectedPaymentMethod = val;
@@ -42,7 +43,7 @@ class AddExpenseProvider extends ChangeNotifier {
   Future<void> addExpense(TransactionModel tn) async {
     try {
       await addTransactionDbHelper.addItem(tn);
-      getAllTransactions();
+      await getTransactionsForMonth(currentMonth);
       notifyListeners();
     } catch (er) {
       if (kDebugMode) {
@@ -51,19 +52,18 @@ class AddExpenseProvider extends ChangeNotifier {
     }
   }
 
-  // Future<List<TransactionModel>> getAllTransactions() async {
-  //   isLoading = true;
-  //   final dt = await addTransactionDbHelper.getAllNotes();
-  //   transactionData = dt.map((e) => TransactionModel.fromMap(e)).toList();
-  //   isLoading = false;
-  //   notifyListeners();
-
-  //   return dt.map((e) => TransactionModel.fromMap(e)).toList();
-  // }
-
-  Future<List<TransactionModel>> getAllTransactions() async {
+  Future<List<TransactionModel>> getTransactionsForMonth(DateTime date) async {
     isLoading = true;
-    final dt = await addTransactionDbHelper.getAllNotes();
+    currentMonth = date;
+
+    final startOfMonth = DateTime(date.year, date.month, 1);
+    final endOfMonth = DateTime(date.year, date.month + 1, 0, 23, 59, 59);
+
+    final dt = await addTransactionDbHelper.getTransactionsByDateRange(
+      startOfMonth.toIso8601String(),
+      endOfMonth.toIso8601String(),
+    );
+
     final transactions = dt.map((e) => TransactionModel.fromMap(e)).toList();
 
     transactionData = transactions;
@@ -95,11 +95,16 @@ class AddExpenseProvider extends ChangeNotifier {
 
   Future<void> updateTransaction(int itemId, TransactionModel tx) async {
     await addTransactionDbHelper.updateItem(itemID: itemId, tx: tx);
-    getAllTransactions();
+    await getTransactionsForMonth(currentMonth);
   }
 
   Future<void> deleteTransaction(int transactionID) async {
     await addTransactionDbHelper.deleteItem(transactionID);
-    getAllTransactions();
+    await getTransactionsForMonth(currentMonth);
+  }
+
+  Future<void> deleteFullTransaction() async {
+    await addTransactionDbHelper.deleteFull();
+    await getTransactionsForMonth(currentMonth);
   }
 }

@@ -1,23 +1,20 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
-import 'package:finance_manager_app/config/routes/routes_name.dart';
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
 import 'package:finance_manager_app/providers/homeProvider/home_provider.dart';
-import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
+
 import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:finance_manager_app/services/dailogue_service.dart';
-import 'package:finance_manager_app/services/weekly_pdf_summary_service.dart';
+import 'package:finance_manager_app/services/reminder_helper.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
+import 'package:finance_manager_app/views/authView/phnVerificationView/sent_otp_view.dart';
 import 'package:finance_manager_app/views/homeView/widgets/home_view_card_widget.dart';
-import 'package:finance_manager_app/views/notificationView/notification_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 import 'dart:math' as math;
 
 import 'package:provider/provider.dart';
-
-import '../reportView/pages/expenses_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -28,16 +25,15 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   late AnimationController _progressController;
-  late Animation<double> _progressAnimation;
   late final pv = context.read<HomeViewProvider>();
 
-  Future<void> _requestNotificationPermission() async {
-    if (!await Permission.notification.isGranted) {
-      await Permission.notification.request();
-    }
+  // Future<void> _requestNotificationPermission() async {
+  //   if (!await Permission.notification.isGranted) {
+  //     await Permission.notification.request();
+  //   }
 
-    DialogService.checkAndShowDialogs();
-  }
+  //   DialogService.checkAndShowDialogs();
+  // }
 
   @override
   void initState() {
@@ -53,28 +49,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     });
 
     // Schedule async call after first frame
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _requestNotificationPermission();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      DialogService.checkAndShowDialogs();
+      await ReminderHelper.scheduleDailyTip();
+      await ReminderHelper.scheduleDailyTransactionReview();
     });
   }
 
   @override
   void didChangeDependencies() {
-    _updateProgressAnimation();
     super.didChangeDependencies();
-  }
-
-  void _updateProgressAnimation() {
-    _progressAnimation =
-        Tween<double>(
-          begin: 0.0,
-          end: pv.getTotals()["expenses"]! / pv.getTotals()["income"]!,
-        ).animate(
-          CurvedAnimation(
-            parent: _progressController,
-            curve: Curves.easeInOutCubic,
-          ),
-        );
   }
 
   void _onPeriodChanged(String period) {
@@ -83,7 +67,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
       // Reset and restart animation with new values
       _progressController.reset();
-      _updateProgressAnimation();
 
       Future.delayed(Duration(milliseconds: 100), () {
         _progressController.forward();
@@ -153,7 +136,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             children: [
               GestureDetector(
                 onTap: () async {
-                  Get.toNamed(RoutesName.notificationView);
+                  Get.to(SentOtpView());
+                  // Get.toNamed(RoutesName.notificationView);
                 },
 
                 child: Container(
@@ -177,12 +161,24 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildExpensesChart() {
-    final reportProvider = context.watch<ReportProvider>();
-    final totals = reportProvider.getCurrentMonthTotals();
-    int expense = totals["expense"] ?? 0;
+    final homeProvider = context.watch<HomeViewProvider>();
+    final totals = homeProvider.getTotals();
+    int expense = totals["expenses"] ?? 0;
     int income = totals["income"] ?? 0;
 
     int remaining = (income == 0 || expense == 0) ? 0 : income - expense;
+
+    // Calculate progress based on ReportProvider totals
+    double progressEnd = 0.0;
+    if (income > 0) {
+      progressEnd = expense / income;
+    }
+
+    final progressAnimation = Tween<double>(begin: 0.0, end: progressEnd)
+        .animate(
+          CurvedAnimation(parent: _progressController, curve: Curves.easeInOut),
+        );
+
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -200,12 +196,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 ),
                 // Animated progress circle
                 AnimatedBuilder(
-                  animation: _progressAnimation,
+                  animation: progressAnimation,
                   builder: (context, child) {
                     return CustomPaint(
                       size: Size(280, 280),
                       painter: CircularProgressPainter(
-                        progress: _progressAnimation.value,
+                        progress: progressAnimation.value,
                         strokeWidth: 20,
                         backgroundColor: Theme.of(context).dividerColor,
                         segmentColors: [
@@ -253,7 +249,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     SizedBox(height: 4),
 
                     Text(
-                      '${"outOfText".tr} ৳${HelperFunctions.convertToBanglaDigits(context.watch<HomeViewProvider>().getTotals()["income"].toString())}',
+                      '${"outOfText".tr} ৳${HelperFunctions.convertToBanglaDigits(income.toString())}',
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
@@ -319,21 +315,32 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              "historyTitle".tr,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            TextButton(
-              onPressed: () {
-                Get.to(ExpensesView());
+            InkWell(
+              onTap: () async {
+                var url = Uri.parse(
+                  "https://fluttbizitsolutions.com/api/fn_caas_api.php",
+                );
+
+                var response = await http.post(url);
+
+                print(response.body);
               },
               child: Text(
-                "seeAllButton".tr,
-                style: Theme.of(
-                  context,
-                ).textTheme.labelMedium?.copyWith(color: AppColors.primaryBlue),
+                "historyTitle".tr,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
             ),
+            // TextButton(
+            //   onPressed: () {
+            //     Get.to(ExpensesView());
+            //   },
+            //   child: Text(
+            //     "seeAllButton".tr,
+            //     style: Theme.of(
+            //       context,
+            //     ).textTheme.labelMedium?.copyWith(color: AppColors.primaryBlue),
+            //   ),
+            // ),
           ],
         ),
 
@@ -359,7 +366,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       key: ValueKey<String>(
                         provider.dwm,
                       ), // rebuild on period change
-                      reverse: true,
+                      //   reverse: true,
                       itemCount: filteredTxns.length,
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),

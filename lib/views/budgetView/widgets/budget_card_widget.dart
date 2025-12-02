@@ -230,112 +230,128 @@ class BudgetCardWidget extends StatelessWidget {
                 children: [
                   // Spent
                   Expanded(
+                    child: _buildInfoColumn(
+                      context,
+                      'spent'.tr,
+                      totalSpent.toString(),
+                      Icons.trending_up_rounded,
+                      Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                  // Divider
+                  _buildDivider(context),
+                  const SizedBox(width: 12),
+                  // Remaining
+                  Expanded(
+                    child: _buildInfoColumn(
+                      context,
+                      isOverspent ? 'overspent'.tr : 'remaining'.tr,
+                      isOverspent
+                          ? (totalSpent - budget.totalAmount).toString()
+                          : remaining.toString(),
+                      isOverspent
+                          ? Icons.warning_rounded
+                          : Icons.savings_outlined,
+                      getStatusColor(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Daily Limit and Days Left
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Daily Limit
+                  Expanded(
                     child: Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.error.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.trending_up_rounded,
-                            size: 18,
-                            color: Theme.of(context).colorScheme.error,
-                          ),
+                        Icon(
+                          Icons.calendar_today_outlined,
+                          size: 16,
+                          color: Theme.of(context).primaryColor,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'spent'.tr,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.color
-                                          ?.withValues(alpha: 0.6),
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '৳${HelperFunctions.convertToBanglaDigits(totalSpent.toString())}',
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: -0.5,
-                                    ),
-                              ),
-                            ],
-                          ),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "label_daily_limit".tr,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    fontSize: 10,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.color
+                                        ?.withValues(alpha: 0.7),
+                                  ),
+                            ),
+                            Text(
+                              "৳${HelperFunctions.convertToBanglaDigits(provider.calculateDailyLimit(budget).toStringAsFixed(0))}",
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  // Divider
-                  Container(
-                    width: 1,
-                    height: 40,
-                    color: Theme.of(
-                      context,
-                    ).dividerColor.withValues(alpha: 0.3),
-                  ),
-                  const SizedBox(width: 12),
-                  // Remaining
+
+                  // Days Left / Expired
                   Expanded(
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: getStatusColor().withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            isOverspent
-                                ? Icons.warning_rounded
-                                : Icons.savings_outlined,
-                            size: 18,
-                            color: getStatusColor(),
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              DateTime.now().isAfter(budget.endDate)
+                                  ? "label_status".tr
+                                  : "label_days_left".tr,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    fontSize: 10,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.color
+                                        ?.withValues(alpha: 0.7),
+                                  ),
+                            ),
+                            Text(
+                              DateTime.now().isAfter(budget.endDate)
+                                  ? "label_expired".tr
+                                  : "${HelperFunctions.convertToBanglaDigits((budget.endDate.difference(DateTime.now()).inDays + 1).toString())} ${"label_days".tr}",
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        DateTime.now().isAfter(budget.endDate)
+                                        ? AppColors.error
+                                        : AppColors.success,
+                                  ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                isOverspent ? 'overspent'.tr : 'remaining'.tr,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.color
-                                          ?.withValues(alpha: 0.6),
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '৳${HelperFunctions.convertToBanglaDigits(isOverspent ? (totalSpent - budget.totalAmount).toString() : remaining.toString())}',
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: getStatusColor(),
-                                      letterSpacing: -0.5,
-                                    ),
-                              ),
-                            ],
-                          ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          DateTime.now().isAfter(budget.endDate)
+                              ? Icons.event_busy
+                              : Icons.timer_outlined,
+                          size: 16,
+                          color: DateTime.now().isAfter(budget.endDate)
+                              ? AppColors.error
+                              : AppColors.success,
                         ),
                       ],
                     ),
@@ -346,6 +362,62 @@ class BudgetCardWidget extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoColumn(
+    BuildContext context,
+    String label,
+    String amount,
+    IconData icon,
+    Color color,
+  ) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 18, color: color),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '৳${HelperFunctions.convertToBanglaDigits(amount)}',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.5,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDivider(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 40,
+      color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
     );
   }
 }

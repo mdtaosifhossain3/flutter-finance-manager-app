@@ -4,6 +4,7 @@ import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:finance_manager_app/views/reportView/widgets/expense_chart_widget.dart';
 import 'package:finance_manager_app/views/reportView/widgets/last_six_days_period_chart_widget.dart';
 import 'package:finance_manager_app/views/reportView/widgets/monthly_budget_chart_widget.dart';
+import 'package:finance_manager_app/views/reportView/widgets/month_picker_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -23,15 +24,34 @@ class _ReportViewState extends State<ReportView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final reportProvider = context.read<ReportProvider>();
-    reportProvider.getMonthlyTotals();
-    reportProvider.periodDatafunction();
-    reportProvider.filterCategoryFunction();
+    reportProvider.fetchReportData();
   }
 
   @override
   Widget build(BuildContext context) {
+    final reportProvider = context.watch<ReportProvider>();
     return Scaffold(
-      appBar: customAppBar(title: "reportTitle".tr),
+      appBar: customAppBar(
+        title: "reportTitle".tr,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.calendar_month),
+            onPressed: () async {
+              final DateTime? picked = await showDialog<DateTime>(
+                context: context,
+                builder: (context) => MonthPickerDialog(
+                  initialDate: reportProvider.selectedMonth,
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime.now(),
+                ),
+              );
+              if (picked != null && picked != reportProvider.selectedMonth) {
+                reportProvider.updateSelectedMonth(picked);
+              }
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(

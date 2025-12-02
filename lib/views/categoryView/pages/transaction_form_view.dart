@@ -1,8 +1,11 @@
+import 'package:finance_manager_app/config/enums/enums.dart';
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
 import 'package:finance_manager_app/providers/category/category_provider.dart';
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
+import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
+import 'package:finance_manager_app/views/categoryView/widgets/calculator_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -17,7 +20,7 @@ class TransactionFormPage extends StatefulWidget {
     this.categoryKey,
   });
   final String? categoryKey;
-  final IconData? categoryIcon;
+  final String? categoryIcon;
   final Color? categoryColor;
   final TransactionModel? transactionModel;
 
@@ -30,6 +33,8 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
   final _notesController = TextEditingController();
+  final _amountFocusNode = FocusNode();
+  bool _includeInTotal = true; // Local state for checkbox
 
   // Payment methods keys for translation
   final List<String> paymentMethods = [
@@ -53,6 +58,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     _amountController.text = widget.transactionModel?.amount.toString() ?? "";
     _notesController.text = widget.transactionModel?.notes.toString() ?? "";
     _titleController.text = widget.transactionModel?.title.toString() ?? "";
+    _includeInTotal = widget.transactionModel?.includeInTotal ?? true;
 
     super.initState();
   }
@@ -62,6 +68,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     _titleController.dispose();
     _amountController.dispose();
     _notesController.dispose();
+    _amountFocusNode.dispose();
     super.dispose();
   }
 
@@ -74,7 +81,9 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
         leading: Padding(
           padding: const EdgeInsets.only(left: 10.0),
           child: IconButton(
-            onPressed: () => Get.back(),
+            onPressed: () {
+              Get.back();
+            },
             icon: Icon(Icons.arrow_back),
           ),
         ),
@@ -103,6 +112,27 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                       SizedBox(height: 20),
                       _buildNotesField(),
                       SizedBox(height: 40),
+                      // Only show checkbox for income transactions
+                      if ((widget.transactionModel?.type ??
+                              context.watch<CategoryProvider>().selectedType) ==
+                          TransactionType.income)
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _includeInTotal,
+                              activeColor: AppColors.primaryBlue,
+                              checkColor: AppColors.textPrimary,
+                              onChanged: (value) {
+                                setState(() {
+                                  _includeInTotal = value!;
+                                });
+                              },
+                            ),
+
+                            Text('include_in_total_income'.tr),
+                          ],
+                        ),
+
                       _buildSubmitButton(),
                       SizedBox(height: 20),
                     ],
@@ -138,11 +168,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             contentPadding: EdgeInsets.all(16),
           ),
           style: TextStyle(fontSize: 16),
-          validator: (value) {
-            if (value == null || value.isEmpty) return 'titleRequiredError'.tr;
-
-            return null;
-          },
         ),
       ],
     );
@@ -159,6 +184,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
         SizedBox(height: 8),
         TextFormField(
           controller: _amountController,
+          focusNode: _amountFocusNode,
           keyboardType: TextInputType.numberWithOptions(decimal: true),
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
@@ -181,6 +207,13 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
               ),
             ),
             contentPadding: EdgeInsets.all(16),
+            suffixIcon: IconButton(
+              icon: Icon(
+                Icons.calculate_outlined,
+                color: Theme.of(context).primaryColor,
+              ),
+              onPressed: _showCalculator,
+            ),
           ),
           style: TextStyle(fontSize: 16),
           validator: (value) {
@@ -392,7 +425,9 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
           widget.transactionModel?.type ??
           context.read<CategoryProvider>().selectedType,
       date: context.read<AddExpenseProvider>().selectedDate,
-      title: _titleController.text,
+      title: _titleController.text == ""
+          ? widget.categoryKey!.tr
+          : _titleController.text,
       amount: amount,
       paymentMethod: context.read<AddExpenseProvider>().selectedPaymentMethod,
       icon: widget.transactionModel?.icon ?? widget.categoryIcon!,
@@ -404,6 +439,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
           widget.transactionModel?.categoryKey ??
           widget.categoryKey ??
           widget.categoryKey!,
+      includeInTotal: _includeInTotal, // Pass the checkbox value
     );
 
     // Show loading dialog
@@ -415,6 +451,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
 
     try {
       final addExpenseProvider = context.read<AddExpenseProvider>();
+      final reportProvider = context.read<ReportProvider>();
 
       if (widget.transactionModel != null) {
         await addExpenseProvider.updateTransaction(
@@ -429,6 +466,8 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
 
       // Close the loading dialog
       Navigator.of(context, rootNavigator: true).pop();
+
+      reportProvider.warningshow();
 
       _resetForm();
       Get.back();
@@ -448,5 +487,35 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     _amountController.clear();
     _notesController.clear();
     context.read<AddExpenseProvider>().clearDate();
+    setState(() {
+      _includeInTotal = true; // Reset checkbox to default
+    });
+  }
+
+  void _showCalculator() {
+    // Unfocus current node (hide keyboard)
+    _amountFocusNode.unfocus();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CalculatorBottomSheet(
+        controller: _amountController,
+        onClose: () {
+          // Unfocus before closing
+          _amountFocusNode.unfocus();
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
+          Navigator.pop(context);
+        },
+      ),
+    ).whenComplete(() {
+      // Ensure keyboard stays hidden after calculator closes
+      Future.delayed(Duration(milliseconds: 100), () {
+        _amountFocusNode.unfocus();
+        SystemChannels.textInput.invokeMethod('TextInput.hide');
+      });
+    });
   }
 }

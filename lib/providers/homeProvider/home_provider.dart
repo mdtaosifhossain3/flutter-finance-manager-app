@@ -51,6 +51,9 @@ class HomeViewProvider extends ChangeNotifier {
           icon: existing.icon,
           iconBgColor: existing.iconBgColor,
           type: existing.type,
+          latestDate: tx.date.isAfter(existing.latestDate)
+              ? tx.date
+              : existing.latestDate,
         );
       } else {
         summaryMap[key] = CategorySummary(
@@ -60,11 +63,16 @@ class HomeViewProvider extends ChangeNotifier {
           icon: tx.icon,
           iconBgColor: tx.iconBgColor,
           type: tx.type,
+          latestDate: tx.date,
         );
       }
     }
 
-    return summaryMap.values.toList();
+    final list = summaryMap.values.toList();
+
+    list.sort((a, b) => b.latestDate.compareTo(a.latestDate));
+
+    return list;
   }
 
   String dwm = 'periodMonth'.tr;
@@ -122,12 +130,19 @@ class HomeViewProvider extends ChangeNotifier {
           .add(const Duration(days: 1))
           .subtract(const Duration(seconds: 1));
     } else if (filter == "periodWeek".tr) {
-      start = now.subtract(Duration(days: now.weekday - 1));
-      start = DateTime(start.year, start.month, start.day);
+      start = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).subtract(const Duration(days: 6));
+      // start = now.subtract(Duration(days: now.weekday - 1));
+      // start = DateTime(start.year, start.month, start.day);
 
-      end = start
-          .add(const Duration(days: 7))
-          .subtract(const Duration(seconds: 1));
+      end = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).add(const Duration(days: 1)).subtract(const Duration(seconds: 1));
     } else {
       start = DateTime(now.year, now.month, 1);
       end = DateTime(
@@ -153,8 +168,9 @@ class HomeViewProvider extends ChangeNotifier {
       } else {
         if (tx.amount == 0) {
           income = 0;
+        } else if (tx.includeInTotal) {
+          income += tx.amount;
         }
-        income += tx.amount;
       }
     }
 

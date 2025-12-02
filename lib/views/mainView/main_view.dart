@@ -1,4 +1,6 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/services/pro_tap_service.dart';
+import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:finance_manager_app/views/aiVIew/add_with_ai.dart';
 import 'package:finance_manager_app/views/budgetView/budget_view.dart';
 import 'package:finance_manager_app/views/categoryView/category_view.dart';
@@ -6,6 +8,7 @@ import 'package:finance_manager_app/views/homeView/home_view.dart';
 import 'package:finance_manager_app/views/reminderView/reminder_view.dart';
 import 'package:finance_manager_app/views/reportView/report_view.dart';
 import 'package:finance_manager_app/views/settingView/setting_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -32,18 +35,13 @@ class _MainViewState extends State<MainView>
     Icons.settings,
   ];
 
-  final List<String> _labels = [
-    'home'.tr,
-    'report'.tr,
-    'budget'.tr,
-    'reminder'.tr,
-    'settings'.tr,
-  ];
+  List<String> _labels(BuildContext context) {
+    return ['home'.tr, 'report'.tr, 'budget'.tr, 'reminder'.tr, 'settings'.tr];
+  }
 
   final List<Widget> _pages = const [
     HomeView(),
     ReportView(),
-
     BudgetView(),
     ReminderView(),
     SettingsPage(),
@@ -96,9 +94,233 @@ class _MainViewState extends State<MainView>
                   icon: Icons.auto_awesome_rounded,
                   title: 'add_with_ai'.tr,
                   subtitle: 'smart_categorization'.tr,
-                  onTap: () {
+                  onTap: () async {
                     Navigator.pop(context);
                     Get.to(() => const AddWithAiScreen());
+
+                    int count = await ProTapService.incrementTap();
+
+                    if (count >= 2) {
+                      // Show Go Pro screen / modal
+                      Get.defaultDialog(
+                        title: "",
+                        backgroundColor: Colors.white,
+                        radius: 20,
+                        barrierDismissible: false,
+                        contentPadding: const EdgeInsets.all(0),
+
+                        content: Column(
+                          children: [
+                            // Title
+                            Text(
+                              "more_ai".tr,
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+
+                            const SizedBox(height: 6),
+
+                            // Description
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
+                              child: Text(
+                                "endedai".tr,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                  height: 1.5,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            // Amount Box
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 24,
+                                horizontal: 20,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0xFF2563EB),
+                                    Color(0xFF1E40AF),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFF2563EB,
+                                    ).withValues(alpha: 0.3),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.baseline,
+                                    textBaseline: TextBaseline.alphabetic,
+                                    children: [
+                                      Text(
+                                        HelperFunctions.convertToBanglaDigits(
+                                          "30",
+                                        ),
+                                        style: TextStyle(
+                                          fontSize: 56,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      const Text(
+                                        "৳",
+                                        style: TextStyle(
+                                          fontSize: 40,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFFBFDBFE),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "30days".tr,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            // Buttons
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
+                              child: Row(
+                                children: [
+                                  // Cancel Button
+                                  Expanded(
+                                    child: Container(
+                                      height: 52,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[100],
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: Colors.grey[300]!,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () => Get.back(),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              "cancelBuy".tr,
+                                              style: TextStyle(
+                                                color: Colors.grey[700],
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                letterSpacing: 0.3,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 12),
+
+                                  // Buy Now Button
+                                  Expanded(
+                                    child: Container(
+                                      height: 52,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: [
+                                            Color(0xFF2563EB),
+                                            Color(0xFF1E40AF),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: const Color(
+                                              0xFF2563EB,
+                                            ).withValues(alpha: 0.3),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 6),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            Get.back();
+                                            // Navigate to payment
+                                            // Get.to(() => const PaymentScreen());
+                                          },
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              "buy".tr,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                letterSpacing: 0.3,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 24),
+                          ],
+                        ),
+                      );
+                    } else {
+                      // Normal Free Action
+                      if (kDebugMode) {
+                        print("Free use: $count/3");
+                      }
+                    }
                   },
                 ),
                 const SizedBox(height: 12),
@@ -181,6 +403,8 @@ class _MainViewState extends State<MainView>
 
   @override
   Widget build(BuildContext context) {
+    final labels = _labels(context);
+
     return Scaffold(
       extendBody: true,
       body: TabBarView(
@@ -239,7 +463,7 @@ class _MainViewState extends State<MainView>
         items: List.generate(_iconItems.length, (index) {
           return BottomNavigationBarItem(
             icon: Icon(_iconItems[index]),
-            label: _labels[index],
+            label: labels[index],
           );
         }),
       ),

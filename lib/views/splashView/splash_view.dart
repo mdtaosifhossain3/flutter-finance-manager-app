@@ -1,4 +1,3 @@
-import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/views/splashView/splash_view_model.dart';
 import 'package:flutter/material.dart';
 
@@ -21,14 +20,21 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkMainBackground,
+      body: Stack(
+        alignment: AlignmentGeometry.center,
+        children: [
+          Center(
+            child: Image.asset("assets/images/a.png", width: 88, height: 88),
+          ),
 
-      body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Text(appName, style: TextStyle(fontSize: 34))],
-        ),
+          Positioned(
+            bottom: 40,
+            child: Text(
+              appName,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+        ],
       ),
     );
   }

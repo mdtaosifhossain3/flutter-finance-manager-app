@@ -5,6 +5,7 @@ import 'package:finance_manager_app/models/budgetModel/budget_model.dart';
 import 'package:finance_manager_app/providers/budget/budget_provider.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -237,7 +238,7 @@ class _BudgetCardViewState extends State<BudgetCardView> {
           label,
           style: TextStyle(
             color: Colors.white.withValues(alpha: 0.8),
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w500,
             letterSpacing: 0.5,
           ),
@@ -245,10 +246,10 @@ class _BudgetCardViewState extends State<BudgetCardView> {
         ),
         const SizedBox(height: 6),
         Text(
-          '${amount < 0 ? '-' : ''}৳${HelperFunctions.convertToBanglaDigits(amount.abs().toString())}',
+          '${amount < 0 ? '-' : ''}৳ ${HelperFunctions.convertToBanglaDigits(amount.abs().toString())}',
           style: TextStyle(
             color: color,
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             letterSpacing: -0.5,
           ),
@@ -582,46 +583,79 @@ class _BudgetCardViewState extends State<BudgetCardView> {
   Map<String, dynamic> _getCategoryIconData(String category) {
     switch (category.toLowerCase()) {
       case 'health_fitness':
-        return {'icon': Icons.fitness_center, 'color': Colors.teal};
+        return {'icon': "health", 'color': Colors.teal};
 
       case 'food_dining':
-        return {'icon': Icons.restaurant, 'color': Colors.red};
+        return {'icon': "food", 'color': Colors.red};
 
       case 'bills_utilities':
-        return {'icon': Icons.electrical_services, 'color': Colors.orange};
+        return {'icon': "bills", 'color': Colors.orange};
 
       case 'phone':
-        return {'icon': Icons.phone_android, 'color': Colors.blueGrey};
+        return {'icon': "phone", 'color': Colors.blueGrey};
 
       case 'beauty':
-        return {'icon': Icons.brush, 'color': Colors.pinkAccent};
+        return {'icon': "beauty", 'color': Colors.pinkAccent};
 
       case 'housing':
-        return {'icon': Icons.home, 'color': Colors.indigo};
+        return {'icon': "home", 'color': Colors.indigo};
 
       case 'transportation':
-        return {'icon': Icons.directions_car, 'color': Colors.blue};
+        return {'icon': "transport", 'color': Colors.blue};
 
       case 'entertainment':
-        return {'icon': Icons.movie, 'color': Colors.deepPurple};
+        return {'icon': "entertainment", 'color': Colors.deepPurple};
 
       case 'shopping':
-        return {'icon': Icons.shopping_bag, 'color': Colors.pink};
+        return {'icon': "shopping", 'color': Colors.pink};
 
       case 'groceries':
-        return {'icon': Icons.shopping_cart, 'color': Colors.green};
+        return {'icon': "groceries", 'color': Colors.green};
 
       case 'education':
-        return {'icon': Icons.school, 'color': Colors.deepOrange};
+        return {'icon': "education", 'color': Colors.deepOrange};
 
       case 'personal':
-        return {'icon': Icons.person, 'color': Colors.cyan};
+        return {'icon': "personal", 'color': Colors.cyan};
 
       case 'investment':
-        return {'icon': Icons.show_chart, 'color': Colors.amber};
+        return {'icon': "invesment", 'color': Colors.amber};
+
+      case 'marketing_advertising':
+        return {'icon': "marketing", 'color': Colors.redAccent};
+
+      case 'travel_accommodation':
+        return {'icon': "travel", 'color': Colors.cyanAccent};
+
+      case 'office_supplies_equipment':
+        return {'icon': "office", 'color': Colors.brown};
+
+      case 'insurance':
+        return {'icon': "insurance", 'color': Colors.brown.shade400};
+
+      case 'subscription_services':
+        return {'icon': "subscripiton", 'color': Colors.purpleAccent};
+
+      case 'fuel_mileage':
+        return {'icon': "fuel", 'color': Colors.deepOrangeAccent};
+
+      case 'charity_donations':
+        return {'icon': "charity", 'color': Colors.redAccent};
+
+      case 'kids':
+        return {'icon': "kids", 'color': Colors.lightBlueAccent};
+
+      case 'repairs':
+        return {'icon': "repair", 'color': Colors.grey};
+
+      case 'pets':
+        return {'icon': "pets", 'color': Colors.brown};
+
+      case 'sports':
+        return {'icon': "sports", 'color': Colors.green.shade700};
 
       default:
-        return {'icon': Icons.category, 'color': Colors.grey};
+        return {'icon': "other", 'color': Colors.grey};
     }
   }
 
@@ -992,11 +1026,19 @@ class _BudgetCardViewState extends State<BudgetCardView> {
                 //     ).colorScheme.primary.withValues(alpha: 0.1),
                 //   ],
                 // ),
-                color: Color(expense.iconBgColor),
+                color: Color(expense.iconBgColor).withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
-                child: Icon(expense.icon, color: AppColors.textPrimary),
+                child: SvgPicture.asset(
+                  'assets/functional_icons/${expense.icon}.svg',
+                  height: 24,
+                  width: 24,
+                  colorFilter: ColorFilter.mode(
+                    Color(expense.iconBgColor),
+                    BlendMode.srcIn,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 14),

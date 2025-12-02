@@ -1,13 +1,15 @@
 import 'package:finance_manager_app/data/category/category_item_data.dart';
 import 'package:finance_manager_app/data/category/income_item_data.dart';
 import 'package:finance_manager_app/models/categoryModel/category_item_model.dart';
+import 'package:finance_manager_app/views/categoryView/pages/transaction_form_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/providers/category/category_provider.dart';
-import 'package:finance_manager_app/views/categoryView/pages/category_item_view.dart';
+
 import '../../config/enums/enums.dart';
 
 class CategoryView extends StatefulWidget {
@@ -281,30 +283,40 @@ class _CategoryTile extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () => Get.to(
-        () => CategoryItemView(
-          categoryIcon: category.icon,
+        () => TransactionFormPage(
           categoryColor: category.color,
+          categoryIcon: category.icon,
           categoryKey: category.key,
         ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: category.color.withValues(alpha: 0.15),
-            child: Icon(category.icon, color: category.color, size: 26),
+          Container(
+            width: 56,
+            height: 56,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: category.color.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: SvgPicture.asset(
+              "assets/functional_icons/${category.icon}.svg",
+              fit: BoxFit.contain,
+              colorFilter: ColorFilter.mode(category.color, BlendMode.srcIn),
+            ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Flexible(
             child: Text(
               category.name,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
                 overflow: TextOverflow.ellipsis,
               ),
               textAlign: TextAlign.center,
+              maxLines: 2,
             ),
           ),
         ],

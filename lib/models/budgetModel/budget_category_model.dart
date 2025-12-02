@@ -1,11 +1,9 @@
-import 'package:flutter/material.dart';
-
 class BudgetCategoryModel {
   final int? id; // auto-increment
   final int? budgetId; // FK -> budgets.id
   final String categoryName;
   final int spent;
-  final IconData icon;
+  final String icon;
   final int iconBgColor;
 
   BudgetCategoryModel({
@@ -22,7 +20,7 @@ class BudgetCategoryModel {
     int? budgetId,
     String? categoryName,
     int? spent,
-    IconData? icon,
+    String? icon,
     int? iconBgColor,
   }) {
     return BudgetCategoryModel(
@@ -41,8 +39,7 @@ class BudgetCategoryModel {
       'budgetId': budgetId,
       'categoryName': categoryName,
       'spent': spent,
-      'iconCodePoint': icon.codePoint,
-      'iconFontFamily': icon.fontFamily ?? 'MaterialIcons',
+      'icon': icon,
       'iconBgColor': iconBgColor,
     };
   }
@@ -54,10 +51,7 @@ class BudgetCategoryModel {
       categoryName: map['categoryName'],
       spent: map['spent'],
       iconBgColor: map['iconBgColor'],
-      icon: IconData(
-        map['iconCodePoint'],
-        fontFamily: map['iconFontFamily'] ?? 'MaterialIcons',
-      ),
+      icon: map['icon'],
     );
   }
 }

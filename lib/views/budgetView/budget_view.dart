@@ -49,13 +49,17 @@ class BudgetView extends StatelessWidget {
                       horizontal: MediaQuery.of(context).size.width * 0.04,
                       vertical: 10,
                     ),
+
                     physics: const BouncingScrollPhysics(),
                     itemCount: provider.budgets.length,
                     itemBuilder: (context, index) {
                       final BudgetModel budget = provider.budgets[index];
-                      return BudgetCardWidget(
-                        provider: provider,
-                        budget: budget,
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: BudgetCardWidget(
+                          provider: provider,
+                          budget: budget,
+                        ),
                       );
                     },
                   );

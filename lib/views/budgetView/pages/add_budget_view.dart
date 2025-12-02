@@ -5,6 +5,7 @@ import 'package:finance_manager_app/models/budgetModel/budget_model.dart';
 import 'package:finance_manager_app/providers/budget/budget_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -412,7 +413,15 @@ class _AddBudgetViewState extends State<AddBudgetView> {
                         value: key,
                         child: Row(
                           children: [
-                            _getCategoryIcon(key),
+                            SvgPicture.asset(
+                              "assets/functional_icons/${_getCategoryIconData(key)['icon']}.svg",
+                              height: 16,
+                              width: 16,
+                              colorFilter: ColorFilter.mode(
+                                _getCategoryIconData(key)['color'],
+                                BlendMode.srcIn,
+                              ),
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
@@ -600,186 +609,91 @@ class _AddBudgetViewState extends State<AddBudgetView> {
   }
 
   Widget _getCategoryIcon(String category) {
-    IconData iconData;
-    Color color;
-
-    switch (category.toLowerCase()) {
-      case 'health_fitness':
-        iconData = Icons.fitness_center;
-        color = Colors.teal;
-        break;
-
-      case 'food_dining':
-        iconData = Icons.restaurant;
-        color = Colors.red;
-        break;
-
-      case 'bills_utilities':
-        iconData = Icons.electrical_services;
-        color = Colors.orange;
-        break;
-
-      case 'phone':
-        iconData = Icons.phone_android;
-        color = Colors.blueGrey;
-        break;
-
-      case 'beauty':
-        iconData = Icons.brush;
-        color = Colors.pinkAccent;
-        break;
-
-      case 'housing':
-        iconData = Icons.home;
-        color = Colors.indigo;
-        break;
-
-      case 'transportation':
-        iconData = Icons.directions_car;
-        color = Colors.blue;
-        break;
-
-      case 'entertainment':
-        iconData = Icons.movie;
-        color = Colors.deepPurple;
-        break;
-
-      case 'shopping':
-        iconData = Icons.shopping_bag;
-        color = Colors.pink;
-        break;
-
-      case 'groceries':
-        iconData = Icons.shopping_cart;
-        color = Colors.green;
-        break;
-
-      case 'education':
-        iconData = Icons.school;
-        color = Colors.deepOrange;
-        break;
-
-      case 'personal':
-        iconData = Icons.person;
-        color = Colors.cyan;
-        break;
-
-      case 'investment':
-        iconData = Icons.show_chart;
-        color = Colors.amber;
-        break;
-
-      case 'living_expenses':
-        iconData = Icons.attach_money;
-        color = Colors.greenAccent;
-        break;
-
-      case 'marketing_advertising':
-        iconData = Icons.campaign;
-        color = Colors.redAccent;
-        break;
-
-      case 'travel_accommodation':
-        iconData = Icons.flight;
-        color = Colors.cyanAccent;
-        break;
-
-      case 'office_supplies_equipment':
-        iconData = Icons.work;
-        color = Colors.brown;
-        break;
-
-      case 'insurance':
-        iconData = Icons.verified_user;
-        color = Colors.brown.shade400;
-        break;
-
-      case 'subscription_services':
-        iconData = Icons.subscriptions;
-        color = Colors.purpleAccent;
-        break;
-
-      case 'fuel_mileage':
-        iconData = Icons.local_gas_station;
-        color = Colors.deepOrangeAccent;
-        break;
-
-      case 'charity_donations':
-        iconData = Icons.volunteer_activism;
-        color = Colors.redAccent;
-        break;
-
-      case 'kids':
-        iconData = Icons.child_friendly;
-        color = Colors.lightBlueAccent;
-        break;
-
-      case 'repairs':
-        iconData = Icons.build;
-        color = Colors.grey;
-        break;
-
-      case 'pets':
-        iconData = Icons.pets;
-        color = Colors.brown;
-        break;
-
-      case 'sports':
-        iconData = Icons.sports_soccer;
-        color = Colors.green.shade700;
-        break;
-
-      default:
-        iconData = Icons.category;
-        color = Colors.grey;
-    }
-
-    return Icon(iconData, color: color, size: 20);
+    final iconData = _getCategoryIconData(category);
+    return SvgPicture.asset(
+      'assets/functional_icons/${iconData['icon']}.svg',
+      height: 24,
+      width: 24,
+      colorFilter: ColorFilter.mode(iconData['color'], BlendMode.srcIn),
+    );
   }
 
   Map<String, dynamic> _getCategoryIconData(String category) {
     switch (category.toLowerCase()) {
       case 'health_fitness':
-        return {'icon': Icons.fitness_center, 'color': Colors.teal};
+        return {'icon': "health", 'color': Colors.teal};
 
       case 'food_dining':
-        return {'icon': Icons.restaurant, 'color': Colors.red};
+        return {'icon': "food", 'color': Colors.red};
 
       case 'bills_utilities':
-        return {'icon': Icons.electrical_services, 'color': Colors.orange};
+        return {'icon': "bills", 'color': Colors.orange};
 
       case 'phone':
-        return {'icon': Icons.phone_android, 'color': Colors.blueGrey};
+        return {'icon': "phone", 'color': Colors.blueGrey};
 
       case 'beauty':
-        return {'icon': Icons.brush, 'color': Colors.pinkAccent};
+        return {'icon': "beauty", 'color': Colors.pinkAccent};
 
       case 'housing':
-        return {'icon': Icons.home, 'color': Colors.indigo};
+        return {'icon': "home", 'color': Colors.indigo};
 
       case 'transportation':
-        return {'icon': Icons.directions_car, 'color': Colors.blue};
+        return {'icon': "transport", 'color': Colors.blue};
 
       case 'entertainment':
-        return {'icon': Icons.movie, 'color': Colors.deepPurple};
+        return {'icon': "entertainment", 'color': Colors.deepPurple};
 
       case 'shopping':
-        return {'icon': Icons.shopping_bag, 'color': Colors.pink};
+        return {'icon': "shopping", 'color': Colors.pink};
 
       case 'groceries':
-        return {'icon': Icons.shopping_cart, 'color': Colors.green};
+        return {'icon': "groceries", 'color': Colors.green};
 
       case 'education':
-        return {'icon': Icons.school, 'color': Colors.deepOrange};
+        return {'icon': "education", 'color': Colors.deepOrange};
 
       case 'personal':
-        return {'icon': Icons.person, 'color': Colors.cyan};
+        return {'icon': "personal", 'color': Colors.cyan};
 
       case 'investment':
-        return {'icon': Icons.show_chart, 'color': Colors.amber};
+        return {'icon': "invesment", 'color': Colors.amber};
+
+      case 'marketing_advertising':
+        return {'icon': "marketing", 'color': Colors.redAccent};
+
+      case 'travel_accommodation':
+        return {'icon': "travel", 'color': Colors.cyanAccent};
+
+      case 'office_supplies_equipment':
+        return {'icon': "office", 'color': Colors.brown};
+
+      case 'insurance':
+        return {'icon': "insurance", 'color': Colors.brown.shade400};
+
+      case 'subscription_services':
+        return {'icon': "subscripiton", 'color': Colors.purpleAccent};
+
+      case 'fuel_mileage':
+        return {'icon': "fuel", 'color': Colors.deepOrangeAccent};
+
+      case 'charity_donations':
+        return {'icon': "charity", 'color': Colors.redAccent};
+
+      case 'kids':
+        return {'icon': "kids", 'color': Colors.lightBlueAccent};
+
+      case 'repairs':
+        return {'icon': "repair", 'color': Colors.grey};
+
+      case 'pets':
+        return {'icon': "pets", 'color': Colors.brown};
+
+      case 'sports':
+        return {'icon': "sports", 'color': Colors.green.shade700};
 
       default:
-        return {'icon': Icons.category, 'color': Colors.grey};
+        return {'icon': "other", 'color': Colors.grey};
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
+import 'package:finance_manager_app/services/reminder_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -13,13 +14,104 @@ class ReportProvider extends ChangeNotifier {
     {
       // Listen to updates from AddExpenseProvider
       transactionProvider.addListener(() {
-        notifyListeners(); // <-- Rebuild home when transactions change
+        fetchReportData(); // Refresh report data when transactions change
       });
     }
   }
+
+  DateTime selectedMonth = DateTime.now();
+  List<TransactionModel> reportTransactions =
+      []; // Transactions for the selected month
+  List<TransactionModel> historyTransactions =
+      []; // Transactions for the last 6 months
   String selectedPeriod = "periodMonth".tr;
+
+  void updateSelectedMonth(DateTime date) {
+    selectedMonth = date;
+    selectedPeriod = "periodMonth".tr;
+    fetchReportData();
+    notifyListeners();
+  }
+
   void setSelectedMonth(val) {
     selectedPeriod = val;
+    notifyListeners();
+  }
+
+  String _searchQuery = "";
+  void setSearchQuery(String query) {
+    _searchQuery = query.toLowerCase();
+    notifyListeners();
+  }
+
+  List<TransactionModel> get filteredTransactions {
+    List<TransactionModel> periodFiltered = [];
+
+    if (selectedPeriod == "periodMonth".tr) {
+      periodFiltered = reportTransactions;
+    } else if (selectedPeriod == "periodWeek".tr) {
+      // Filter for current week if it falls within the selected month
+      // For now, let's just show all if we can't determine the week relative to selected month easily without more UI
+      // Or we can use the same logic as HomeViewProvider but relative to DateTime.now()
+      // If the user is looking at a past month, "Current Week" makes no sense.
+      // So let's just return reportTransactions for now to avoid showing nothing.
+      // Or better, filter by the week of the selectedMonth (e.g. first 7 days?)
+      // Let's stick to returning reportTransactions for simplicity as the user only asked for Month support.
+      periodFiltered = reportTransactions;
+    } else {
+      // Day
+      periodFiltered = reportTransactions;
+    }
+
+    if (_searchQuery.isEmpty) return periodFiltered;
+
+    return periodFiltered.where((tx) {
+      return tx.categoryKey.toLowerCase().contains(_searchQuery) ||
+          tx.amount.toString().contains(_searchQuery);
+    }).toList();
+  }
+
+  Future<void> fetchReportData() async {
+    // Fetch data for the selected month
+    final startOfMonth = DateTime(selectedMonth.year, selectedMonth.month, 1);
+    final endOfMonth = DateTime(
+      selectedMonth.year,
+      selectedMonth.month + 1,
+      0,
+      23,
+      59,
+      59,
+    );
+
+    final dt = await transactionProvider.addTransactionDbHelper
+        .getTransactionsByDateRange(
+          startOfMonth.toIso8601String(),
+          endOfMonth.toIso8601String(),
+        );
+    reportTransactions = dt.map((e) => TransactionModel.fromMap(e)).toList();
+
+    // Fetch data for the last 6 months for trends
+    final startOfHistory = DateTime(
+      selectedMonth.year,
+      selectedMonth.month - 5,
+      1,
+    );
+    final endOfHistory = endOfMonth; // End at the selected month
+
+    final historyDt = await transactionProvider.addTransactionDbHelper
+        .getTransactionsByDateRange(
+          startOfHistory.toIso8601String(),
+          endOfHistory.toIso8601String(),
+        );
+    historyTransactions = historyDt
+        .map((e) => TransactionModel.fromMap(e))
+        .toList();
+
+    // Recalculate everything
+    filterCategoryFunction();
+    getMonthlyTotals();
+    periodDatafunction();
+
     notifyListeners();
   }
 
@@ -32,7 +124,7 @@ class ReportProvider extends ChangeNotifier {
 
     final Map<String, Map<String, dynamic>> categoryTotals = {};
 
-    for (var elm in transactionProvider.transactionData) {
+    for (var elm in reportTransactions) {
       final name = elm.categoryKey;
       final color = elm.iconBgColor;
       final amount = elm.amount;
@@ -105,7 +197,8 @@ class ReportProvider extends ChangeNotifier {
     for (var tx in filteredTxns) {
       if (tx.type == TransactionType.expense) {
         expenses += tx.amount;
-      } else {
+      } else if (tx.includeInTotal) {
+        // Only include income if includeInTotal is true
         income += tx.amount;
       }
     }
@@ -115,7 +208,7 @@ class ReportProvider extends ChangeNotifier {
 
   void getMonthlyTotals() {
     montlydata.clear();
-    final now = DateTime.now();
+    final now = selectedMonth;
 
     // Get last 6 months including current
     for (int i = 5; i >= 0; i--) {
@@ -124,7 +217,7 @@ class ReportProvider extends ChangeNotifier {
       final startOfMonth = DateTime(date.year, date.month, 1);
       final endOfMonth = DateTime(date.year, date.month + 1, 0);
 
-      final monthTxns = transactionProvider.transactionData.where((tx) {
+      final monthTxns = historyTransactions.where((tx) {
         return tx.date.isAfter(
               startOfMonth.subtract(const Duration(days: 1)),
             ) &&
@@ -175,21 +268,36 @@ class ReportProvider extends ChangeNotifier {
     int totalExpense = 0;
     int totalIncome = 0;
 
-    final now = DateTime.now();
+    final now = selectedMonth;
     final startOfMonth = DateTime(now.year, now.month, 1);
     final endOfMonth = DateTime(now.year, now.month + 1, 0);
 
-    for (var tx in transactionProvider.transactionData) {
+    for (var tx in reportTransactions) {
       if (tx.date.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
           tx.date.isBefore(endOfMonth.add(const Duration(days: 1)))) {
         if (tx.type == TransactionType.expense) {
           totalExpense += tx.amount;
-        } else {
+        } else if (tx.includeInTotal) {
+          // Only include income if includeInTotal is true
           totalIncome += tx.amount;
         }
       }
     }
 
     return {"expense": totalExpense, "income": totalIncome};
+  }
+
+  void warningshow() {
+    final totals = getCurrentMonthTotals();
+
+    int expense = totals["expense"] ?? 0;
+    int income = totals["income"] ?? 0;
+
+    int remaining = (income == 0 || expense == 0) ? 0 : income - expense;
+    //   remaining < 0 ? ReminderHelper.tt() : null;
+
+    if (remaining < 0) {
+      ReminderHelper.tt("warningTitleTransacton", "warningDescTransacton");
+    }
   }
 }

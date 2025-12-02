@@ -20,6 +20,17 @@ class HelperFunctions {
     }
   }
 
+  static String getFormattedDate(DateTime date) {
+    final locale = Get.locale?.languageCode ?? 'en';
+
+    if (locale == 'bn') {
+      return _getBanglaFormattedDate(date);
+    } else {
+      final formatter = DateFormat("dd MMM");
+      return formatter.format(date);
+    }
+  }
+
   static String _getBanglaFormattedDateTime(DateTime date) {
     // Bangla months (short)
     final banglaMonths = [
@@ -66,6 +77,50 @@ class HelperFunctions {
     final period = date.hour < 12 ? 'AM' : 'PM';
 
     return '$day $month, $hour:$minute $period';
+  }
+
+  static String _getBanglaFormattedDate(DateTime date) {
+    // Bangla months (short)
+    final banglaMonths = [
+      'জানু',
+      'ফেব্রু',
+      'মার্চ',
+      'এপ্রিল',
+      'মে',
+      'জুন',
+      'জুলাই',
+      'আগস্ট',
+      'সেপ্টেম্বর',
+      'অক্টোবর',
+      'নভেম্বর',
+      'ডিসেম্বর',
+    ];
+
+    // Convert numbers to Bangla digits
+    String toBanglaDigits(String number) {
+      const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+      return number
+          .split('')
+          .map((digit) {
+            if (digit == '0') return banglaDigits[0];
+            if (digit == '1') return banglaDigits[1];
+            if (digit == '2') return banglaDigits[2];
+            if (digit == '3') return banglaDigits[3];
+            if (digit == '4') return banglaDigits[4];
+            if (digit == '5') return banglaDigits[5];
+            if (digit == '6') return banglaDigits[6];
+            if (digit == '7') return banglaDigits[7];
+            if (digit == '8') return banglaDigits[8];
+            if (digit == '9') return banglaDigits[9];
+            return digit;
+          })
+          .join('');
+    }
+
+    final day = toBanglaDigits(date.day.toString().padLeft(2, '0'));
+    final month = banglaMonths[date.month - 1];
+
+    return '$day $month';
   }
 
   static String formatDate(DateTime date) {
@@ -267,6 +322,8 @@ class HelperFunctions {
       "gifts": "Gifts",
       "grants_subsidies": "Grants",
       "miscellaneous": "Others",
+      "miscellaneous_income": "Other Income",
+      "miscellaneous_expense": "Others",
     };
 
     return items[val] ?? val.toString();

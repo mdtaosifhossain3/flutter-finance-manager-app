@@ -7,14 +7,16 @@ PreferredSizeWidget customAppBar({
   bool centerTitle = true,
 
   double elevation = 0.0,
+  TextStyle? titleStyle,
+  Color? backgroundColor,
 }) {
   return AppBar(
     automaticallyImplyLeading: false,
-    leading:leading ,
-    title: Text(title),
+    leading: leading,
+    title: Text(title, style: titleStyle),
     actions: actions,
     centerTitle: centerTitle,
-
     elevation: elevation,
+    backgroundColor: backgroundColor,
   );
 }

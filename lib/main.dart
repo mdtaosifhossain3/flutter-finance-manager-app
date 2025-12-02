@@ -11,14 +11,26 @@ import 'package:finance_manager_app/providers/homeProvider/home_provider.dart';
 import 'package:finance_manager_app/providers/languageProvider/language_translator_provider.dart';
 import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
 import 'package:finance_manager_app/providers/reminderProvider/reminder_provider.dart';
+import 'package:finance_manager_app/providers/speechProvider/speech_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
+
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
 import 'package:flutter/material.dart';
+import 'package:finance_manager_app/services/reminder_helper.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize reminders and timezone data before the app starts.
+  try {
+    await ReminderHelper.initializeReminderNoti();
+  } catch (e) {
+    // Log initialization failure but still continue to start the app.
+    // Use debugPrint to avoid exceptions in release builds.
+    debugPrint('Reminder initialization failed: $e');
+  }
 
   runApp(
     MultiProvider(
@@ -27,7 +39,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => AddExpenseProvider(
             addTransactionDbHelper: AddTransactionDbHelper.getInstance,
-          )..getAllTransactions(), // ✅ Load data once
+          )..getTransactionsForMonth(DateTime.now()),
         ),
 
         ChangeNotifierProxyProvider<AddExpenseProvider, HomeViewProvider>(
@@ -90,8 +102,34 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => ReminderProvider()),
-        ChangeNotifierProvider(create: (_) => BudgetProvider()..loadBudgets()),
+        ChangeNotifierProxyProvider<AddExpenseProvider, BudgetProvider>(
+          lazy: false,
+          create: (context) => BudgetProvider(
+            transactionProvider: context.read<AddExpenseProvider>(),
+          )..loadBudgets(),
+          update: (_, txProvider, budgetProvider) {
+            // Re-create or update?
+            // Since BudgetProvider needs to listen, we might need to update the reference
+            // But BudgetProvider constructor sets up the listener.
+            // If we just update a field, we need to handle listener attachment/detachment.
+            // Simpler to just pass it in constructor if possible, but update is called on rebuilds.
+            // Let's use the update to ensure we have the latest provider.
+            // Actually, for simplicity and stability, let's just create it with the provider.
+            // But ProxyProvider requires update.
+            if (budgetProvider == null) {
+              return BudgetProvider(transactionProvider: txProvider)
+                ..loadBudgets();
+            }
+            // If we already have one, we might not need to do anything if the instance is the same
+            // But if txProvider changes (unlikely for top level), we might need to update.
+            // Let's just return the existing one, assuming AddExpenseProvider instance is stable.
+            return budgetProvider;
+          },
+        ),
         ChangeNotifierProvider(create: (_) => AiProvider()),
+        ChangeNotifierProvider(
+          create: (_) => SpeechProvider()..initializeSpeech(),
+        ),
       ],
       child: MyApp(),
     ),
@@ -116,7 +154,7 @@ class MyApp extends StatelessWidget {
       translations: AppTranslations(),
       locale: context.watch<LanguageTranslatorProvider>().locale,
       fallbackLocale: const Locale('en', 'US'),
-      home: const SplashView(),
+      home: SplashView(),
       onUnknownRoute: (RouteSettings settings) {
         return MaterialPageRoute(
           builder: (context) => Scaffold(

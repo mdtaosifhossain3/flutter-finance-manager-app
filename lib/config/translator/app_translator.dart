@@ -4,6 +4,88 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
     'en_US': {
+      "feedbackTitle": "We would love to hear your thoughts!",
+
+      "feedbackLabel": "Your Feedback",
+
+      "feedbackHint": "Please enter feedback",
+
+      "feedbackSubmit": "Submit",
+
+      "feedbackSuccess": "Thank you for your feedback!",
+      "aboutbody":
+          "FinzyCash is a smart and modern money management app designed "
+          "specifically for Bangladeshi users. It helps you track daily expenses, "
+          "add income, plan budgets, view detailed financial reports, set reminders, "
+          "and improve your savings habits with AI-powered assistance.\n\n"
+          "FinzyCash is built with a focus on simplicity, privacy, and accuracy, "
+          "ensuring users can manage their finances without any hassle.\n\n"
+          "This app is proudly developed by MD Taosif Hossain and powered by "
+          "Fluttbiz IT Solutions.",
+
+      "dev": "Developer: MD Taosif Hossain",
+      "companyName": "Company: Fluttbiz IT Solutions",
+      "q1": "How does FinzyCash work?",
+      "a1":
+          "You can add expenses, income, budgets, and track detailed reports easily.",
+
+      "q2": "Is my data safe?",
+      "a2": "Yes, your data is securely stored and never shared with anyone.",
+
+      "q3": "Is FinzyCash free?",
+      "a3": "Yes, FinzyCash is free with optional Pro features.",
+
+      "q4": "What is FinzyCash Pro?",
+      "a4":
+          "FinzyCash Pro unlocks advanced features like unlimited AI taps and premium tools.",
+
+      "q5": "Can I track both income and expenses?",
+      "a5":
+          "Yes, the app allows complete tracking of expenses, income, and reports.",
+
+      "q6": "Does FinzyCash support Bangla?",
+      "a6": "Yes, the app fully supports the Bangla language.",
+
+      "q7": "How does the AI help?",
+      "a7":
+          "AI can understand Bangla/English and automatically generate transactions for you.",
+
+      "q8": "Can I backup my data?",
+      "a8": "Yes, you can store cloud backups to keep your data safe.",
+
+      "q9": "Does the app send reminders?",
+      "a9":
+          "Yes, you can set daily reminders for budgets, reports, and money tips.",
+
+      "q10": "How can I contact support?",
+      "a10": "You can contact us via email or Messenger from the Support page.",
+
+      "more_ai": "Get More AI Credits?",
+      "endedai": "Your free AI credits have ended.",
+      "30days": "Unlimited AI Credits for 30 Days",
+      "buy": "Buy Now",
+      "cancelBuy": "Cancel",
+      'transaction_detected': 'Transaction Detected',
+      'items_found': 'item(s) found',
+      'try_different_input': 'Try describing your transaction differently',
+      'today': 'Today',
+      'yesterday': 'Yesterday',
+      'ai_assistant_title': 'AI Money Assistant',
+      'ai_assistant_subtitle':
+          'Describe your transaction naturally, and I\'ll help organize it',
+      'try_examples': 'Try these examples',
+      'spent_50_groceries': 'Spent 500 on groceries',
+      'lunch_25_today': 'Lunch 250 today',
+      'fuel_40_yesterday': 'Fuel Expense 180 tk yesterday',
+      'ai_tip': 'Include amount, category, and date for best results',
+      'analyzing_transaction': 'Analyzing Transaction',
+      'please_wait': 'Please wait a moment...',
+      'processing': 'Processing...',
+      'input_placeholder_detailed': 'Example: "Spent 50 on groceries"',
+
+      'preferences': 'Preferences',
+      'manage_app_settings':
+          'Manage your app settings to match your style and needs',
       'no_internet_connection': 'No internet connection',
       'connection_timeout': 'Connection timeout',
       "something_went_wrong": "Something went wrong, please try again later.",
@@ -24,7 +106,7 @@ class AppTranslations extends Translations {
       "phone": "Phone",
       "beauty": "Beauty",
       "housing": "Housing",
-      "transportation": "Transpor",
+      "transportation": "Transport",
       "entertainment": "Entertainment",
       "shopping": "Shopping",
       "groceries": "Groceries",
@@ -58,7 +140,53 @@ class AppTranslations extends Translations {
       "refunds_reimbursements": "Refunds",
       "gifts": "Gifts",
       "grants_subsidies": "Grants",
-      "miscellaneous": "Others",
+      "miscellaneous_expense": "Others",
+      "miscellaneous_income": "Other Income",
+
+      // ------------------------------- Pricing View -------------------------------
+      'manage_plan': 'Manage Plan',
+      'choose_pricing_plan': 'Choose Your Pricing Plan',
+      'set_reminder': 'Set Reminder',
+      'monthly_weekly_reports': 'Monthly/Weekly Reports',
+      'reports': 'Reports',
+      'set_budget': 'Set Budget',
+      'no_ads': 'No Ads',
+      'starter_plan': 'Starter Plan',
+      'smart_plan': 'Smart Plan',
+      'pro_plan': 'Pro Plan',
+      'ultimate_plan': 'Ultimate Plan',
+      '900_credits': '900 AI Credits',
+      '2700_credits': '2700 AI Credits',
+      '2700_credits_pro': '2700 AI Credit',
+      '27000_credits': '27000 AI Credits',
+      'monthly': 'monthly',
+      '3_months': '3 month',
+      '6_months': '6 month',
+      '1_year': '1 year',
+      'choose_plan': 'Choose Plan',
+      'payment_success': 'Payment Success',
+      'payment_success_message':
+          'Thank you for your purchase! Your plan has been activated successfully.',
+
+      // ------------------------------- OTP Views -------------------------------
+      'registration': 'Registration',
+      'mobile_verification': 'Mobile Number Verification',
+      'enter_phone_number_desc': 'Please enter your phone number to register',
+      'enter_phone_hint': 'Enter Robi/Airtel number...',
+      'please_enter_number': 'Please enter number',
+      'number_must_be_11_digits': 'Number must be 11 digits',
+      'enter_valid_bd_number': 'Enter valid Bangladeshi number (01...)',
+      'send_code': 'Send Code',
+      'otp_will_be_sent': 'An OTP code will be sent to verify your number.',
+      'login': 'Login',
+      'account_activation': 'Account Activation',
+      'enter_otp_desc': 'Please enter the OTP code to activate your account',
+      'enter_otp_hint': 'Enter OTP...',
+      'please_enter_otp': 'Please enter OTP',
+      'otp_must_be_6_digits': 'OTP must be 6 digits',
+      'verify_number': 'Verify Number',
+      'retry_otp_desc':
+          'If you don\'t receive OTP, try again after a few seconds.',
 
       //-------------------------------Welcome View-------------------------------
       "welcomeViewTitle": "Easy way to\nManage your Money",
@@ -66,6 +194,7 @@ class AppTranslations extends Translations {
           "Organize your spending, plan your savings, and stay stress-free.",
       "welcomeViewButtonOne": "Get Started",
       "welcomeViewButtonTwo": "Preview Demo",
+      "preview": "Preview",
 
       //-------------------------------Home View-------------------------------
       "expensesTitle": "Expenses",
@@ -111,6 +240,7 @@ class AppTranslations extends Translations {
       'gas_bill': 'Gas Bill',
       'internet_wifi': 'Internet / WiFi',
       'house_rent': 'House Rent',
+      'my_salary': 'Salary 12000 tk',
 
       // Transportation
       'fuel': 'Fuel',
@@ -220,9 +350,13 @@ class AppTranslations extends Translations {
       // -------------------------------Category Card-------------------------------
       "transactionDetails": "Transaction Details",
       "title": "Title",
+      "warningTitleTransacton": "Overspending Alert",
+      "warningDescTransacton":
+          "You just added an expense that exceeds your income.",
+      "expense": "Expense",
 
       // -------------------------------Transaction Form Page -------------------------------
-      "titleOptional": "Title",
+      "titleOptional": "Title (Optional)",
       "titleRequiredError": "Title is required",
       "titleHint": "Enter transaction title",
       "amountRequired": "Amount *",
@@ -238,6 +372,8 @@ class AppTranslations extends Translations {
       "successTitle": "Success!",
       "successMessage": "Transaction saved successfully!",
       "transactionUpdateMessage": "Transaction updated successfully!",
+      "resetDescription":
+          "Reset completed successfully. All of your data has been deleted from the system",
 
       "details": "Details:",
       "amount": "Amount",
@@ -265,7 +401,25 @@ class AppTranslations extends Translations {
       "budgetOverview": "Budget Overview",
       "noBudgetsYet": "No budgets yet",
       "budgetDeletedSuccess": "Budget Deleted Successfully",
-
+      "daily_budget_limit_title": "Daily Budget Limit",
+      "budget_exceeded_title": "Budget Exceeded!",
+      "budget_exceeded_message": "You have exceeded your budget for",
+      "review_transactions_title": "Review Your Transactions",
+      "review_transactions_message":
+          "Take a moment to review today's transactions and ensure everything is tracked!",
+      "include_in_total_income": "Include in total income",
+      "enbudget_expired_title": "Budget Expired",
+      "label_days": "Days",
+      "label_expired": "Expired",
+      "label_days_left": "Days Left",
+      "label_status": "Status",
+      "label_daily_limit": "Daily Limit",
+      "daily_spend_advice_one": "You can spend up to ৳",
+      "daily_spend_advice_two": "today to stay on track.",
+      "budget_exceeded_message_start": "You ",
+      "budget_exceeded_message_end": "have exceeded your budget for",
+      "budget_expired_message_start": "Your budget period for",
+      "budget_expired_message_end": "has ended.",
       // -------------------------------Budget Card -------------------------------
       "overspent": "Overspent",
       "over": "Overspent",
@@ -458,10 +612,15 @@ class AppTranslations extends Translations {
       "termsPolicies": "Terms & Policies",
       "versionInfo": "Version Info",
       "versionInfoDescription": "Build version and update checker",
+      "appearance": "Appearance",
 
       "confirm_delete": "Confirm Delete",
       "delete_category_message":
           "Are you sure you want to delete this category? This action cannot be undone.",
+      "reset_confirmation_title": "Reset App?",
+      "reset_confirmation_message":
+          "Are you sure you want to reset? This will delete all your transactions and data. This action cannot be undone.",
+      "yes": "Yes",
 
       // ------------------------------- Notification View -------------------------------
       "notificationsTitle": "Notifications",
@@ -484,7 +643,7 @@ class AppTranslations extends Translations {
       "received_salary": "Received Salary",
       "bought_groceries": "Bought Groceries",
       "fuel_expense": "Fuel Expense",
-      "input_placeholder": "Type or speak your transaction",
+      "input_placeholder": "Type your transaction",
       "input_example": "Example: \"Example: I spent 50 taka on groceries\"",
       "ai_assistant": "AI Assistant",
       "process_with_ai": "Process With AI",
@@ -500,8 +659,162 @@ class AppTranslations extends Translations {
           "Speech recognition not available on this device.",
       "speech_error": "Speech error:",
       "speech_init_failed": "Speech initialization failed",
+      "save_today_for_tomorrow":
+          "Save a little today — it becomes a lot tomorrow.",
+      "skip_unnecessary_purchase":
+          "Skip one unnecessary purchase today, save the difference!",
+      "saving_is_a_habit": "Saving is a habit, not a number. Start small.",
+      "daily_savings_goal": "Set a daily savings goal — even 10 taka counts.",
+      "future_emergency_savings":
+          "Future emergencies are solved by today’s savings.",
+      "pay_yourself_first": "Pay yourself first — save before you spend.",
+      "save_five_percent_challenge":
+          "Challenge: Save at least 5% of today’s income!",
+      "emergency_fund_peace": "Want peace of mind? Build an emergency fund.",
+      "review_savings_goal": "Review your savings goal — adjust if needed.",
+      "track_spending_daily":
+          "Saving is easier when spending is tracked. Don’t forget today’s entries!",
+      "budget_limit_check":
+          "Check your budget — are you still within limits today?",
+      "daily_budget_check": "A daily budget check keeps money stress away.",
+      "plan_todays_spending": "Plan today’s spending before you spend.",
+      "update_categories":
+          "Update your categories — budget smarter, not harder.",
+      "zero_based_budgeting":
+          "Zero-based budgeting works wonders. Try it today!",
+      "needs_vs_wants":
+          "Keep your needs and wants separate — your wallet will thank you.",
+      "delay_if_not_in_budget": "If it's not in the budget, delay it.",
+      "budget_is_roadmap": "Your budget is your roadmap — follow it daily.",
+      "review_last_week_expenses":
+          "Revisit last week's expenses — any mistakes to fix?",
+      "consistency_over_perfection":
+          "Consistency beats perfection. Track daily.",
+      "think_before_buying":
+          "Think twice before buying — do you really need it?",
+      "avoid_emotional_spending":
+          "Avoid emotional spending — give it 10 minutes before buying.",
+      "compare_prices":
+          "Compare prices before every purchase. Saves more than you think.",
+      "shopping_list_reminder":
+          "Carry a list when shopping — avoid impulse buys!",
+      "discounts_arent_savings":
+          "Discounts aren’t savings if you don’t need the item.",
+      "cook_at_home": "Cook at home today — save more than you expect.",
+      "no_spend_day_challenge": "Challenge: One no-spend day this week.",
+      "review_subscriptions": "Review your subscriptions — cancel unused ones.",
+      "buy_quality_not_quantity":
+          "Buy quality, not quantity — good items last longer.",
+      "avoid_small_daily_expenses":
+          "Avoid daily small expenses — they secretly drain savings.",
+      "track_all_income": "Track all income — big or small.",
+      "new_side_hustle_idea": "Explore a new side hustle idea today.",
+      "invest_in_yourself":
+          "Skill development pays back with interest — invest in yourself.",
+      "monetize_hobby": "Monetize a hobby — extra income helps your goals.",
+      "upgrade_skills_question":
+          "Ask yourself: Can I earn more by upgrading my skills?",
+      "extra_income_acceleration":
+          "Every extra taka you earn accelerates your goals!",
+      "diversify_income_sources":
+          "Don't depend on one income source — diversify slowly.",
+      "strong_resume_strong_income":
+          "A stronger resume = stronger income. Keep growing.",
+      "save_extra_income": "Save at least 20% of extra income.",
+      "use_bonuses_wisely":
+          "Use bonuses wisely — save or invest, don’t blow it.",
+      "daily_financial_habit":
+          "Financial success is a daily habit — stay consistent.",
+      "track_expenses_now":
+          "Track your expenses right now — don’t wait till evening.",
+      "healthy_wallet_entries":
+          "Your wallet becomes healthier with every entry you add.",
+      "avoid_tracking_delay":
+          "Don’t delay — small tracking delays lead to big mistakes.",
+      "review_monthly_goals":
+          "Review your monthly goals — progress starts today.",
+      "one_good_habit_away":
+          "You’re one good habit away from financial improvement.",
+      "update_finzycash": "Keep yourself accountable — update FinzyCash today.",
+      "protect_your_money": "Protect your money like you protect your time.",
+      "daily_habits_to_freedom": "Small daily habits → Big financial freedom.",
+      "consistency_is_superpower":
+          "Consistency is your superpower — stay on track!",
+
+      "daily_finance_tip": "Daily Finance Tips",
+      "support": "Support",
     },
     'bn_BD': {
+      "feedbackTitle": "আমরা আপনার মতামত জানতে আগ্রহী!",
+      "feedbackLabel": "আপনার মতামত",
+      "feedbackHint": "দয়া করে আপনার মতামত লিখুন",
+      "feedbackSubmit": "সাবমিট",
+      "feedbackSuccess": "আপনার মতামতের জন্য ধন্যবাদ!",
+
+      "aboutbody":
+          "FinzyCash একটি স্মার্ট এবং আধুনিক মানি ম্যানেজমেন্ট অ্যাপ, যা বিশেষভাবে "
+          "বাংলাদেশি ব্যবহারকারীদের জন্য তৈরি। এই অ্যাপের মাধ্যমে আপনি দৈনিক খরচ ট্র্যাক করতে পারবেন, "
+          "আয় যোগ করতে পারবেন, বাজেট প্ল্যান করতে পারবেন, বিস্তারিত রিপোর্ট দেখতে পারবেন, "
+          "রিমাইন্ডার সেট করতে পারবেন এবং AI-এর সাহায্যে আপনার সেভিংস অভ্যাস আরও উন্নত করতে পারবেন।\n\n"
+          "FinzyCash তৈরি করা হয়েছে সহজ ব্যবহার, নিরাপত্তা এবং নির্ভুলতার উপর গুরুত্ব দিয়ে, "
+          "যাতে আপনি ঝামেলাহীনভাবে আপনার ব্যক্তিগত অর্থ ব্যবস্থাপনা করতে পারেন।\n\n"
+          "এই অ্যাপটি তৈরি করেছেন তাওসিফ হোসেন এবং প্রযুক্তিগত সহায়তা দিয়েছে "
+          "Fluttbiz IT Solutions।",
+      "version:": "ভার্সন: 1.0.0",
+      "dev": "ডেভেলপার: তাওসিফ হোসেন",
+      "companyName": "প্রতিষ্ঠান:Fluttbiz IT Solutions",
+      "q1": "FinzyCash কীভাবে কাজ করে?",
+      "a1":
+          "আপনি খুব সহজেই খরচ, আয়, বাজেট যোগ করতে পারবেন এবং বিস্তারিত রিপোর্ট দেখতে পারবেন।",
+
+      "q2": "আমার ডেটা কি নিরাপদ?",
+      "a2":
+          "হ্যাঁ, আপনার ডেটা নিরাপদভাবে সংরক্ষিত হয় এবং কারও সাথে শেয়ার করা হয় না।",
+
+      "q3": "FinzyCash কি ফ্রি?",
+      "a3": "হ্যাঁ, FinzyCash ফ্রি, তবে কিছু প্রো ফিচারও রয়েছে।",
+
+      "q5": "আমি কি আয় ও খরচ দুটোই ট্র্যাক করতে পারবো?",
+      "a5": "হ্যাঁ, আপনি আয়, খরচ এবং রিপোর্ট সম্পূর্ণভাবে ট্র্যাক করতে পারবেন।",
+
+      "q6": "FinzyCash কি বাংলা সাপোর্ট করে?",
+      "a6": "হ্যাঁ, অ্যাপটি পুরোপুরি বাংলা সাপোর্ট করে।",
+
+      "q7": "AI কীভাবে সাহায্য করে?",
+      "a7":
+          "AI বাংলা/ইংরেজি বুঝে স্বয়ংক্রিয়ভাবে ট্রান্স্যাকশন তৈরি করতে পারে।",
+
+      "q8": "আমি কি ডেটা ব্যাকআপ রাখতে পারবো?",
+      "a8":
+          "হ্যাঁ, আপনি ক্লাউড ব্যাকআপ রাখতে পারবেন যাতে আপনার ডেটা নিরাপদ থাকে।",
+
+      "q9": "অ্যাপটি কি রিমাইন্ডার পাঠায়?",
+      "a9":
+          "হ্যাঁ, আপনি বাজেট, রিপোর্ট এবং মানি টিপসের জন্য দৈনিক রিমাইন্ডার সেট করতে পারবেন।",
+
+      "cancelBuy": "বাতিল",
+      "buy": "কিনুন",
+      "more_ai": "AI ক্রেডিট রিচার্জ করুন",
+      "endedai": "আপনার ফ্রি AI ক্রেডিট শেষ হয়ে গেছে।",
+      "30days": "৩০ দিনের জন্য আনলিমিটেড AI ক্রেডিট",
+      'ai_assistant_title': 'AI মানি অ্যাসিস্ট্যান্ট',
+      'ai_assistant_subtitle':
+          'আপনার লেনদেন লিখুন, আমি সেটাকে ঠিকভাবে সাজিয়ে দেবো',
+      'try_examples': 'এগুলো ট্রাই করে দেখুন',
+      'spent_50_groceries': 'আজকে মুদির দোকানে খরচ ৫০০ টাকা ',
+      'lunch_25_today': 'খাবার খরচ ২৫০ টাকা এবং  কারেন্ট বিল ১৫০০',
+      'fuel_40_yesterday': 'গতকাল ফুয়েল খরচ ১৮০ টাকা',
+      'ai_tip': 'সবচেয়ে ভালো ফলাফলের জন্য পরিমাণ, ক্যাটাগরি ও তারিখ লিখুন',
+      'analyzing_transaction': 'লেনদেন বিশ্লেষণ করা হচ্ছে',
+      'please_wait': 'একটু অপেক্ষা করুন...',
+      'processing': 'প্রসেস করা হচ্ছে...',
+      'input_placeholder_detailed': 'উদাহরণ: "বিদ্যুৎ বিল ৩০০০"',
+
+      "support": "সাপোর্ট",
+      'preferences': 'পছন্দসমূহ',
+      'manage_app_settings': 'আপনার পছন্দ অনুযায়ী অ্যাপ সেটিংস কাস্টমাইজ করুন',
+      "daily_finance_tip": "দৈনিক ফাইন্যান্স টিপ",
+
       'no_internet_connection': 'ইন্টারনেট সংযোগ নেই',
       'connection_timeout': 'সংযোগ সময়সীমা শেষ',
       "something_went_wrong":
@@ -553,13 +866,19 @@ class AppTranslations extends Translations {
       "refunds_reimbursements": "রিফান্ড",
       "gifts": "উপহার",
       "grants_subsidies": "অনুদান",
-      "miscellaneous": "অন্যান্য",
+      "miscellaneous_expense": "অন্যান্য",
+      "miscellaneous_income": "অন্যান্য আয়",
+      "reset_confirmation_title": "অ্যাপ রিসেট করবেন?",
+      "reset_confirmation_message":
+          "আপনি কি রিসেট করতে চান? রিসেট করলে আপনার সব লেনদেন ও ডেটা মুছে যাবে।",
+      "yes": "হ্যাঁ",
       //-------------------------------Welcome View-------------------------------
       "welcomeViewTitle": "সহজে টাকার ব্যবস্থাপনা",
       "welcomeViewSubtitle":
           "খরচ গুছিয়ে রাখুন, সঞ্চয়ের পরিকল্পনা করুন আর নিশ্চিন্তে থাকুন।",
       "welcomeViewButtonOne": "শুরু করুন",
       "welcomeViewButtonTwo": "ডেমো দেখুন",
+      "preview": "প্রিভিউ",
 
       //-------------------------------Home View-------------------------------
       "expensesTitle": "খরচ",
@@ -604,6 +923,8 @@ class AppTranslations extends Translations {
       'phone_bill': 'ফোন বিল',
       'water_bill': 'পানির বিল',
       'electricity_bill': 'বিদ্যুৎ বিল',
+      'my_salary': 'বেতন ১২০০০ টাকা',
+
       'gas_bill': 'গ্যাস বিল',
       'internet_wifi': 'ইন্টারনেট / ওয়াইফাই',
       'house_rent': 'বাড়ি ভাড়া',
@@ -718,7 +1039,7 @@ class AppTranslations extends Translations {
       "transactionDetails": "লেনদেনের বিবরণ",
 
       // ------------------------------- Transaction Form Page -------------------------------
-      "titleOptional": "শিরোনাম",
+      "titleOptional": "শিরোনাম (ঐচ্ছিক)",
       "titleRequiredError": "শিরোনাম আবশ্যক",
       "titleHint": "লেনদেনের শিরোনাম লিখুন",
       "amountRequired": "টাকা *",
@@ -732,6 +1053,9 @@ class AppTranslations extends Translations {
       "notesHint": "অতিরিক্ত নোট যোগ করুন...",
       "saveTransaction": "লেনদেন সংরক্ষণ করুন",
       "successTitle": "সফল!",
+      "resetDescription":
+          "রিসেট সফলভাবে সম্পন্ন হয়েছে। আপনার সমস্ত ডেটা সিস্টেম থেকে মুছে ফেলা হয়েছে।",
+
       "successMessage": "লেনদেন সফলভাবে সংরক্ষণ করা হয়েছে!",
       "transactionUpdateMessage": "লেনদেন সফলভাবে আপডেট করা হয়েছে",
       "details": "বিস্তারিত:",
@@ -758,7 +1082,25 @@ class AppTranslations extends Translations {
       "budgetOverview": "বাজেটের সারসংক্ষেপ",
       "noBudgetsYet": "এখনও কোনো বাজেট নেই",
       "budgetDeletedSuccess": "বাজেট সফলভাবে মুছে ফেলা হয়েছে",
-
+      "daily_budget_limit_title": "দৈনিক বাজেটের সীমা",
+      "budget_exceeded_title": "বাজেট পার হয়ে গেছে!",
+      "budget_exceeded_message": "আপনার বাজেট পার হয়ে গেছে",
+      "review_transactions_title": "আপনার লেনদেন পর্যালোচনা করুন",
+      "review_transactions_message":
+          "আজকের লেনদেনগুলি পর্যালোচনা করতে একটু সময় নিন এবং নিশ্চিত করুন যে সবকিছু ট্র্যাক করা হয়েছে!",
+      "include_in_total_income": "মোট আয়ের সাথে যুক্ত হবে",
+      "budget_expired_title": "বাজেটের মেয়াদ শেষ",
+      "label_days": "দিন",
+      "label_expired": "মেয়াদোত্তীর্ণ",
+      "label_days_left": "সময়সীমা",
+      "label_status": "অবস্থা",
+      "label_daily_limit": "দৈনিক লিমিট",
+      "daily_spend_advice_one": "বাজেট ঠিক রাখতে আজ আপনি সর্বোচ্চ ৳",
+      "daily_spend_advice_two": "খরচ করতে পারবেন।",
+      "budget_exceeded_message_start": "আপনার ",
+      "budget_exceeded_message_end": "-এর জন্য নির্ধারিত বাজেট শেষ হয়ে গেছে।",
+      "budget_expired_message_start": "আপনার",
+      "budget_expired_message_end": "বাজেটের সময়সীমা শেষ হয়েছে।",
       // -------------------------------Budget Card -------------------------------
       "of": "এর",
       "left": "বাকি",
@@ -904,7 +1246,7 @@ class AppTranslations extends Translations {
       "shareApp": "শেয়ার",
       "contactSupport": "সাপোর্ট",
       "faq": "প্রশ্নোত্তর",
-      "about": "সম্পর্কে",
+      "about": "আমাদের সম্পর্কে",
       "feedback": "ফিডব্যাক",
       "termsPolicies": "শর্তাবলী",
       "confirm_delete": "আপনি কি মুছে ফেলতে চান?",
@@ -931,7 +1273,7 @@ class AppTranslations extends Translations {
       "fuel_expense": "জ্বালানির খরচ",
       "ai_assistant": "AI সহায়ক",
       "process_with_ai": "AI দিয়ে প্রক্রিয়া করুন",
-      "input_placeholder": "আপনার লেনদেন লিখুন অথবা বলুন",
+      "input_placeholder": "আপনার লেনদেন লিখুন",
       "input_example": "উদাহরণ: \"আমি আজ ২৭০ টাকায় বিরিয়ানি খেয়েছি।",
       "empty_field": "ফাঁকা ফিল্ড ⚠️",
       "fields_empty_error": "ফিল্ডগুলি ফাঁকা রাখা যাবে না।",
@@ -948,6 +1290,151 @@ class AppTranslations extends Translations {
       "permission_required": "অনুমতি প্রয়োজন",
       "grant_permission_message":
           "দয়া করে 'অ্যালার্ম ও রিমাইন্ডার' অনুমতি প্রদান করুন।",
+      "save_today_for_tomorrow":
+          "ছোট ছোট সঞ্চয় করলে সময়ের সাথে সাথে বড় হয়ে যায়।",
+      "skip_unnecessary_purchase": "যা দরকার নেই, তা না কিনলে টাকা বাঁচে!",
+      "saving_is_a_habit":
+          "সঞ্চয় একটি অভ্যাস, সংখ্যা নয়। ছোট থেকে শুরু করুন।",
+      "daily_savings_goal":
+          "দৈনিক সঞ্চয়ের লক্ষ্য নির্ধারণ করুন — এমনকি ১০ টাকাও গুরুত্বপূর্ণ।",
+      "future_emergency_savings":
+          "ভবিষ্যতের জরুরি অবস্থা আজকের সঞ্চয় দিয়ে সমাধান হয়।",
+      "pay_yourself_first": "আয় হলে সবার আগে নিজের জন্য কিছু সঞ্চয় করুন।",
+      "save_five_percent_challenge":
+          "চ্যালেঞ্জ: আজকের আয়ের কমপক্ষে ৫% সঞ্চয় করুন!",
+      "review_savings_goal":
+          "আপনার সঞ্চয়ের লক্ষ্য পর্যালোচনা করুন — প্রয়োজনে সামঞ্জস্য করুন।",
+      "track_spending_daily":
+          "খরচ ট্র্যাক করলে সঞ্চয় সহজ হয়। আজকের এন্ট্রিগুলো ভুলবেন না!",
+      "budget_limit_check":
+          "দেখে নিন আজ কত খরচ হয়েছে, বাজেটের মধ্যে আছে কি না।",
+      "daily_budget_check": "দৈনিক বাজেট পরীক্ষা করলে টাকার চাপ দূরে থাকে।",
+      "plan_todays_spending": "খরচ করার আগে আজকের খরচ পরিকল্পনা করুন।",
+      "update_categories":
+          "আপনার ক্যাটাগরি আপডেট করুন — বুদ্ধিমানের মতো বাজেট করুন, কঠিনভাবে নয়।",
+      "zero_based_budgeting":
+          "জিরো-বেসড বাজেটিং অসাধারণ কাজ করে। আজই চেষ্টা করুন!",
+      "needs_vs_wants":
+          "আপনার প্রয়োজন আর ইচ্ছা আলাদা রাখুন — আপনার মানিব্যাগ আপনাকে ধন্যবাদ জানাবে।",
+      "delay_if_not_in_budget": "যদি বাজেটে না থাকে, তাহলে দেরি করুন।",
+      "budget_is_roadmap":
+          "আপনার বাজেটই আপনার রোডম্যাপ — প্রতিদিন এটি অনুসরণ করুন।",
+      "review_last_week_expenses":
+          "গত সপ্তাহের খরচ আবার দেখুন — কোনো ভুল ঠিক করার আছে?",
+      "consistency_over_perfection":
+          "ধারাবাহিকতা নিখুঁততার চেয়ে ভালো। প্রতিদিন ট্র্যাক করুন।",
+      "think_before_buying":
+          "কেনার আগে দুবার ভাবুন — আপনার সত্যিই দরকার আছে কি?",
+      "avoid_emotional_spending":
+          "আবেগী খরচ এড়িয়ে চলুন — কেনার আগে ১০ মিনিট দিন।",
+      "compare_prices":
+          "প্রতিটি কেনার আগে দাম তুলনা করুন। আপনি যতটা ভাবেন তার চেয়ে বেশি সঞ্চয় হয়।",
+      "shopping_list_reminder":
+          "শপিং করার সময় একটি তালিকা নিয়ে যান — আবেগের বশে কেনা এড়িয়ে চলুন!",
+      "discounts_arent_savings":
+          "যদি জিনিসটি আপনার দরকার না হয়, তাহলে ডিসকাউন্ট সঞ্চয় নয়।",
+      "cook_at_home":
+          "আজ বাড়িতে রান্না করুন — আপনি যতটা ভাবেন তার চেয়ে বেশি সঞ্চয় হবে।",
+      "no_spend_day_challenge": "চ্যালেঞ্জ: এই সপ্তাহে একদিন কোনো খরচ না করা।",
+      "review_subscriptions":
+          "আপনার সাবস্ক্রিপশনগুলো পর্যালোচনা করুন — ব্যবহার না করা গুলো বাতিল করুন।",
+      "buy_quality_not_quantity":
+          "মান নিয়ে কিনুন, পরিমাণ নয় — ভালো জিনিস বেশি দিন চলে।",
+      "avoid_small_daily_expenses":
+          "দৈনিক ছোট খরচ এড়িয়ে চলুন — এগুলো গোপনে সঞ্চয় কমিয়ে দেয়।",
+      "track_all_income": "সব আয় ট্র্যাক করুন — বড় বা ছোট।",
+      "new_side_hustle_idea": "আজ একটি নতুন সাইড হাস্টল আইডিয়া অন্বেষণ করুন।",
+      "invest_in_yourself":
+          "দক্ষতা বাড়ানো সুদ সহ ফেরত দেয় — নিজের উপর বিনিয়োগ করুন।",
+      "monetize_hobby":
+          "একটি শখকে আয়ের উৎস করুন — অতিরিক্ত আয় আপনার লক্ষ্যে সাহায্য করে।",
+      "upgrade_skills_question":
+          "নিজেকে জিজ্ঞাসা করুন: আমি কি দক্ষতা বাড়িয়ে আরও আয় করতে পারি?",
+      "extra_income_acceleration":
+          "আপনি যে অতিরিক্ত টাকা আয় করেন তা আপনার লক্ষ্যগুলো দ্রুত অর্জনে সাহায্য করে!",
+      "diversify_income_sources":
+          "একটি আয়ের উৎসের উপর নির্ভর করবেন না — ধীরে ধীরে বৈচিত্র্য আনুন।",
+      "strong_resume_strong_income":
+          "একটি শক্তিশালী রেজিউমে = শক্তিশালী আয়। বাড়তে থাকুন।",
+      "save_extra_income": "অতিরিক্ত আয়ের কমপক্ষে ২০% সঞ্চয় করুন।",
+      "use_bonuses_wisely":
+          "বোনাস বুদ্ধিমানের মতো ব্যবহার করুন — সঞ্চয় করুন বা বিনিয়োগ করুন, অপচয় করবেন না।",
+      "daily_financial_habit":
+          "আর্থিক সাফল্য একটি দৈনিক অভ্যাস — ধারাবাহিক থাকুন।",
+      "track_expenses_now":
+          "আপনার খরচ এখনই ট্র্যাক করুন — সন্ধ্যা পর্যন্ত অপেক্ষা করবেন না।",
+      "healthy_wallet_entries":
+          "আপনি যত এন্ট্রি যোগ করবেন, আপনার মানিব্যাগ তত সুস্থ হবে।",
+      "avoid_tracking_delay":
+          "দেরি করবেন না — ছোট ট্র্যাকিং দেরি বড় ভুলের কারণ হয়।",
+      "review_monthly_goals":
+          "আপনার মাসিক লক্ষ্য পর্যালোচনা করুন — আজ থেকেই অগ্রগতি শুরু হয়।",
+
+      "update_finzycash":
+          "নিজেকে দায়িত্বশীল রাখুন — আজই FinzyCash আপডেট করুন।",
+      "protect_your_money":
+          "আপনি যেভাবে সময় রক্ষা করেন, সেভাবে টাকা রক্ষা করুন।",
+      "consistency_is_superpower":
+          "ধারাবাহিকতা আপনার সুপারপাওয়ার — পথে থাকুন!",
+      "appearance": "অ্যাপিয়ারেন্স",
+      "warningTitleTransacton": "ওভারস্পেন্ডিং সতর্কবার্তা",
+      "warningDescTransacton": "আপনার যোগ করা খরচ আয়ের চেয়ে বেশি হয়েছে।",
+
+      'transaction_detected': 'লেনদেন শনাক্ত হয়েছে',
+      'items_found': 'আইটেম পাওয়া গেছে',
+      'try_different_input': 'আপনার লেনদেনটি অন্যভাবে লিখে দেখুন',
+      'note': 'নোট',
+      'today': 'আজ',
+      'yesterday': 'গতকাল',
+      'expense': 'খরচ',
+
+      // ------------------------------- Pricing View -------------------------------
+      'manage_plan': 'প্ল্যান ম্যানেজ করুন',
+      'choose_pricing_plan': 'আপনার প্রাইসিং প্ল্যান বেছে নিন',
+      'set_reminder': 'রিমাইন্ডার সেট করুন',
+      'monthly_weekly_reports': 'মাসিক/সাপ্তাহিক রিপোর্ট',
+      'reports': 'রিপোর্ট',
+      'set_budget': 'বাজেট সেট করুন',
+      'no_ads': 'কোনো বিজ্ঞাপন নেই',
+      'starter_plan': 'স্টার্টার প্ল্যান',
+      'smart_plan': 'স্মার্ট প্ল্যান',
+      'pro_plan': 'প্রো প্ল্যান',
+      'ultimate_plan': 'আলটিমেট প্ল্যান',
+      '900_credits': '৯০০ AI ক্রেডিট',
+      '2700_credits': '২৭০০ AI ক্রেডিট',
+      '2700_credits_pro':
+          '২৭০০ AI ক্রেডিট', // Assuming same as smart based on prototype visual, though usually pro is more
+      '27000_credits': '২৭০০০ AI ক্রেডিট',
+      'monthly': 'মাসিক',
+      '3_months': '৩ মাস',
+      '6_months': '৬ মাস',
+      '1_year': '১ বছর',
+      'choose_plan': 'প্ল্যান বেছে নিন',
+      'payment_success': 'পেমেন্ট সফল হয়েছে',
+      'payment_success_message':
+          'আপনার প্ল্যানটি সফলভাবে চালু হয়েছে। ধন্যবাদ!',
+
+      // ------------------------------- OTP Views -------------------------------
+      'registration': 'রেজিস্ট্রেশন',
+      'mobile_verification': 'মোবাইল নম্বর যাচাইকরণ',
+      'enter_phone_number_desc':
+          'আপনার ফোন নম্বরটি নিবন্ধনের জন্য অনুগ্রহ করে প্রদান করুন',
+      'enter_phone_hint': 'রবি/এয়ারটেল নম্বর লিখুন...',
+      'please_enter_number': 'অনুগ্রহ করে নম্বর লিখুন',
+      'number_must_be_11_digits': 'নম্বরটি অবশ্যই ১১ সংখ্যার হতে হবে',
+      'enter_valid_bd_number': 'সঠিক বাংলাদেশি নম্বর লিখুন (০১...)',
+      'send_code': 'কোড পাঠান',
+      'otp_will_be_sent':
+          'আপনার নম্বর যাচাইয়ের জন্য একটি ওটিপি কোড পাঠানো হবে।',
+      'login': 'লগইন',
+      'account_activation': 'অ্যাকাউন্ট সক্রিয়করণ',
+      'enter_otp_desc':
+          'অ্যাকাউন্ট সক্রিয় করতে অনুগ্রহ করে ওটিপি কোডটি প্রদান করুন',
+      'enter_otp_hint': 'ওটিপি লিখুন...',
+      'please_enter_otp': 'অনুগ্রহ করে ওটিপি লিখুন',
+      'otp_must_be_6_digits': 'ওটিপি অবশ্যই ৬ সংখ্যার হতে হবে',
+      'verify_number': 'নম্বর যাচাই করুন',
+      'retry_otp_desc': 'ওটিপি না পেলে কয়েক সেকেন্ড পর পুনরায় চেষ্টা করুন।',
     },
   };
 }

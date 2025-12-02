@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 class CategoryItemModel {
   /// store translation keys (not translated strings)
   final String key; // example: 'doctor'
-  final IconData icon;
+  final String icon;
   final Color color;
 
   const CategoryItemModel(this.key, this.icon, this.color);

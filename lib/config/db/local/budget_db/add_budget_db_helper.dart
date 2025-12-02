@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -45,8 +45,7 @@ class AddBudgetDbHelper {
             budgetId INTEGER NOT NULL,
             categoryName TEXT NOT NULL,
             spent INTEGER NOT NULL,
-            iconCodePoint INTEGER NOT NULL,
-            iconFontFamily TEXT NOT NULL,
+            icon TEXT NOT NULL,
             iconBgColor INTEGER NOT NULL,
             FOREIGN KEY (budgetId) REFERENCES budgets (id) ON DELETE CASCADE
           )
@@ -184,7 +183,7 @@ class AddBudgetDbHelper {
     required int budgetId,
     required String categoryName,
     required int spent,
-    required IconData icon,
+    required String icon,
     required int iconBgColor,
   }) async {
     final db = await database;
@@ -205,8 +204,7 @@ class AddBudgetDbHelper {
       'budgetId': budgetId,
       'categoryName': categoryName,
       'spent': spent,
-      'iconCodePoint': icon.codePoint,
-      'iconFontFamily': icon.fontFamily ?? 'MaterialIcons',
+      'icon': icon,
       'iconBgColor': iconBgColor,
     };
 
@@ -245,5 +243,51 @@ class AddBudgetDbHelper {
     );
 
     return rowsAffected > 0;
+  }
+
+  Future<void> deleteFullBudget() async {
+    try {
+      final db = await database;
+
+      // Check if table exists before deleting
+      await db.execute('''
+      CREATE TABLE IF NOT EXISTS budgets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        totalAmount INTEGER NOT NULL,
+        startDate TEXT NOT NULL,
+        endDate TEXT NOT NULL
+      )
+    ''');
+      // Budget categories table
+      await db.execute('''
+    CREATE TABLE IF NOT EXISTS budget_categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      budgetId INTEGER NOT NULL,
+      categoryName TEXT NOT NULL,
+      spent INTEGER NOT NULL,
+      icon TEXT NOT NULL,
+      iconBgColor INTEGER NOT NULL,
+      FOREIGN KEY (budgetId) REFERENCES budgets (id) ON DELETE CASCADE
+    )
+  ''');
+
+      await db.rawDelete('DELETE FROM budgets');
+      await db.rawDelete('DELETE FROM budget_categories');
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error deleting all transactions: $e");
+      }
+    }
+  }
+
+  Future<int> updateCategorySpent(int categoryId, int newSpent) async {
+    final db = await database;
+    return await db.update(
+      'budget_categories',
+      {'spent': newSpent},
+      where: 'id = ?',
+      whereArgs: [categoryId],
+    );
   }
 }
