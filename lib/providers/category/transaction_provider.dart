@@ -53,6 +53,8 @@ class AddExpenseProvider extends ChangeNotifier {
   }
 
   Future<List<TransactionModel>> getTransactionsForMonth(DateTime date) async {
+    // Yield to let the UI render the first frame
+    await Future.delayed(Duration.zero);
     isLoading = true;
     currentMonth = date;
 

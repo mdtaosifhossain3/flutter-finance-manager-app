@@ -1,4 +1,5 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/config/routes/routes_name.dart';
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
 import 'package:finance_manager_app/providers/homeProvider/home_provider.dart';
 
@@ -6,11 +7,9 @@ import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:finance_manager_app/services/dailogue_service.dart';
 import 'package:finance_manager_app/services/reminder_helper.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
-import 'package:finance_manager_app/views/authView/phnVerificationView/sent_otp_view.dart';
 import 'package:finance_manager_app/views/homeView/widgets/home_view_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 
 import 'dart:math' as math;
 
@@ -136,8 +135,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             children: [
               GestureDetector(
                 onTap: () async {
-                  Get.to(SentOtpView());
-                  // Get.toNamed(RoutesName.notificationView);
+                  //Get.to(SentOtpView());
+                  Get.toNamed(RoutesName.notificationView);
                 },
 
                 child: Container(
@@ -315,20 +314,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            InkWell(
-              onTap: () async {
-                var url = Uri.parse(
-                  "https://fluttbizitsolutions.com/api/fn_caas_api.php",
-                );
-
-                var response = await http.post(url);
-
-                print(response.body);
-              },
-              child: Text(
-                "historyTitle".tr,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
+            Text(
+              "historyTitle".tr,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             // TextButton(
             //   onPressed: () {

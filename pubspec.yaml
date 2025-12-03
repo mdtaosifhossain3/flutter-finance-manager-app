@@ -33,12 +33,14 @@ dependencies:
   speech_to_text: ^7.3.0
   home_widget: ^0.8.1
   flutter_svg: ^2.2.3
+  flutter_dotenv: ^6.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.14.4
+  
 
 flutter:
   uses-material-design: true
@@ -51,6 +53,7 @@ flutter:
     - assets/animations/
     - assets/fonts/NotoSansBengali-Regular.ttf
     - assets/fonts/NotoSans-Regular.ttf
+    - .env
 
 
   fonts:

@@ -8,6 +8,7 @@ import 'package:finance_manager_app/data/category/income_item_data.dart';
 import 'package:finance_manager_app/models/categoryModel/category_item_model.dart';
 import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 
 import 'package:provider/provider.dart';
@@ -111,9 +112,8 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
     notifyListeners();
 
     try {
-      final apiKey = "AIzaSyArT8fXoUALoMADxtKPoGCErQXar04DbZA";
       final url = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=$apiKey',
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${dotenv.env['API_KEY']}',
       );
 
       final response = await http
@@ -133,7 +133,8 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
           .timeout(const Duration(seconds: 30));
       if (response.statusCode != 200) {
         _isLoading = false;
-        errorMSG('something_went_wrongs'.tr);
+        errorMSG('Failed to fetch data');
+        print(response.body);
         notifyListeners();
         return false;
       }
@@ -156,7 +157,7 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
             .replaceAll('```', '')
             .trim();
         if (cleaned.isEmpty) {
-          errorMSG("something_went_wrongs".tr);
+          errorMSG("No content in response");
           _isLoading = false;
           notifyListeners();
           return false;
@@ -167,7 +168,7 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
         try {
           parsed = jsonDecode(cleaned);
         } catch (e) {
-          errorMSG("something_went_wrongs".tr);
+          errorMSG("Failed to parse response");
           _isLoading = false;
           notifyListeners();
           return false;
@@ -363,18 +364,7 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
       '',
       msg,
       titleText: const SizedBox.shrink(),
-      messageText: Row(
-        children: [
-          const Icon(Icons.wifi_off, color: Colors.white),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'no_internet_connection'.tr,
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
+
       backgroundColor: Colors.red[700],
       colorText: Colors.white,
       borderRadius: 12,

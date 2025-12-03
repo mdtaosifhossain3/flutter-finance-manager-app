@@ -41,7 +41,9 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
                   LineChartData(
                     gridData: FlGridData(show: false),
                     borderData: FlBorderData(show: false),
-                    maxX: (provider.montlydata.length - 1).toDouble(),
+                    maxX: provider.montlydata.isEmpty
+                        ? 0
+                        : (provider.montlydata.length - 1).toDouble(),
                     titlesData: FlTitlesData(
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
@@ -110,7 +112,7 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
                           show: true,
                           gradient: LinearGradient(
                             colors: [
-                              AppColors.primaryBlue.withValues(alpha: 0.3),
+                              AppColors.primaryBlue.withOpacity(0.3),
                               Colors.transparent,
                             ],
                             begin: Alignment.topCenter,
@@ -138,7 +140,7 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
                           show: true,
                           gradient: LinearGradient(
                             colors: [
-                              AppColors.error.withValues(alpha: 0.3),
+                              AppColors.error.withOpacity(0.3),
                               Colors.transparent,
                             ],
                             begin: Alignment.topCenter,

@@ -14,7 +14,7 @@ class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
     super.initState();
-    SplashViewModel.redirectToOnboard();
+    SplashViewModel.initApp(context);
   }
 
   @override

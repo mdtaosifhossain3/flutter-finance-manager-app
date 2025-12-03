@@ -19,6 +19,8 @@ class BudgetProvider with ChangeNotifier {
 
   /// Fetch all budgets and their categories
   Future<void> loadBudgets() async {
+    // Yield to let the UI render the first frame
+    await Future.delayed(Duration.zero);
     _budgets = await _dbHelper.getBudgets();
     _categoriesByBudget.clear();
 

@@ -21,7 +21,6 @@ class ReminderHelper {
 
   static Future<void> initializeReminderNoti() async {
     tz.initializeTimeZones();
-    tz.initializeTimeZones();
     try {
       _bdLocation = tz.getLocation('Asia/Dhaka');
       tz.setLocalLocation(_bdLocation); // set local location to Dhaka

@@ -16,21 +16,14 @@ import 'package:finance_manager_app/providers/theme_provider.dart';
 
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
 import 'package:flutter/material.dart';
-import 'package:finance_manager_app/services/reminder_helper.dart';
+
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize reminders and timezone data before the app starts.
-  try {
-    await ReminderHelper.initializeReminderNoti();
-  } catch (e) {
-    // Log initialization failure but still continue to start the app.
-    // Use debugPrint to avoid exceptions in release builds.
-    debugPrint('Reminder initialization failed: $e');
-  }
+  await dotenv.load(fileName: '.env');
 
   runApp(
     MultiProvider(
@@ -39,7 +32,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => AddExpenseProvider(
             addTransactionDbHelper: AddTransactionDbHelper.getInstance,
-          )..getTransactionsForMonth(DateTime.now()),
+          ),
         ),
 
         ChangeNotifierProxyProvider<AddExpenseProvider, HomeViewProvider>(
@@ -103,10 +96,9 @@ void main() async {
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => ReminderProvider()),
         ChangeNotifierProxyProvider<AddExpenseProvider, BudgetProvider>(
-          lazy: false,
           create: (context) => BudgetProvider(
             transactionProvider: context.read<AddExpenseProvider>(),
-          )..loadBudgets(),
+          ),
           update: (_, txProvider, budgetProvider) {
             // Re-create or update?
             // Since BudgetProvider needs to listen, we might need to update the reference
@@ -117,8 +109,7 @@ void main() async {
             // Actually, for simplicity and stability, let's just create it with the provider.
             // But ProxyProvider requires update.
             if (budgetProvider == null) {
-              return BudgetProvider(transactionProvider: txProvider)
-                ..loadBudgets();
+              return BudgetProvider(transactionProvider: txProvider);
             }
             // If we already have one, we might not need to do anything if the instance is the same
             // But if txProvider changes (unlikely for top level), we might need to update.
@@ -127,9 +118,7 @@ void main() async {
           },
         ),
         ChangeNotifierProvider(create: (_) => AiProvider()),
-        ChangeNotifierProvider(
-          create: (_) => SpeechProvider()..initializeSpeech(),
-        ),
+        ChangeNotifierProvider(create: (_) => SpeechProvider()),
       ],
       child: MyApp(),
     ),
