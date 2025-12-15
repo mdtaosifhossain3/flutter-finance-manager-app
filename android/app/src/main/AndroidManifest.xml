@@ -45,8 +45,8 @@
         android:name="${applicationName}"
         android:allowEmbedded="true"
         android:exported="true"
-        android:icon="@mipmap/launcher_icon"
-        android:label="FinzyCash"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Hishab Rakhi"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">
         <receiver

@@ -133,8 +133,28 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
           .timeout(const Duration(seconds: 30));
       if (response.statusCode != 200) {
         _isLoading = false;
-        errorMSG('Failed to fetch data');
-        print(response.body);
+        Get.snackbar(
+          '',
+          'failed_to_fetch_data'.tr,
+          titleText: const SizedBox.shrink(),
+          messageText: Row(
+            children: [
+              const Icon(Icons.wifi_off, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'failed_to_fetch_data'.tr,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red[700],
+          colorText: Colors.white,
+          borderRadius: 12,
+          margin: const EdgeInsets.all(16),
+          duration: const Duration(seconds: 4),
+        );
         notifyListeners();
         return false;
       }
@@ -144,8 +164,28 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
             data['candidates']?[0]?['content']?['parts']?[0]?['text'];
 
         if (content == null || content.toString().trim().isEmpty) {
-          errorMSG('No content in response');
-
+          Get.snackbar(
+            '',
+            'no_content_in_response'.tr,
+            titleText: const SizedBox.shrink(),
+            messageText: Row(
+              children: [
+                const Icon(Icons.wifi_off, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'no_content_in_response'.tr,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.red[700],
+            colorText: Colors.white,
+            borderRadius: 12,
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 4),
+          );
           _isLoading = false;
           notifyListeners();
           return false;
@@ -157,7 +197,28 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
             .replaceAll('```', '')
             .trim();
         if (cleaned.isEmpty) {
-          errorMSG("No content in response");
+          Get.snackbar(
+            '',
+            'no_content_in_response'.tr,
+            titleText: const SizedBox.shrink(),
+            messageText: Row(
+              children: [
+                const Icon(Icons.wifi_off, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'no_content_in_response'.tr,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.red[700],
+            colorText: Colors.white,
+            borderRadius: 12,
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 4),
+          );
           _isLoading = false;
           notifyListeners();
           return false;
@@ -168,7 +229,28 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
         try {
           parsed = jsonDecode(cleaned);
         } catch (e) {
-          errorMSG("Failed to parse response");
+          Get.snackbar(
+            '',
+            'failed_to_parse_response'.tr,
+            titleText: const SizedBox.shrink(),
+            messageText: Row(
+              children: [
+                const Icon(Icons.wifi_off, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'failed_to_parse_response'.tr,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.red[700],
+            colorText: Colors.white,
+            borderRadius: 12,
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 4),
+          );
           _isLoading = false;
           notifyListeners();
           return false;
@@ -275,8 +357,28 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
         notifyListeners();
         return true;
       } else {
-        errorMSG('AI request failed (${response.statusCode})');
-
+        Get.snackbar(
+          '',
+          '${'ai_request_failed'.tr} (${response.statusCode})',
+          titleText: const SizedBox.shrink(),
+          messageText: Row(
+            children: [
+              const Icon(Icons.wifi_off, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '${'ai_request_failed'.tr} (${response.statusCode})',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red[700],
+          colorText: Colors.white,
+          borderRadius: 12,
+          margin: const EdgeInsets.all(16),
+          duration: const Duration(seconds: 4),
+        );
         _isLoading = false;
 
         notifyListeners();
@@ -337,7 +439,28 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
       return false;
     } catch (e) {
       _isLoading = false;
-      errorMSG("something_went_wrong".tr);
+      Get.snackbar(
+        '',
+        'something_went_wrong'.tr,
+        titleText: const SizedBox.shrink(),
+        messageText: Row(
+          children: [
+            const Icon(Icons.wifi_off, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'something_went_wrong'.tr,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.red[700],
+        colorText: Colors.white,
+        borderRadius: 12,
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 4),
+      );
 
       notifyListeners();
       return false;
@@ -358,20 +481,6 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
   //     );
   //   }
   // }
-
-  void errorMSG(msg) {
-    Get.snackbar(
-      '',
-      msg,
-      titleText: const SizedBox.shrink(),
-
-      backgroundColor: Colors.red[700],
-      colorText: Colors.white,
-      borderRadius: 12,
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 4),
-    );
-  }
 
   // keep other helper methods you already have (editTransaction, deleteTransaction, saveTransaction, resetPreview, etc.)
   void editTransaction() {

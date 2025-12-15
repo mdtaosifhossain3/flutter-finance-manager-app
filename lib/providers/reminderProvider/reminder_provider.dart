@@ -74,11 +74,13 @@ class ReminderProvider with ChangeNotifier {
         // Schedule or cancel notification
         if (isActive) {
           final scheduledTime = _parseReminderTime(reminder['remindersTime']);
+          final isRepeating = reminder['isRepeating'] == 1;
           ReminderHelper.scheduleNoti(
             id,
             "Reminder",
             reminder["title"],
             scheduledTime,
+            isRepeating: isRepeating,
           );
         } else {
           ReminderHelper.chanceledRemidnerNoti(id);
@@ -132,6 +134,7 @@ class ReminderProvider with ChangeNotifier {
     required String title,
     required String body,
     required DateTime reminderTime,
+    bool isRepeating = false,
   }) async {
     try {
       _errorMessage = null;
@@ -141,11 +144,18 @@ class ReminderProvider with ChangeNotifier {
         'body': body,
         'isActive': 1,
         'remindersTime': reminderTime.toIso8601String(),
+        'isRepeating': isRepeating ? 1 : 0,
       };
 
       final reminderId = await ReminderDbHelper.addReminder(newReminder);
 
-      ReminderHelper.scheduleNoti(reminderId, "Reminder", title, reminderTime);
+      ReminderHelper.scheduleNoti(
+        reminderId,
+        "Reminder",
+        title,
+        reminderTime,
+        isRepeating: isRepeating,
+      );
 
       // Reload reminders to get the new one with ID
       await loadReminders();
@@ -165,6 +175,7 @@ class ReminderProvider with ChangeNotifier {
     required String body,
     required DateTime reminderTime,
     required bool isActive,
+    bool isRepeating = false,
   }) async {
     try {
       _errorMessage = null;
@@ -174,6 +185,7 @@ class ReminderProvider with ChangeNotifier {
         'body': body,
         'isActive': isActive ? 1 : 0,
         'remindersTime': reminderTime.toIso8601String(),
+        'isRepeating': isRepeating ? 1 : 0,
       };
 
       await ReminderDbHelper.updateReminder(id, updatedReminder);
@@ -181,7 +193,13 @@ class ReminderProvider with ChangeNotifier {
       // Cancel old notification and schedule new one if active
       ReminderHelper.chanceledRemidnerNoti(id);
       if (isActive) {
-        ReminderHelper.scheduleNoti(id, "Reminder", title, reminderTime);
+        ReminderHelper.scheduleNoti(
+          id,
+          "Reminder",
+          title,
+          reminderTime,
+          isRepeating: isRepeating,
+        );
       }
 
       // Reload reminders

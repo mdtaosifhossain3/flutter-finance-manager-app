@@ -1,8 +1,8 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/config/routes/routes_name.dart';
+import 'package:finance_manager_app/providers/budget/budget_provider.dart';
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
 import 'package:finance_manager_app/providers/homeProvider/home_provider.dart';
-
 import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:finance_manager_app/services/dailogue_service.dart';
 import 'package:finance_manager_app/services/reminder_helper.dart';
@@ -10,6 +10,7 @@ import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:finance_manager_app/views/homeView/widgets/home_view_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:in_app_update/in_app_update.dart';
 
 import 'dart:math' as math;
 
@@ -34,9 +35,25 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   //   DialogService.checkAndShowDialogs();
   // }
 
+  Future<void> _checkForUpdate() async {
+    await InAppUpdate.checkForUpdate().then((info) {
+      setState(() {
+        if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+          updateHandler();
+        }
+      });
+    });
+  }
+
+  updateHandler() async {
+    await InAppUpdate.startFlexibleUpdate();
+    await InAppUpdate.completeFlexibleUpdate();
+  }
+
   @override
   void initState() {
     super.initState();
+    _checkForUpdate();
     _progressController = AnimationController(
       duration: Duration(milliseconds: 1500),
       vsync: this,
@@ -49,7 +66,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
     // Schedule async call after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      DialogService.checkAndShowDialogs();
+      DialogService.checkAndShowDialogs(context);
+
+      // Fetch initial data
+      if (mounted) {
+        context.read<AddExpenseProvider>().getTransactionsForMonth(
+          DateTime.now(),
+        );
+        context.read<BudgetProvider>().loadBudgets();
+      }
+
       await ReminderHelper.scheduleDailyTip();
       await ReminderHelper.scheduleDailyTransactionReview();
     });
@@ -135,8 +161,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             children: [
               GestureDetector(
                 onTap: () async {
-                  //Get.to(SentOtpView());
+                  // Get.to(SentOtpView());
                   Get.toNamed(RoutesName.notificationView);
+                  //   Get.to(PricingView());
                 },
 
                 child: Container(

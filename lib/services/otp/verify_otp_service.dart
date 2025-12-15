@@ -1,7 +1,7 @@
+import 'dart:async';
 import 'dart:io';
-import 'package:finance_manager_app/views/mainView/main_view.dart';
-import 'package:flutter/material.dart';
 
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,27 +20,13 @@ class VerifyOTPService {
     return '';
   }
 
-  Future<void> verifyOTP(context, otpController) async {
+  Future<Map<String, dynamic>> verifyOTP(String otp) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     final referenceNumber = sharedPreferences.getString("REFERENCE_NUMBER");
-    String mobile = otpController.text.trim();
 
     // Prepare the request data
-    Map<String, String> data = {"referenceNo": referenceNumber!, "otp": mobile};
-    //Loading Effect
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Dialog(
-          backgroundColor: Colors.transparent,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [CircularProgressIndicator(color: Colors.black)],
-          ),
-        );
-      },
-    );
+    Map<String, String> data = {"referenceNo": referenceNumber!, "otp": otp};
+
     // Send HTTP POST request to the API
     try {
       final response = await http.post(
@@ -52,34 +38,16 @@ class VerifyOTPService {
       final statusCode = extractValue(body, 'Status code').trim();
       final result = statusCode.replaceAll(":", "").trim();
       if (result == "S1000") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) {
-              return const MainView();
-            },
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Successfully Subscribed')),
-        );
+        return {'success': true, 'message': 'Successfully Subscribed'};
       } else {
-        Navigator.pop(context);
-        // print(response.body); // Error occurred
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Enter a valid OTP')));
+        return {'success': false, 'message': 'Enter a valid OTP'};
       }
     } on SocketException {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Time Out')));
+      return {'success': false, 'message': 'no_internet_connection'.tr};
+    } on TimeoutException {
+      return {'success': false, 'message': 'connection_timeout'.tr};
     } catch (e) {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      return {'success': false, 'message': 'something_went_wrong'.tr};
     }
   }
 }

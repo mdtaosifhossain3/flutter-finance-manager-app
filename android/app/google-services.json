@@ -1,0 +1,70 @@
+{
+  "project_info": {
+    "project_number": "265741029614",
+    "project_id": "finzycash-2da36",
+    "storage_bucket": "finzycash-2da36.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:265741029614:android:3c6baf905b55f690c123ff",
+        "android_client_info": {
+          "package_name": "com.finzycash.expensebudgetmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "265741029614-1g2ul7ea0td35eljfnbif67uc0179rqi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.finzycash.expensebudgetmanager",
+            "certificate_hash": "1be78ff0c8a53d7bb3922e5e43810f915e206ae5"
+          }
+        },
+        {
+          "client_id": "265741029614-jiatsbkc3v71eh14ho1huh295cgkffag.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.finzycash.expensebudgetmanager",
+            "certificate_hash": "fa6b6fcd989b05d77c378ec3e8ea485c66d99387"
+          }
+        },
+        {
+          "client_id": "265741029614-rqa0o6tidu0ef61i8a1qeu72v0piu7jk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.finzycash.expensebudgetmanager",
+            "certificate_hash": "fff4e5d205f6c811627e789d45d0b2a5f9647fe2"
+          }
+        },
+        {
+          "client_id": "265741029614-k6kv68c48ppp2c7m6svugl043jra8n16.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmoVv5eR58dgqV-jErwnREqXWU3oEOHO4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "265741029614-k6kv68c48ppp2c7m6svugl043jra8n16.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "265741029614-fkapp7pi0klmm4223u0qefrsf6dqqfib.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.financemanagerapp.financeManagerApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,7 +1,8 @@
-import 'package:finance_manager_app/views/splashView/splash_view_model.dart';
+import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/app_name.dart';
+import 'splash_view_model.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -10,31 +11,58 @@ class SplashView extends StatefulWidget {
   State<SplashView> createState() => _SplashViewState();
 }
 
-class _SplashViewState extends State<SplashView> {
+class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    // Initialize app logic
     SplashViewModel.initApp(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        alignment: AlignmentGeometry.center,
-        children: [
-          Center(
-            child: Image.asset("assets/images/a.png", width: 88, height: 88),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.primaryBlue, AppColors.primaryPurple],
           ),
-
-          Positioned(
-            bottom: 40,
-            child: Text(
-              appName,
-              style: Theme.of(context).textTheme.titleMedium,
+        ),
+        child: Stack(
+          alignment: AlignmentGeometry.center,
+          children: [
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Image.asset(
+                      "assets/images/logo_foreground.png",
+                      width: 100,
+                      height: 100,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    appName,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

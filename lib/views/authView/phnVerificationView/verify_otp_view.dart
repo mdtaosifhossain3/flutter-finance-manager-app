@@ -1,5 +1,6 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/services/otp/verify_otp_service.dart';
+import 'package:finance_manager_app/views/mainView/main_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -128,10 +129,43 @@ class _VerifyOtpViewState extends State<VerifyOtpView> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             // Get.to(MainView());
-                            VerifyOTPService().verifyOTP(
-                              context,
-                              _otpController,
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                return const Dialog(
+                                  backgroundColor: Colors.transparent,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      CircularProgressIndicator(
+                                        color: Colors.black,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
                             );
+
+                            final result = await VerifyOTPService().verifyOTP(
+                              _otpController.text.trim(),
+                            );
+
+                            if (context.mounted) {
+                              Navigator.pop(context); // Close loading dialog
+
+                              if (result['success'] == true) {
+                                Get.offAll(() => const MainView());
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(result['message'])),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(result['message'])),
+                                );
+                              }
+                            }
                           }
                         },
                         child: Text(

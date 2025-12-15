@@ -3,6 +3,7 @@ import 'dart:core';
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/providers/reminderProvider/reminder_provider.dart';
+import 'package:finance_manager_app/services/reminder_helper.dart';
 import 'package:finance_manager_app/views/reminderView/add_reminder_form.dart';
 import 'package:finance_manager_app/views/reminderView/reminder_card_view.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class _ReminderViewState extends State<ReminderView> {
     // Initialize reminder provider on first open
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ReminderProvider>().initialize();
+      ReminderHelper.requestNotificationPermission();
     });
   }
 
@@ -247,6 +249,37 @@ class _ReminderViewState extends State<ReminderView> {
                                         style: TextStyle(
                                           fontSize: 10,
                                           color: Colors.orange[700],
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              // Repeat Tag
+                              if (reminder['isRepeating'] == 1)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.purple.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.repeat,
+                                        size: 12,
+                                        color: Colors.purple[700],
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'Daily',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.purple[700],
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),

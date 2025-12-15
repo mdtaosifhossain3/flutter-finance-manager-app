@@ -18,10 +18,18 @@ class ReminderDbHelper {
         title TEXT,
         body TEXT,
         isActive INTEGER,
-        remindersTime TEXT
+        remindersTime TEXT,
+        isRepeating INTEGER DEFAULT 0
       )''');
       },
-      version: 1,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute(
+            'ALTER TABLE reminders ADD COLUMN isRepeating INTEGER DEFAULT 0',
+          );
+        }
+      },
+      version: 2,
     );
   }
 

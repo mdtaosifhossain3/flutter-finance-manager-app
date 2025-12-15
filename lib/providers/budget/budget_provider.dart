@@ -202,29 +202,21 @@ class BudgetProvider with ChangeNotifier {
 
   /// Schedule daily notification for all active budgets
   Future<void> scheduleDailyLimitNotification() async {
-    print("DEBUG: scheduleDailyLimitNotification called");
     if (_budgets.isEmpty) {
-      print("DEBUG: No budgets found");
       return;
     }
 
     for (var budget in _budgets) {
-      print(
-        "DEBUG: Checking budget ${budget.title}, EndDate: ${budget.endDate}, Total: ${budget.totalAmount}",
-      );
       // Check if budget is active
       if (DateTime.now().isBefore(budget.endDate) && budget.totalAmount > 0) {
         final limit = calculateDailyLimit(budget);
-        print(
-          "DEBUG: Scheduling notification for ${budget.title} with limit $limit",
-        );
+
         await ReminderHelper.scheduleDailyBudgetNotification(
           budgetId: budget.id!,
           budgetName: budget.title,
           dailyLimit: limit,
         );
       } else {
-        print("DEBUG: Budget ${budget.title} is inactive or expired");
         // If budget is expired or invalid, ensure no notification is scheduled
         if (budget.id != null) {
           await ReminderHelper.cancelBudgetNotification(budget.id!);

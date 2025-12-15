@@ -43,12 +43,6 @@ class ReminderHelper {
       playSound: true,
     );
 
-    _notificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.requestNotificationsPermission();
-
     await _notificationsPlugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
@@ -109,6 +103,14 @@ class ReminderHelper {
           AndroidFlutterLocalNotificationsPlugin
         >()
         ?.requestExactAlarmsPermission();
+  }
+
+  static Future<void> requestNotificationPermission() async {
+    await _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.requestNotificationsPermission();
   }
 
   @pragma('vm:entry-point')
@@ -191,10 +193,17 @@ class ReminderHelper {
     int id,
     String title,
     String body,
-    DateTime time,
-  ) async {
-    if (time.isBefore(DateTime.now())) {
+    DateTime time, {
+    bool isRepeating = false,
+  }) async {
+    if (time.isBefore(DateTime.now()) && !isRepeating) {
       return;
+    }
+
+    // If repeating and time is in past, schedule for tomorrow same time
+    DateTime scheduledTime = time;
+    if (isRepeating && time.isBefore(DateTime.now())) {
+      scheduledTime = time.add(const Duration(days: 1));
     }
 
     // --- 🚨 Alternative Exact Alarm Permission Check ---
@@ -222,10 +231,11 @@ class ReminderHelper {
       id,
       title,
       body,
-      tz.TZDateTime.from(time, tz.local),
+      tz.TZDateTime.from(scheduledTime, tz.local),
       notiDetails,
       androidScheduleMode: AndroidScheduleMode.alarmClock,
       payload: "reminder_page",
+      matchDateTimeComponents: isRepeating ? DateTimeComponents.time : null,
     );
   }
 
@@ -385,14 +395,10 @@ class ReminderHelper {
     required String budgetName,
     required double dailyLimit,
   }) async {
-    print(
-      "DEBUG: ReminderHelper.scheduleDailyBudgetNotification called for $budgetName",
-    );
     try {
       // 1. Permission check
       final bool allowed = await _checkAndRequestExactAlarmPermission();
       if (!allowed) {
-        print("DEBUG: Permission denied for exact alarms");
         return;
       }
 
@@ -407,14 +413,9 @@ class ReminderHelper {
         30,
       );
 
-      print("DEBUG: Scheduled time before check: $scheduled, Now: $now");
-
       if (scheduled.isBefore(now)) {
-        print("DEBUG: Scheduled time is in the past, adding 1 day");
         scheduled = scheduled.add(const Duration(days: 1));
       }
-
-      print("DEBUG: Final scheduled time: $scheduled");
 
       // 3. Schedule with unique ID based on budgetId
       // We use a base ID (e.g., 888000) + budgetId to ensure uniqueness
@@ -437,9 +438,6 @@ class ReminderHelper {
         androidScheduleMode: AndroidScheduleMode.alarmClock,
         matchDateTimeComponents: DateTimeComponents.time,
         payload: "budget_view",
-      );
-      print(
-        "DEBUG: Notification successfully scheduled with ID $notificationId",
       );
     } catch (e) {
       if (kDebugMode) print("Error scheduling budget noti: $e");

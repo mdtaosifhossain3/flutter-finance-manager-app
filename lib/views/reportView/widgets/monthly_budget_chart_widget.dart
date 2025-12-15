@@ -112,7 +112,7 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
                           show: true,
                           gradient: LinearGradient(
                             colors: [
-                              AppColors.primaryBlue.withOpacity(0.3),
+                              AppColors.primaryBlue.withValues(alpha: 0.3),
                               Colors.transparent,
                             ],
                             begin: Alignment.topCenter,
@@ -140,7 +140,7 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
                           show: true,
                           gradient: LinearGradient(
                             colors: [
-                              AppColors.error.withOpacity(0.3),
+                              AppColors.error.withValues(alpha: 0.3),
                               Colors.transparent,
                             ],
                             begin: Alignment.topCenter,

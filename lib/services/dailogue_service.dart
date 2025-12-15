@@ -4,7 +4,7 @@ import 'package:finance_manager_app/services/monthly_pdf_summary_service.dart';
 import 'package:finance_manager_app/services/weekly_pdf_summary_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:path/path.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DialogService {
@@ -13,7 +13,7 @@ class DialogService {
   static const _firstLaunchKey = 'is_first_launch';
 
   /// Call this on app startup or Home screen init
-  static Future<void> checkAndShowDialogs() async {
+  static Future<void> checkAndShowDialogs(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
 
     final isFirstLaunch = prefs.getBool(_firstLaunchKey) ?? true;
@@ -24,11 +24,14 @@ class DialogService {
     }
 
     // Show dialogs for subsequent app opens
-    await _checkWeeklyDialog(prefs);
-    await _checkMonthlyDialog(prefs);
+    if (context.mounted) await _checkWeeklyDialog(prefs, context);
+    if (context.mounted) await _checkMonthlyDialog(prefs, context);
   }
 
-  static Future<void> _checkWeeklyDialog(SharedPreferences prefs) async {
+  static Future<void> _checkWeeklyDialog(
+    SharedPreferences prefs,
+    BuildContext context,
+  ) async {
     final lastShownString = prefs.getString(_weeklyKey);
     final now = DateTime.now();
 
@@ -41,7 +44,7 @@ class DialogService {
       return;
     }
 
-    await _showWeeklyDialog(context);
+    if (context.mounted) await _showWeeklyDialog(context);
     await prefs.setString(_weeklyKey, now.toIso8601String());
     final NotificationModel notificationModel = NotificationModel(
       title: "weeklyFinancialSummaryTitle".tr,
@@ -51,7 +54,10 @@ class DialogService {
     NotificationDbHelper().insertNotification(notificationModel);
   }
 
-  static Future<void> _checkMonthlyDialog(SharedPreferences prefs) async {
+  static Future<void> _checkMonthlyDialog(
+    SharedPreferences prefs,
+    BuildContext context,
+  ) async {
     final lastShownString = prefs.getString(_monthlyKey);
     final now = DateTime.now();
 
@@ -66,7 +72,7 @@ class DialogService {
       return;
     }
 
-    await _showMonthlyDialog();
+    if (context.mounted) await _showMonthlyDialog(context);
     await prefs.setString(_monthlyKey, now.toIso8601String());
     final NotificationModel notificationModel = NotificationModel(
       title: "monthlyFinancialReportTitle".tr,
@@ -77,7 +83,7 @@ class DialogService {
   }
 
   // Weekly Dialog
-  static Future<void> _showWeeklyDialog(context) async {
+  static Future<void> _showWeeklyDialog(BuildContext context) async {
     await Get.dialog(
       AlertDialog(
         title: Text("weeklyFinancialSummaryTitle".tr),
@@ -103,7 +109,7 @@ class DialogService {
   }
 
   // Monthly Dialog
-  static Future<void> _showMonthlyDialog() async {
+  static Future<void> _showMonthlyDialog(BuildContext context) async {
     await Get.dialog(
       AlertDialog(
         title: Text("monthlyFinancialReportTitle".tr),

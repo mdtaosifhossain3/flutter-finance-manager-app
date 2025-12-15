@@ -1,1 +1,1 @@
-const appName = "FinzyCash";
+const appName = "Hishab Rakhi";

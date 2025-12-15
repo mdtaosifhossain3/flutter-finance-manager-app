@@ -1,5 +1,4 @@
 import 'package:finance_manager_app/config/routes/routes_name.dart';
-import 'package:finance_manager_app/views/authView/phnVerificationView/verify_otp_view.dart';
 import 'package:finance_manager_app/views/budgetView/pages/add_budget_view.dart';
 import 'package:finance_manager_app/views/categoryView/category_view.dart';
 import 'package:finance_manager_app/views/categoryView/pages/transaction_form_view.dart';
@@ -9,11 +8,13 @@ import 'package:finance_manager_app/views/notificationView/notification_view.dar
 import 'package:finance_manager_app/views/reportView/report_view.dart';
 import 'package:finance_manager_app/views/settingView/setting_view.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
-import 'package:finance_manager_app/views/welcomeView/welcome_view.dart';
 import 'package:get/get.dart';
 
 import '../../views/budgetView/budget_view.dart';
 import '../../views/reportView/pages/expenses_view.dart';
+import 'package:finance_manager_app/views/authView/auth/login_view.dart';
+import 'package:finance_manager_app/views/authView/auth/register_view.dart';
+import 'package:finance_manager_app/views/authView/auth/reset_password.dart';
 
 class Routes {
   static var views = [
@@ -22,14 +23,29 @@ class Routes {
       page: () => const SplashView(),
       transition: Transition.rightToLeft,
     ),
+    // GetPage(
+    //   name: RoutesName.welcomeView,
+    //   page: () => const WelcomeView(),
+    //   transition: Transition.rightToLeft,
+    // ),
+    // GetPage(
+    //   name: RoutesName.otepVerifyView,
+    //   page: () => const VerifyOtpView(),
+    //   transition: Transition.rightToLeft,
+    // ),
     GetPage(
-      name: RoutesName.welcomeView,
-      page: () => const WelcomeView(),
+      name: RoutesName.loginView,
+      page: () => const LoginView(),
       transition: Transition.rightToLeft,
     ),
     GetPage(
-      name: RoutesName.otepVerifyView,
-      page: () => const VerifyOtpView(),
+      name: RoutesName.registerView,
+      page: () => const RegisterView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.resetPasswordView,
+      page: () => const ResetPasswordView(),
       transition: Transition.rightToLeft,
     ),
     GetPage(

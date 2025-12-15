@@ -41,8 +41,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
                   return;
                 }
 
-                // TODO: Send feedback to Firestore / API / Email
-
                 ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(SnackBar(content: Text("feedbackSuccess".tr)));

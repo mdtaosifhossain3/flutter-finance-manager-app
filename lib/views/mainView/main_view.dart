@@ -6,9 +6,11 @@ import 'package:finance_manager_app/views/homeView/home_view.dart';
 import 'package:finance_manager_app/views/reminderView/reminder_view.dart';
 import 'package:finance_manager_app/views/reportView/report_view.dart';
 import 'package:finance_manager_app/views/settingView/setting_view.dart';
+import 'package:finance_manager_app/providers/proProvider/pro_provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
@@ -49,9 +51,15 @@ class _MainViewState extends State<MainView>
     super.initState();
     _tabController = TabController(length: _tabCount, vsync: this);
     _tabController.animation?.addListener(_onTabAnimationChange);
+
+    // Ensure Pro status is up to date (e.g. after login)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ProProvider>(context, listen: false).initializeProStatus();
+    });
   }
 
   void _onTabAnimationChange() {
+    if (_tabController.indexIsChanging) return;
     final value = _tabController.animation!.value.round();
     if (value != _currentPage && mounted) {
       _changePage(value);
@@ -59,6 +67,20 @@ class _MainViewState extends State<MainView>
   }
 
   void _changePage(int newPage) {
+    // Protect Report (1), Budget (2), Reminder (3)
+    if (newPage == 1 || newPage == 2 || newPage == 3) {
+      final hasAccess = Provider.of<ProProvider>(
+        context,
+        listen: false,
+      ).checkAccess();
+      if (!hasAccess) {
+        // Revert tab controller if it was a tap on the tab bar
+        if (_tabController.index != _currentPage) {
+          _tabController.animateTo(_currentPage);
+        }
+        return;
+      }
+    }
     setState(() => _currentPage = newPage);
   }
 
@@ -93,7 +115,13 @@ class _MainViewState extends State<MainView>
                   subtitle: 'smart_categorization'.tr,
                   onTap: () async {
                     Navigator.pop(context);
-                    Get.to(() => const AddWithAiScreen());
+                    final hasAccess = Provider.of<ProProvider>(
+                      context,
+                      listen: false,
+                    ).checkAccess();
+                    if (hasAccess) {
+                      Get.to(() => const AddWithAiScreen());
+                    }
 
                     // int count = await ProTapService.incrementTap();
 
@@ -450,6 +478,15 @@ class _MainViewState extends State<MainView>
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentPage,
         onTap: (index) {
+          // Protect Report (1), Budget (2), Reminder (3)
+          if (index == 1 || index == 2 || index == 3) {
+            final hasAccess = Provider.of<ProProvider>(
+              context,
+              listen: false,
+            ).checkAccess();
+            if (!hasAccess) return;
+          }
+
           _changePage(index);
           _tabController.animateTo(index);
         },

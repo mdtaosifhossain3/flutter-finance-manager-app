@@ -79,8 +79,9 @@ class _CalculatorBottomSheetState extends State<CalculatorBottomSheet> {
       double? val = double.tryParse(lastNumber);
       if (val != null) {
         String newVal = (val / 100).toString();
-        if (newVal.endsWith('.0'))
+        if (newVal.endsWith('.0')) {
           newVal = newVal.substring(0, newVal.length - 2);
+        }
 
         _expression = _expression.substring(0, i + 1) + newVal;
       }

@@ -1,16 +1,15 @@
-import 'package:finance_manager_app/config/routes/routes_name.dart';
-import 'package:finance_manager_app/providers/budget/budget_provider.dart';
-import 'package:finance_manager_app/providers/category/transaction_provider.dart';
-import 'package:finance_manager_app/providers/speechProvider/speech_provider.dart';
+import 'package:finance_manager_app/providers/authProvider/auth_provider.dart';
+
+import 'package:finance_manager_app/providers/proProvider/pro_provider.dart';
 import 'package:finance_manager_app/services/reminder_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
 import 'package:provider/provider.dart';
 
 class SplashViewModel {
   static Future<void> initApp(BuildContext context) async {
     // Yield to allow the Splash Screen to render its first frame
-    await Future.delayed(Duration(milliseconds: 300));
+    await Future.delayed(Duration(seconds: 1));
 
     // 1. Initialize Reminders
     try {
@@ -19,34 +18,17 @@ class SplashViewModel {
       debugPrint('Reminder initialization failed: $e');
     }
 
-    // 2. Load Transactions
+    // 5. Initialize Pro Status
     if (context.mounted) {
-      final txProvider = Provider.of<AddExpenseProvider>(
-        context,
-        listen: false,
-      );
-      await txProvider.getTransactionsForMonth(DateTime.now());
+      final proProvider = Provider.of<ProProvider>(context, listen: false);
+      await proProvider.initializeProStatus();
     }
 
-    // 3. Load Budgets
+    // 6. Navigate to Main View
+    // 6. Check Auth State and Navigate
     if (context.mounted) {
-      final budgetProvider = Provider.of<BudgetProvider>(
-        context,
-        listen: false,
-      );
-      await budgetProvider.loadBudgets();
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await authProvider.checkAuthState();
     }
-
-    // 4. Initialize Speech
-    if (context.mounted) {
-      final speechProvider = Provider.of<SpeechProvider>(
-        context,
-        listen: false,
-      );
-      await speechProvider.initializeSpeech();
-    }
-
-    // 5. Navigate to Main View
-    Get.offAllNamed(RoutesName.mainView);
   }
 }

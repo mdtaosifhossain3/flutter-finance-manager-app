@@ -21,6 +21,7 @@ class _AddReminderFormState extends State<AddReminderForm> {
   TextEditingController desc = TextEditingController();
 
   DateTime _reminderTime = DateTime.now();
+  bool _isRepeating = false;
 
   @override
   void initState() {
@@ -39,6 +40,10 @@ class _AddReminderFormState extends State<AddReminderForm> {
         title.text = data["title"];
         desc.text = data['body'];
         _reminderTime = DateTime.parse(data['remindersTime']);
+        title.text = data["title"];
+        desc.text = data['body'];
+        _reminderTime = DateTime.parse(data['remindersTime']);
+        _isRepeating = data['isRepeating'] == 1;
         setState(() {});
       }
     } catch (e) {
@@ -171,6 +176,43 @@ class _AddReminderFormState extends State<AddReminderForm> {
                       ),
                     ),
                   ],
+                ),
+
+                SizedBox(height: 24),
+
+                // Repeat Toggle
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Theme.of(context).dividerColor),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: SwitchListTile(
+                    value: _isRepeating,
+                    onChanged: (val) {
+                      setState(() {
+                        _isRepeating = val;
+                      });
+                    },
+                    title: Text(
+                      'Repeat Daily',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    secondary: Icon(
+                      Icons.repeat,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
                 ),
 
                 SizedBox(height: 32),
@@ -356,8 +398,9 @@ class _AddReminderFormState extends State<AddReminderForm> {
   }
 
   void _saveReminder() async {
-    final provider =  context.read<ReminderProvider>();
-    await  requestNotiPermission();
+    final provider = context.read<ReminderProvider>();
+    await requestNotiPermission();
+    if (!mounted) return;
     if (_formKey.currentState!.validate()) {
       try {
         if (widget.reminderID == null) {
@@ -366,7 +409,9 @@ class _AddReminderFormState extends State<AddReminderForm> {
           provider.addReminder(
             title: title.text,
             body: desc.text,
+
             reminderTime: _reminderTime,
+            isRepeating: _isRepeating,
           );
         } else {
           provider.updateReminder(
@@ -375,6 +420,7 @@ class _AddReminderFormState extends State<AddReminderForm> {
             body: desc.text,
             reminderTime: _reminderTime,
             isActive: true,
+            isRepeating: _isRepeating,
           );
         }
 

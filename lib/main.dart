@@ -2,6 +2,7 @@ import 'package:finance_manager_app/config/db/local/category_db/add_transaction_
 import 'package:finance_manager_app/config/routes/routes.dart';
 import 'package:finance_manager_app/config/theme/app_theme.dart';
 import 'package:finance_manager_app/config/translator/app_translator.dart';
+import 'package:finance_manager_app/firebase_options.dart';
 import 'package:finance_manager_app/providers/aiProvider/ai_provider.dart';
 import 'package:finance_manager_app/providers/budget/budget_provider.dart';
 import 'package:finance_manager_app/providers/category/category_item_provider.dart';
@@ -12,9 +13,12 @@ import 'package:finance_manager_app/providers/languageProvider/language_translat
 import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
 import 'package:finance_manager_app/providers/reminderProvider/reminder_provider.dart';
 import 'package:finance_manager_app/providers/speechProvider/speech_provider.dart';
+import 'package:finance_manager_app/providers/proProvider/pro_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
+import 'package:finance_manager_app/providers/authProvider/auth_provider.dart';
 
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get_navigation/get_navigation.dart';
@@ -24,6 +28,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
     MultiProvider(
@@ -62,36 +68,6 @@ void main() async {
             return previous; // <- return the SAME instance
           },
         ),
-
-        // ChangeNotifierProxyProvider<AddExpenseProvider, ReportProvider>(
-        //   create: (context) {
-        //     final txProvider = context.read<AddExpenseProvider>();
-        //     final reportProvider = ReportProvider(
-        //       transactionProvider: txProvider,
-        //     );
-
-        //     Timer? debounceTimer;
-
-        //     // 🔁 Listen to AddExpenseProvider changes
-        //     txProvider.addListener(() {
-        //       // Cancel any running timer
-        //       debounceTimer?.cancel();
-
-        //       // Start a new timer
-        //       debounceTimer = Timer(const Duration(milliseconds: 400), () {
-        //         reportProvider.filterCategoryFunction();
-        //         reportProvider.getMonthlyTotals();
-        //         reportProvider.periodDatafunction();
-        //       });
-        //     });
-
-        //     return reportProvider;
-        //   },
-        //   update: (_, txProvider, reportProvider) {
-        //     reportProvider!.transactionProvider = txProvider;
-        //     return reportProvider;
-        //   },
-        // ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => ReminderProvider()),
@@ -100,25 +76,17 @@ void main() async {
             transactionProvider: context.read<AddExpenseProvider>(),
           ),
           update: (_, txProvider, budgetProvider) {
-            // Re-create or update?
-            // Since BudgetProvider needs to listen, we might need to update the reference
-            // But BudgetProvider constructor sets up the listener.
-            // If we just update a field, we need to handle listener attachment/detachment.
-            // Simpler to just pass it in constructor if possible, but update is called on rebuilds.
-            // Let's use the update to ensure we have the latest provider.
-            // Actually, for simplicity and stability, let's just create it with the provider.
-            // But ProxyProvider requires update.
             if (budgetProvider == null) {
               return BudgetProvider(transactionProvider: txProvider);
             }
-            // If we already have one, we might not need to do anything if the instance is the same
-            // But if txProvider changes (unlikely for top level), we might need to update.
-            // Let's just return the existing one, assuming AddExpenseProvider instance is stable.
+
             return budgetProvider;
           },
         ),
         ChangeNotifierProvider(create: (_) => AiProvider()),
         ChangeNotifierProvider(create: (_) => SpeechProvider()),
+        ChangeNotifierProvider(create: (_) => ProProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MyApp(),
     ),
