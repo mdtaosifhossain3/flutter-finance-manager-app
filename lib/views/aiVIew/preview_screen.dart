@@ -54,7 +54,7 @@ class PreviewScreen extends StatelessWidget {
                 saveTransactionButton: () {
                   HapticFeedback.mediumImpact();
                   provider.saveTransaction(context);
-                  Get.offAll(() => const MainView()); // Navigate to Home
+                  Get.offAll(MainView()); // Navigate to Home
                 },
               ),
             ],

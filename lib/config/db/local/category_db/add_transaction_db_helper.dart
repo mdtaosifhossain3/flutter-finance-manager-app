@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../../../../models/categoryModel/transaction_model.dart';
+import '../../../../services/uid_service.dart';
 
 class AddTransactionDbHelper {
   AddTransactionDbHelper._();
@@ -13,9 +14,9 @@ class AddTransactionDbHelper {
   static final AddTransactionDbHelper getInstance = AddTransactionDbHelper._();
 
   Database? myDB;
+  String? _currentUid;
 
-  // Table Data
-  final String tableName = 'transaction_data';
+  // Table column names
   final String id = 'id';
   final String type = 'type';
   final String date = 'date';
@@ -28,33 +29,64 @@ class AddTransactionDbHelper {
   final String categoryKey = 'categoryKey';
   final String includeInTotal = 'includeInTotal';
 
+  /// Get table name with UID
+  String get tableName {
+    final uid = UidService.instance.getUidOrThrow();
+    return 'transaction_data_$uid';
+  }
+
   Future<Database> getDB() async {
+    final uid = UidService.instance.getUidOrThrow();
+
+    // If UID changed, close current DB and open new one
+    if (_currentUid != uid) {
+      await closeDB();
+      _currentUid = uid;
+    }
+
     myDB ??= await openDB();
     return myDB!;
   }
 
   Future<Database> openDB() async {
+    final uid = UidService.instance.getUidOrThrow();
     Directory appDir = await getApplicationDocumentsDirectory();
-    String dbPath = join(appDir.path, 'transaction_data.db');
+    String dbPath = join(appDir.path, 'transaction_data_$uid.db');
 
-    return await openDatabase(
+    final db = await openDatabase(
       dbPath,
-      version: 2, // Incremented version for schema change
+      version: 2,
       onCreate: (db, version) async {
-        await db.execute('''CREATE TABLE $tableName (
-          $id INTEGER PRIMARY KEY AUTOINCREMENT,
-          $type INTEGER NOT NULL,
-          $date TEXT NOT NULL,
-          $title TEXT NOT NULL,
-          $amount INTEGER NOT NULL,
-          $notes TEXT,
-          $paymentMethod TEXT NOT NULL,
-          $icon TEXT NOT NULL,
-          $categoryKey TEXT NOT NULL,
-          $iconBgColor INTEGER NOT NULL,
-          $includeInTotal INTEGER NOT NULL DEFAULT 1)''');
+        await _createTable(db, uid);
       },
     );
+
+    return db;
+  }
+
+  /// Create the transaction table
+  Future<void> _createTable(Database db, String uid) async {
+    final table = 'transaction_data_$uid';
+    await db.execute('''CREATE TABLE $table (
+      $id INTEGER PRIMARY KEY AUTOINCREMENT,
+      $type INTEGER NOT NULL,
+      $date TEXT NOT NULL,
+      $title TEXT NOT NULL,
+      $amount INTEGER NOT NULL,
+      $notes TEXT,
+      $paymentMethod TEXT NOT NULL,
+      $icon TEXT NOT NULL,
+      $categoryKey TEXT NOT NULL,
+      $iconBgColor INTEGER NOT NULL,
+      $includeInTotal INTEGER NOT NULL DEFAULT 1)''');
+  }
+
+  /// Close the database
+  Future<void> closeDB() async {
+    if (myDB != null) {
+      await myDB!.close();
+      myDB = null;
+    }
   }
 
   ///insertion
@@ -118,23 +150,6 @@ class AddTransactionDbHelper {
   Future<void> deleteFull() async {
     try {
       final db = await getDB();
-
-      // Check if table exists before deleting
-      await db.execute('''
-      CREATE TABLE IF NOT EXISTS $tableName (
-        $id INTEGER PRIMARY KEY AUTOINCREMENT,
-        $type INTEGER NOT NULL,
-        $date TEXT NOT NULL,
-        $title TEXT NOT NULL,
-        $amount INTEGER NOT NULL,
-        $notes TEXT,
-        $paymentMethod TEXT NOT NULL,
-        $icon TEXT NOT NULL,
-        $categoryKey TEXT NOT NULL,
-        $iconBgColor INTEGER NOT NULL
-      )
-    ''');
-
       await db.rawDelete('DELETE FROM $tableName');
     } catch (e) {
       if (kDebugMode) {

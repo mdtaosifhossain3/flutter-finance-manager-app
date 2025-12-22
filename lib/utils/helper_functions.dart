@@ -136,7 +136,13 @@ class HelperFunctions {
     if (locale == 'bn') {
       return number
           .split('')
-          .map((digit) => banglaDigits[int.parse(digit)])
+          .map((char) {
+            final index = int.tryParse(char);
+            if (index != null && index >= 0 && index <= 9) {
+              return banglaDigits[index];
+            }
+            return char;
+          })
           .join('');
     } else {
       return number;

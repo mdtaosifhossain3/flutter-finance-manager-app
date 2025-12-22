@@ -5,6 +5,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../../../models/budgetModel/budget_category_model.dart';
 import '../../../../models/budgetModel/budget_model.dart';
+import '../../../../services/uid_service.dart';
 
 class AddBudgetDbHelper {
   static final AddBudgetDbHelper _instance = AddBudgetDbHelper._internal();
@@ -12,53 +13,91 @@ class AddBudgetDbHelper {
   AddBudgetDbHelper._internal();
 
   static Database? _db;
+  String? _currentUid;
+
+  /// Get budgets table name with UID
+  String get budgetsTable {
+    final uid = UidService.instance.getUidOrThrow();
+    return 'budgets_$uid';
+  }
+
+  /// Get budget categories table name with UID
+  String get categoriesTable {
+    final uid = UidService.instance.getUidOrThrow();
+    return 'budget_categories_$uid';
+  }
 
   Future<Database> get database async {
+    final uid = UidService.instance.getUidOrThrow();
+
+    // If UID changed, close current DB and open new one
+    if (_currentUid != uid) {
+      await closeDB();
+      _currentUid = uid;
+    }
+
     if (_db != null) return _db!;
     _db = await _initDB();
     return _db!;
   }
 
   Future<Database> _initDB() async {
+    final uid = UidService.instance.getUidOrThrow();
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'budget_db.db');
+    final path = join(dbPath, 'budget_db_$uid.db');
 
     return await openDatabase(
       path,
       version: 1,
       onCreate: (db, version) async {
-        // Budgets table
-        await db.execute('''
-          CREATE TABLE budgets (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            totalAmount INTEGER NOT NULL,
-            startDate TEXT NOT NULL,
-            endDate TEXT NOT NULL
-          )
-        ''');
-
-        // Budget categories table
-        await db.execute('''
-          CREATE TABLE budget_categories (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            budgetId INTEGER NOT NULL,
-            categoryName TEXT NOT NULL,
-            spent INTEGER NOT NULL,
-            icon TEXT NOT NULL,
-            iconBgColor INTEGER NOT NULL,
-            FOREIGN KEY (budgetId) REFERENCES budgets (id) ON DELETE CASCADE
-          )
-        ''');
+        await _createTables(db, uid);
       },
     );
+  }
+
+  /// Create budget tables
+  Future<void> _createTables(Database db, String uid) async {
+    final budgets = 'budgets_$uid';
+    final categories = 'budget_categories_$uid';
+
+    // Budgets table
+    await db.execute('''
+      CREATE TABLE $budgets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        totalAmount INTEGER NOT NULL,
+        startDate TEXT NOT NULL,
+        endDate TEXT NOT NULL
+      )
+    ''');
+
+    // Budget categories table
+    await db.execute('''
+      CREATE TABLE $categories (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        budgetId INTEGER NOT NULL,
+        categoryName TEXT NOT NULL,
+        spent INTEGER NOT NULL,
+        icon TEXT NOT NULL,
+        iconBgColor INTEGER NOT NULL,
+        FOREIGN KEY (budgetId) REFERENCES $budgets (id) ON DELETE CASCADE
+      )
+    ''');
+  }
+
+  /// Close the database
+  Future<void> closeDB() async {
+    if (_db != null) {
+      await _db!.close();
+      _db = null;
+    }
   }
 
   // ------------------ Budget Methods ------------------
   Future<int> insertBudget(BudgetModel budget) async {
     final db = await database;
     return await db.insert(
-      'budgets',
+      budgetsTable,
       budget.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -66,20 +105,20 @@ class AddBudgetDbHelper {
 
   Future<List<BudgetModel>> getBudgets() async {
     final db = await database;
-    final result = await db.query('budgets');
+    final result = await db.query(budgetsTable);
     return result.map((e) => BudgetModel.fromMap(e)).toList();
   }
 
   Future<int> deleteBudget(int id) async {
     final db = await database;
-    return await db.delete('budgets', where: 'id = ?', whereArgs: [id]);
+    return await db.delete(budgetsTable, where: 'id = ?', whereArgs: [id]);
   }
 
   // ------------------ Budget Category Methods ------------------
   Future<int> insertBudgetCategory(BudgetCategoryModel category) async {
     final db = await database;
     return await db.insert(
-      'budget_categories',
+      categoriesTable,
       category.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -88,7 +127,7 @@ class AddBudgetDbHelper {
   Future<List<BudgetCategoryModel>> getCategoriesByBudget(int budgetId) async {
     final db = await database;
     final result = await db.query(
-      'budget_categories',
+      categoriesTable,
       where: 'budgetId = ?',
       whereArgs: [budgetId],
     );
@@ -101,8 +140,8 @@ class AddBudgetDbHelper {
     final result = await db.rawQuery('''
       SELECT b.id as budgetId, b.title, b.totalAmount, b.startDate, b.endDate,
              c.id as categoryId, c.categoryName
-      FROM budgets b
-      LEFT JOIN budget_categories c
+      FROM $budgetsTable b
+      LEFT JOIN $categoriesTable c
       ON b.id = c.budgetId
     ''');
     return result;
@@ -116,7 +155,7 @@ class AddBudgetDbHelper {
     final db = await database;
 
     final result = await db.query(
-      'budget_categories',
+      categoriesTable,
       columns: ['spent'],
       where: 'id = ?',
       whereArgs: [categoryId],
@@ -128,7 +167,7 @@ class AddBudgetDbHelper {
     final newSpent = currentSpent + amountToAdd;
 
     final rowsAffected = await db.update(
-      'budget_categories',
+      categoriesTable,
       {'spent': newSpent},
       where: 'id = ?',
       whereArgs: [categoryId],
@@ -145,7 +184,7 @@ class AddBudgetDbHelper {
     final db = await database;
 
     final result = await db.query(
-      'budget_categories',
+      categoriesTable,
       columns: ['spent'],
       where: 'id = ?',
       whereArgs: [categoryId],
@@ -159,7 +198,7 @@ class AddBudgetDbHelper {
         .toInt();
 
     final rowsAffected = await db.update(
-      'budget_categories',
+      categoriesTable,
       {'spent': newSpent},
       where: 'id = ?',
       whereArgs: [categoryId],
@@ -172,7 +211,7 @@ class AddBudgetDbHelper {
   Future<int> deleteCategory(int categoryId) async {
     final db = await database;
     return await db.delete(
-      'budget_categories',
+      categoriesTable,
       where: 'id = ?',
       whereArgs: [categoryId],
     );
@@ -190,7 +229,7 @@ class AddBudgetDbHelper {
 
     // Make sure the budget exists
     final budgetExists = await db.query(
-      'budgets',
+      budgetsTable,
       where: 'id = ?',
       whereArgs: [budgetId],
     );
@@ -209,7 +248,7 @@ class AddBudgetDbHelper {
     };
 
     return await db.insert(
-      'budget_categories',
+      categoriesTable,
       category,
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -224,7 +263,7 @@ class AddBudgetDbHelper {
 
     // Fetch current allocatedAmount
     final result = await db.query(
-      'budget_categories',
+      categoriesTable,
       columns: ['spent'],
       where: 'id = ?',
       whereArgs: [categoryId],
@@ -236,7 +275,7 @@ class AddBudgetDbHelper {
     final newAmount = currentAmount + amountToAdd;
 
     final rowsAffected = await db.update(
-      'budget_categories',
+      categoriesTable,
       {'spent': newAmount},
       where: 'id = ?',
       whereArgs: [categoryId],
@@ -248,35 +287,11 @@ class AddBudgetDbHelper {
   Future<void> deleteFullBudget() async {
     try {
       final db = await database;
-
-      // Check if table exists before deleting
-      await db.execute('''
-      CREATE TABLE IF NOT EXISTS budgets (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        totalAmount INTEGER NOT NULL,
-        startDate TEXT NOT NULL,
-        endDate TEXT NOT NULL
-      )
-    ''');
-      // Budget categories table
-      await db.execute('''
-    CREATE TABLE IF NOT EXISTS budget_categories (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      budgetId INTEGER NOT NULL,
-      categoryName TEXT NOT NULL,
-      spent INTEGER NOT NULL,
-      icon TEXT NOT NULL,
-      iconBgColor INTEGER NOT NULL,
-      FOREIGN KEY (budgetId) REFERENCES budgets (id) ON DELETE CASCADE
-    )
-  ''');
-
-      await db.rawDelete('DELETE FROM budgets');
-      await db.rawDelete('DELETE FROM budget_categories');
+      await db.rawDelete('DELETE FROM $budgetsTable');
+      await db.rawDelete('DELETE FROM $categoriesTable');
     } catch (e) {
       if (kDebugMode) {
-        print("Error deleting all transactions: $e");
+        print("Error deleting all budgets: $e");
       }
     }
   }
@@ -284,7 +299,7 @@ class AddBudgetDbHelper {
   Future<int> updateCategorySpent(int categoryId, int newSpent) async {
     final db = await database;
     return await db.update(
-      'budget_categories',
+      categoriesTable,
       {'spent': newSpent},
       where: 'id = ?',
       whereArgs: [categoryId],

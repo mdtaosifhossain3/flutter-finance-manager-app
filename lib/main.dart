@@ -4,32 +4,40 @@ import 'package:finance_manager_app/config/theme/app_theme.dart';
 import 'package:finance_manager_app/config/translator/app_translator.dart';
 import 'package:finance_manager_app/firebase_options.dart';
 import 'package:finance_manager_app/providers/aiProvider/ai_provider.dart';
+
 import 'package:finance_manager_app/providers/budget/budget_provider.dart';
 import 'package:finance_manager_app/providers/category/category_item_provider.dart';
 import 'package:finance_manager_app/providers/category/category_provider.dart';
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
 import 'package:finance_manager_app/providers/homeProvider/home_provider.dart';
 import 'package:finance_manager_app/providers/languageProvider/language_translator_provider.dart';
+import 'package:finance_manager_app/providers/notesProvider/notes_provider.dart';
 import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
 import 'package:finance_manager_app/providers/reminderProvider/reminder_provider.dart';
+import 'package:finance_manager_app/providers/savingsProvider/savings_provider.dart';
 import 'package:finance_manager_app/providers/speechProvider/speech_provider.dart';
 import 'package:finance_manager_app/providers/proProvider/pro_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
 import 'package:finance_manager_app/providers/authProvider/auth_provider.dart';
-
+import 'package:finance_manager_app/providers/givenTakenProvider/given_taken_provider.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: '.env');
+  // await dotenv.load(fileName: '.env');
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // // Initialize UidService early
+  // await UidService.instance.initialize();
+  // final appLockProvider = AppLockProvider();
+  // await appLockProvider.load();
 
   runApp(
     MultiProvider(
@@ -42,6 +50,7 @@ void main() async {
         ),
 
         ChangeNotifierProxyProvider<AddExpenseProvider, HomeViewProvider>(
+          lazy: true,
           create: (context) => HomeViewProvider(
             transactionProvider: context.read<AddExpenseProvider>(),
           ),
@@ -51,6 +60,7 @@ void main() async {
           },
         ),
         ChangeNotifierProxyProvider<AddExpenseProvider, CategoryItemProvider>(
+          lazy: true,
           create: (context) => CategoryItemProvider(
             transactionProvider: context.read<AddExpenseProvider>(),
           ),
@@ -60,6 +70,7 @@ void main() async {
         ),
 
         ChangeNotifierProxyProvider<AddExpenseProvider, ReportProvider>(
+          lazy: true,
           create: (context) => ReportProvider(
             transactionProvider: context.read<AddExpenseProvider>(),
           ),
@@ -71,7 +82,10 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => ReminderProvider()),
+        ChangeNotifierProvider(create: (_) => SavingsProvider()),
+
         ChangeNotifierProxyProvider<AddExpenseProvider, BudgetProvider>(
+          lazy: true,
           create: (context) => BudgetProvider(
             transactionProvider: context.read<AddExpenseProvider>(),
           ),
@@ -87,6 +101,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SpeechProvider()),
         ChangeNotifierProvider(create: (_) => ProProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => GivenTakenProvider()),
+        ChangeNotifierProvider(create: (_) => NotesProvider()),
       ],
       child: MyApp(),
     ),
@@ -102,8 +118,14 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Finance Manager',
       debugShowCheckedModeBanner: false,
-      theme: AppThemes.lightTheme,
-      darkTheme: AppThemes.darkTheme,
+      theme: AppThemes.getTheme(
+        Brightness.light,
+        context.watch<LanguageTranslatorProvider>().locale.languageCode,
+      ),
+      darkTheme: AppThemes.getTheme(
+        Brightness.dark,
+        context.watch<LanguageTranslatorProvider>().locale.languageCode,
+      ),
       themeMode: context
           .watch<ThemeProvider>()
           .themeMode, // system / light / dark

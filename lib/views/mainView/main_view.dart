@@ -2,10 +2,10 @@ import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/views/aiVIew/add_with_ai.dart';
 import 'package:finance_manager_app/views/budgetView/budget_view.dart';
 import 'package:finance_manager_app/views/categoryView/category_view.dart';
+import 'package:finance_manager_app/views/givenTakenView/given_taken_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
-import 'package:finance_manager_app/views/reminderView/reminder_view.dart';
+import 'package:finance_manager_app/views/moreView/more_view.dart';
 import 'package:finance_manager_app/views/reportView/report_view.dart';
-import 'package:finance_manager_app/views/settingView/setting_view.dart';
 import 'package:finance_manager_app/providers/proProvider/pro_provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -30,20 +30,21 @@ class _MainViewState extends State<MainView>
     Icons.home,
     Icons.analytics,
     Icons.wallet,
-    Icons.schedule,
-    Icons.settings,
+    Icons.handshake_outlined,
+    Icons.more_horiz,
   ];
 
   List<String> _labels(BuildContext context) {
-    return ['home'.tr, 'report'.tr, 'budget'.tr, 'reminder'.tr, 'settings'.tr];
+    return ['home'.tr, 'report'.tr, 'budget'.tr, 'given_taken'.tr, 'more'.tr];
   }
 
   final List<Widget> _pages = const [
     HomeView(),
     ReportView(),
     BudgetView(),
-    ReminderView(),
-    SettingsPage(),
+    GivenTakenView(),
+    MoreView(),
+    // SettingsPage(),
   ];
 
   @override
@@ -439,41 +440,6 @@ class _MainViewState extends State<MainView>
         children: _pages,
       ),
 
-      // ✅ Bottom navigation goes here
-      // bottomNavigationBar: AnimatedBottomNavigationBar.builder(
-      //   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      //   elevation: 0,
-      //   itemCount: _iconItems.length,
-      //   activeIndex: _currentPage,
-      //   // gapLocation: GapLocation.end,
-      //   notchSmoothness: NotchSmoothness.softEdge,
-      //   leftCornerRadius: 0,
-      //   rightCornerRadius: 0,
-      //   splashColor: AppColors.purpleGradientEnd,
-      //   onTap: (index) {
-      //     _changePage(index);
-      //     _tabController.animateTo(index);
-      //   },
-      //   tabBuilder: (int index, bool isActive) {
-      //     final color = isActive ? AppColors.primaryBlue : AppColors.textMuted;
-      //     return Column(
-      //       mainAxisSize: MainAxisSize.min,
-      //       mainAxisAlignment: MainAxisAlignment.center,
-      //       children: [
-      //         Icon(_iconItems[index], size: 24, color: color),
-      //         const SizedBox(height: 4),
-      //         Text(
-      //           _labels[index],
-      //           style: TextStyle(
-      //             color: color,
-      //             fontSize: 10,
-      //             fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-      //           ),
-      //         ),
-      //       ],
-      //     );
-      //   },
-      // ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentPage,

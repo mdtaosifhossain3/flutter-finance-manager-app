@@ -27,27 +27,26 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   late AnimationController _progressController;
   late final pv = context.read<HomeViewProvider>();
 
-  // Future<void> _requestNotificationPermission() async {
-  //   if (!await Permission.notification.isGranted) {
-  //     await Permission.notification.request();
-  //   }
-
-  //   DialogService.checkAndShowDialogs();
-  // }
-
   Future<void> _checkForUpdate() async {
-    await InAppUpdate.checkForUpdate().then((info) {
-      setState(() {
-        if (info.updateAvailability == UpdateAvailability.updateAvailable) {
-          updateHandler();
-        }
-      });
-    });
+    try {
+      final info = await InAppUpdate.checkForUpdate();
+      if (mounted &&
+          info.updateAvailability == UpdateAvailability.updateAvailable) {
+        await updateHandler();
+      }
+    } catch (e) {
+      // Handle update check errors silently
+      //print('Update check error: $e');
+    }
   }
 
-  updateHandler() async {
-    await InAppUpdate.startFlexibleUpdate();
-    await InAppUpdate.completeFlexibleUpdate();
+  Future<void> updateHandler() async {
+    try {
+      await InAppUpdate.startFlexibleUpdate();
+      await InAppUpdate.completeFlexibleUpdate();
+    } catch (e) {
+      // print('Update error: $e');
+    }
   }
 
   @override

@@ -4,6 +4,7 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
     'en_US': {
+      "more": "More",
       "login": "Login",
       "register": "Register",
       "email": "Email",
@@ -261,6 +262,7 @@ class AppTranslations extends Translations {
       "welcomeViewButtonOne": "Get Started",
       "welcomeViewButtonTwo": "Preview Demo",
       "preview": "Preview",
+      "viewMore": "View More",
 
       //-------------------------------Home View-------------------------------
       "expensesTitle": "Expenses",
@@ -412,6 +414,7 @@ class AppTranslations extends Translations {
       "totalAmount": "Total Amount",
       "addFirstTransaction": "Add your first transaction to get started",
       "addTransaction": "Add Transaction",
+      "recentActivity": "Recent Activity",
 
       // -------------------------------Category Card-------------------------------
       "transactionDetails": "Transaction Details",
@@ -621,6 +624,13 @@ class AppTranslations extends Translations {
       "inactive": "Inactive",
       "scheduled_time": "Scheduled Time",
       "not_set": "Not set",
+      "edit_record": "Edit Record",
+      "given_taken_report": "Given-Taken Report",
+      "share": "Share",
+      "download": "Download",
+      "given_taken_summary": "Given-Taken Summary",
+      "get": "Get",
+      "pay": "Pay",
 
       // -------------------------------Setting View -------------------------------
 
@@ -736,7 +746,6 @@ class AppTranslations extends Translations {
       "pay_yourself_first": "Pay yourself first — save before you spend.",
       "save_five_percent_challenge":
           "Challenge: Save at least 5% of today’s income!",
-      "emergency_fund_peace": "Want peace of mind? Build an emergency fund.",
       "review_savings_goal": "Review your savings goal — adjust if needed.",
       "track_spending_daily":
           "Saving is easier when spending is tracked. Don’t forget today’s entries!",
@@ -746,16 +755,10 @@ class AppTranslations extends Translations {
       "plan_todays_spending": "Plan today’s spending before you spend.",
       "update_categories":
           "Update your categories — budget smarter, not harder.",
-      "zero_based_budgeting":
-          "Zero-based budgeting works wonders. Try it today!",
-      "needs_vs_wants":
-          "Keep your needs and wants separate — your wallet will thank you.",
       "delay_if_not_in_budget": "If it's not in the budget, delay it.",
       "budget_is_roadmap": "Your budget is your roadmap — follow it daily.",
       "review_last_week_expenses":
           "Revisit last week's expenses — any mistakes to fix?",
-      "consistency_over_perfection":
-          "Consistency beats perfection. Track daily.",
       "think_before_buying":
           "Think twice before buying — do you really need it?",
       "avoid_emotional_spending":
@@ -764,46 +767,20 @@ class AppTranslations extends Translations {
           "Compare prices before every purchase. Saves more than you think.",
       "shopping_list_reminder":
           "Carry a list when shopping — avoid impulse buys!",
-      "discounts_arent_savings":
-          "Discounts aren’t savings if you don’t need the item.",
-      "cook_at_home": "Cook at home today — save more than you expect.",
-      "no_spend_day_challenge": "Challenge: One no-spend day this week.",
-      "review_subscriptions": "Review your subscriptions — cancel unused ones.",
-      "buy_quality_not_quantity":
-          "Buy quality, not quantity — good items last longer.",
-      "avoid_small_daily_expenses":
-          "Avoid daily small expenses — they secretly drain savings.",
       "track_all_income": "Track all income — big or small.",
-      "new_side_hustle_idea": "Explore a new side hustle idea today.",
       "invest_in_yourself":
           "Skill development pays back with interest — invest in yourself.",
-      "monetize_hobby": "Monetize a hobby — extra income helps your goals.",
-      "upgrade_skills_question":
-          "Ask yourself: Can I earn more by upgrading my skills?",
       "extra_income_acceleration":
           "Every extra taka you earn accelerates your goals!",
-      "diversify_income_sources":
-          "Don't depend on one income source — diversify slowly.",
-      "strong_resume_strong_income":
-          "A stronger resume = stronger income. Keep growing.",
       "save_extra_income": "Save at least 20% of extra income.",
       "use_bonuses_wisely":
           "Use bonuses wisely — save or invest, don’t blow it.",
       "daily_financial_habit":
           "Financial success is a daily habit — stay consistent.",
-      "track_expenses_now":
-          "Track your expenses right now — don’t wait till evening.",
-      "healthy_wallet_entries":
-          "Your wallet becomes healthier with every entry you add.",
       "avoid_tracking_delay":
           "Don’t delay — small tracking delays lead to big mistakes.",
       "review_monthly_goals":
           "Review your monthly goals — progress starts today.",
-      "one_good_habit_away":
-          "You’re one good habit away from financial improvement.",
-      "update_finzycash": "Keep yourself accountable — update FinzyCash today.",
-      "protect_your_money": "Protect your money like you protect your time.",
-      "daily_habits_to_freedom": "Small daily habits → Big financial freedom.",
       "consistency_is_superpower":
           "Consistency is your superpower — stay on track!",
 
@@ -828,8 +805,206 @@ class AppTranslations extends Translations {
       'pro_active': 'Pro Active',
       'lifetime': 'Lifetime',
       "repeat_daily": "Repeat Daily",
+      "given_taken": "Given–Taken",
+      "transaction_type": "Transaction Type",
+      "features": "Features",
+      "you_will_get": "You Will Get",
+      "you_need_to_pay": "You Need to Pay",
+      "given": "Given",
+      "taken": "Taken",
+      "no_contacts_yet": "No contacts yet",
+      "add_person_to_track": "Add a person to track lending",
+      "add_person": "Add Person",
+      "edit_person": "Edit Person",
+      "delete_person": "Delete Person",
+      "person_name": "Person Name",
+      "phone_number": "Phone Number",
+      "address": "Address",
+      "initial_amount": "Initial Amount",
+      "net_balance": "Net Balance",
+      "transactions_history": "Transactions History",
+      "records": "Records",
+      "add_record": "Add Record",
+      "settle_up": "Settle Up",
+      "mark_as_settled": "Mark as Settled",
+      "confirm_delete_person":
+          "Are you sure you want to delete this person and all their transactions?",
+      "confirm_delete_transaction":
+          "Are you sure you want to delete this transaction?",
+      "delete_transaction": "Delete Transaction",
+      "amount_required": "Amount is required",
+      "enter_valid_amount": "Please enter a valid amount",
+      "name_required": "Name is required",
+      "enter_name": "Please enter a name",
+      "enter_phone_number": "Enter phone number (optional)",
+      "enter_address": "Enter address (optional)",
+      "enter_note": "Enter note (optional)",
+      "transaction_added": "Transaction added successfully",
+      "transaction_updated": "Transaction updated successfully",
+      "transaction_deleted": "Transaction deleted successfully",
+      "person_deleted": "Person deleted successfully",
+      "person_added": "Person added successfully",
+      "person_updated": "Person updated successfully",
+      "success": "Success",
+      "settled_successfully": "Settled successfully",
+      "confirm_settle_up": "Are you sure you want to settle the full balance?",
+      "error": "Error",
+      "failed_to_load_transactions": "Failed to load transactions",
+      "failed_to_save_contact": "Failed to save contact",
+      "failed_to_save_transaction": "Failed to save transaction",
+      "failed_to_settle_up": "Failed to settle up",
       "connect_internet_to_buy":
           "Please connect to the internet to purchase a plan.",
+
+      // App Lock Translations
+      'unlock_your_app': 'Unlock Your App',
+      'use_biometric_or_pin': 'Use your biometric or PIN',
+      'authenticating': 'Authenticating...',
+      'authenticate_to_unlock': 'Authenticate to unlock Hisab Rakhi',
+      'device_check_failed': 'Device check failed',
+      'biometric_check_failed': 'Biometric check failed',
+      'authentication_failed': 'Authentication failed',
+      'biometric_hardware_not_available':
+          'Biometric hardware not available on this device',
+      'no_biometric_enrolled':
+          'No fingerprint / face enrolled in device settings',
+      'locked_out': 'Too many attempts. Try again later',
+      'permanently_locked_out': 'Biometric locked. Use device PIN to unlock',
+      'passcode_not_set': 'No screen lock set on this device',
+      'app_lock': 'App Lock',
+      'app_lock_enabled': 'App Lock Enabled',
+      'enable_app_lock': 'Enable App Lock',
+      'disable_app_lock': 'Disable App Lock',
+      'app_lock_enabled_description':
+          'Your financial data is protected with device security.',
+      'app_lock_disabled_description':
+          'Secure your financial data using fingerprint, face ID, or PIN.',
+      'please_enter_pin': 'Please enter PIN',
+      'incorrect_pin': 'Incorrect PIN. Try again.',
+      'no_pin_set': 'No PIN set for this app',
+      'failed_to_set_pin': 'Failed to set PIN',
+      'failed_to_clear_pin': 'Failed to clear PIN',
+      'failed_to_set_biometric': 'Failed to set biometric preference',
+      'enter_app_pin': 'Enter your app PIN',
+      'enter_pin_hint': '0000',
+      'unlock': 'Unlock',
+      'biometric_not_available': 'Biometric is not available on this device',
+      'set_app_pin': 'Set App PIN',
+      'create_secure_pin': 'Create a secure PIN to protect your app',
+      'enter_pin': 'Enter PIN',
+      'confirm_pin': 'Confirm PIN',
+      'set_pin': 'Set PIN',
+      'pin_must_be_4_digits': 'PIN must be at least 4 digits',
+      'pins_do_not_match': 'PINs do not match',
+      'app_lock_enabled_success': 'App lock enabled successfully!',
+      'failed_to_enable_app_lock': 'Failed to enable app lock',
+
+      // Savings Feature
+      'savingsGoals': 'Savings Goals',
+      'noSavingsGoalsYet': 'No Savings Goals Yet',
+      'createYourFirstGoal': 'Start saving today by creating your first goal',
+      'createGoal': 'Create Goal',
+      'saved': 'Saved',
+      'target': 'Target',
+      'goalCompleted': 'Goal Completed',
+      'goalsCompleted': 'Goals Completed',
+      'totalSaved': 'Total Saved',
+      'deleteGoal': 'Delete Goal',
+      'confirmDeleteGoal': 'Are you sure you want to delete this goal?',
+      'goalDeleted': 'Goal deleted successfully',
+
+      // Phase 5: Create/Edit Goal
+      'editGoal': 'Edit Goal',
+      'goalName': 'Goal Name',
+      'enterGoalName': 'e.g., Emergency Fund, Vacation',
+      'goalNameRequired': 'Goal name is required',
+      'goalNameTooShort': 'Goal name must be at least 2 characters',
+      'targetAmount': 'Target Amount',
+      'enterAmount': 'Enter target amount',
+      'invalidAmount': 'Please enter a valid amount',
+
+      'goalSummary': 'Goal Summary',
+      'notSet': 'Not set',
+      'update': 'Update',
+      'create': 'Create',
+      'goalCreated': 'Goal created successfully!',
+      'goalUpdated': 'Goal updated successfully!',
+
+      // Phase 6: Goal Details
+      'progress': 'Progress',
+      'completed': 'Completed',
+      'inProgress': 'In Progress',
+      'addOrRemoveAmount': 'Add or Remove Amount',
+      'goalInfo': 'Goal Information',
+      'createdAt': 'Created At',
+      'recentTransactions': 'Recent Transactions',
+      'viewAll': 'View All',
+      'added': 'Added',
+      'removed': 'Removed',
+
+      // Phase 7: Add/Remove Amount
+      'add': 'Add',
+      'remove': 'Remove',
+
+      'note': 'Note',
+      'enterNote': 'Add notes (optional)',
+      'transactionSummary': 'Transaction Summary',
+      'type': 'Type',
+      'adding': 'Adding',
+      'removing': 'Removing',
+      'newBalance': 'New Balance',
+      'transactionAdded': 'Transaction added successfully!',
+      'cannotRemoveMoreThanSaved': 'Cannot remove more than current balance',
+
+      // Phase 8: Transactions List
+      'allTransactions': 'All Transactions',
+      'confirmDelete': 'Confirm Delete',
+      'deleteTransactionWarning':
+          'Are you sure you want to delete this transaction?',
+      'transactionDeleted': 'Transaction deleted successfully',
+      'editTransactionTBD': 'Edit transaction feature coming soon',
+      'addMoney': 'Add Money',
+      'started': 'Started',
+      'keepGoing': 'Keep Going!',
+      'milestoneAchieved': 'Milestone Achieved! 🎉',
+      'milestoneReached_one': 'You\'ve reached',
+      'milestoneReached_other': 'of your goal',
+      'moneyAdded': 'Money Added',
+      'moneyRemoved': 'Money Removed',
+      'commonTags': 'Common Tags',
+      'deleteTransaction': 'Delete Transaction',
+      'optional': 'Optional',
+
+      // Phase 9: Edit/Delete Transaction
+      'editTransaction': 'Edit Transaction',
+      'transactionUpdated': 'Transaction updated successfully',
+
+      // OPTIONAL: Enhanced Features
+      'dailySavingNeeded': 'Daily Saving Needed',
+      'milestone': 'Milestone',
+      'milestone25': '25% Milestone',
+      'milestone50': '50% Milestone',
+      'milestone75': '75% Milestone',
+      'milestoneComplete': 'Goal Completed',
+      'commonNotes': 'Common Notes',
+
+      // ------------------------------- Notes Feature -------------------------------
+      'no_notes_yet': 'No notes yet',
+      'create_first_note': 'Tap + to create your first note',
+      'delete_note_title': 'Delete Note',
+      'delete_note_message': 'Are you sure you want to delete this note?',
+      'note_deleted': 'Note deleted',
+      'add_note': 'Add Note',
+      'edit_note': 'Edit Note',
+      'write_your_note_here': 'Write your note here...',
+      'discard_changes': 'Discard Changes?',
+      'discard_note_message':
+          'You have unsaved changes. Are you sure you want to discard them?',
+      'discard': 'Discard',
+      'note_content_empty': 'Note content cannot be empty',
+      'note_updated': 'Note updated successfully',
+      'note_added': 'Note added successfully',
+      'failed_to_save_note': 'Failed to save note',
     },
     'bn_BD': {
       "login": "লগইন",
@@ -1424,73 +1599,38 @@ class AppTranslations extends Translations {
       "save_five_percent_challenge":
           "টাকা কোথায় গেল জানলেই, টাকা থাকা শুরু হয়।",
       "review_savings_goal":
-          "আপনার সঞ্চয়ের লক্ষ্য পর্যালোচনা করুন — প্রয়োজনে সামঞ্জস্য করুন।",
-      "track_spending_daily":
-          "খরচ ট্র্যাক করলে সঞ্চয় সহজ হয়। আজকের এন্ট্রিগুলো ভুলবেন না!",
+          "আপনার সঞ্চয়ের লক্ষ্য পর্যালোচনা করুন — প্রয়োজনে এডজাস্ট করুন।",
+      "track_spending_daily": "খরচ ট্র্যাক করলে সঞ্চয় সহজ হয়!",
       "budget_limit_check":
           "দেখে নিন আজ কত খরচ হয়েছে, বাজেটের মধ্যে আছে কি না।",
-      "daily_budget_check": "দৈনিক বাজেট পরীক্ষা করলে টাকার চাপ দূরে থাকে।",
+      "daily_budget_check": "দৈনিক বাজেট ট্র্যাক করলে টাকার চাপ দূরে থাকে।",
       "plan_todays_spending": "খরচ করার আগে আজকের খরচ পরিকল্পনা করুন।",
       "update_categories": "আজ হিসাব রাখলে, আগামীকাল চাপ কমে।",
-      "zero_based_budgeting": "আয় নয়, অভ্যাসই ঠিক করে আপনি ধনী হবেন কি না।",
-      "needs_vs_wants":
-          "আপনার প্রয়োজন আর ইচ্ছা আলাদা রাখুন — আপনার মানিব্যাগ আপনাকে ধন্যবাদ জানাবে।",
-      "delay_if_not_in_budget": "প্রতিটি টাকার একটা গল্প আছে—লিখে রাখুন।",
+      "delay_if_not_in_budget": "আপনার চাহিদা এবং ইচ্ছা অনুযায়ী খরচ করুন।",
       "budget_is_roadmap":
-          "আপনার বাজেটই আপনার রোডম্যাপ — প্রতিদিন এটি অনুসরণ করুন।",
+          "আপনার বাজেটই আপনার রোডম্যাপ — প্রতিদিন এটি অনুসরণ করুন হিসাব রাখি অ্যাপের সাহায্যে।",
       "review_last_week_expenses":
           "গত সপ্তাহের খরচ আবার দেখুন — কোনো ভুল ঠিক করার আছে?",
-      "consistency_over_perfection":
-          "ধারাবাহিকতা নিখুঁততার চেয়ে ভালো। প্রতিদিন ট্র্যাক করুন।",
       "think_before_buying":
           "কেনার আগে দুবার ভাবুন — আপনার সত্যিই দরকার আছে কি?",
       "avoid_emotional_spending": "অপ্রয়োজনীয় খরচই ভবিষ্যতের সবচেয়ে বড় শত্রু।",
-      "compare_prices":
-          "প্রতিটি কেনার আগে দাম তুলনা করুন। আপনি যতটা ভাবেন তার চেয়ে বেশি সঞ্চয় হয়।",
+      "compare_prices": "প্রতিটি কেনার আগে দাম তুলনা করুন।",
       "shopping_list_reminder":
           "শপিং করার সময় একটি তালিকা নিয়ে যান — আবেগের বশে কেনা এড়িয়ে চলুন!",
-      "discounts_arent_savings": "সঞ্চয় মানে কৃপণতা নয়, সচেতনতা।",
-      "cook_at_home": "ছোট কয়েনই বড় স্বপ্নের বীজ।",
-      "no_spend_day_challenge":
-          "হিসাব রাখার অভ্যাসই আর্থিক স্বাধীনতার প্রথম ধাপ।",
-      "review_subscriptions":
-          "আপনার সাবস্ক্রিপশনগুলো পর্যালোচনা করুন — ব্যবহার না করা গুলো বাতিল করুন।",
-      "buy_quality_not_quantity": "টাকা আপনার দাস হোক, আপনি টাকার দাস নন।",
-      "avoid_small_daily_expenses":
-          "দৈনিক ছোট খরচ এড়িয়ে চলুন — এগুলো গোপনে সঞ্চয় কমিয়ে দেয়।",
       "track_all_income": "সব আয় ট্র্যাক করুন — বড় বা ছোট।",
-      "new_side_hustle_idea": "আজ একটি নতুন সাইড হাস্টল আইডিয়া অন্বেষণ করুন।",
-      "invest_in_yourself":
-          "দক্ষতা বাড়ানো সুদ সহ ফেরত দেয় — নিজের উপর বিনিয়োগ করুন।",
-      "monetize_hobby":
-          "একটি শখকে আয়ের উৎস করুন — অতিরিক্ত আয় আপনার লক্ষ্যে সাহায্য করে।",
-      "upgrade_skills_question":
-          "নিজেকে জিজ্ঞাসা করুন: আমি কি দক্ষতা বাড়িয়ে আরও আয় করতে পারি?",
+      "invest_in_yourself": "নিজের উপর বিনিয়োগ করুন।",
       "extra_income_acceleration":
           "আপনি যে অতিরিক্ত টাকা আয় করেন তা আপনার লক্ষ্যগুলো দ্রুত অর্জনে সাহায্য করে!",
-      "diversify_income_sources":
-          "একটি আয়ের উৎসের উপর নির্ভর করবেন না — ধীরে ধীরে বৈচিত্র্য আনুন।",
-      "strong_resume_strong_income": "মাসের শেষে নয়, মাসের শুরুতেই সঞ্চয় করুন।",
       "save_extra_income": "অতিরিক্ত আয়ের কমপক্ষে ২০% সঞ্চয় করুন।",
       "use_bonuses_wisely":
           "বোনাস বুদ্ধিমানের মতো ব্যবহার করুন — সঞ্চয় করুন বা বিনিয়োগ করুন, অপচয় করবেন না।",
       "daily_financial_habit":
           "আর্থিক সাফল্য একটি দৈনিক অভ্যাস — ধারাবাহিক থাকুন।",
-      "track_expenses_now":
-          "আপনার খরচ এখনই ট্র্যাক করুন — সন্ধ্যা পর্যন্ত অপেক্ষা করবেন না।",
-      "healthy_wallet_entries":
-          "আপনি যত এন্ট্রি যোগ করবেন, আপনার মানিব্যাগ তত সুস্থ হবে।",
       "avoid_tracking_delay":
           "দেরি করবেন না — ছোট ট্র্যাকিং দেরি বড় ভুলের কারণ হয়।",
       "review_monthly_goals":
-          "আপনার মাসিক লক্ষ্য পর্যালোচনা করুন — আজ থেকেই অগ্রগতি শুরু হয়।",
-
-      "update_finzycash":
-          "নিজেকে দায়িত্বশীল রাখুন — হিসাবহীন আয়ও একদিন ফুরিয়ে যায়।",
-      "protect_your_money":
-          "আপনি যেভাবে সময় রক্ষা করেন, সেভাবে টাকা রক্ষা করুন।",
-      "consistency_is_superpower":
-          "ধারাবাহিকতা আপনার সুপারপাওয়ার — পথে থাকুন!",
+          "আপনার মাসিক লক্ষ্য পর্যালোচনা করুন — আজ থেকেই অগ্রগতি শুরু হবে।",
+      "consistency_is_superpower": "ধারাবাহিকতা আপনার সুপারপাওয়ার!",
 
       "appearance": "অ্যাপিয়ারেন্স",
       "warningTitleTransacton": "ওভারস্পেন্ডিং সতর্কবার্তা",
@@ -1503,6 +1643,61 @@ class AppTranslations extends Translations {
       'today': 'আজ',
       'yesterday': 'গতকাল',
       'expense': 'খরচ',
+      "given_taken": "দেনা-পাওনা",
+      "transaction_type": "লেনদেনের ধরন",
+      "features": "ফিচারসমূহ",
+      "you_will_get": "পাবেন",
+      "you_need_to_pay": "দিতে হবে",
+      "given": "দেনা",
+      "taken": "পাওনা",
+      "no_contacts_yet": "এখনও কোনো কন্টাক্ট নেই",
+      "add_person_to_track": "লেনদেন ট্র্যাক করতে নতুন ব্যক্তি যোগ করুন",
+      "add_person": "ব্যক্তি যোগ করুন",
+      "edit_person": "তথ্য পরিবর্তন",
+      "delete_person": "মুছে ফেলুন",
+      "person_name": "ব্যক্তির নাম",
+      "phone_number": "ফোন নম্বর",
+      "address": "ঠিকানা",
+      "initial_amount": "শুরুর ব্যালেন্স",
+      "net_balance": "মোট ব্যালেন্স",
+      "transactions_history": "লেনদেনের ইতিহাস",
+      "records": "রেকর্ড",
+      "add_record": "রেকর্ড যোগ করুন",
+      "given_taken_report": "দেনা-পাওনা রিপোর্ট",
+      "share": "শেয়ার",
+      "download": "ডাউনলোড",
+      "given_taken_summary": "দেনা-পাওনা সারসংক্ষেপ",
+      "get": "পাবেন",
+      "pay": "দেবেন",
+      "settle_up": "হিসাব মিটিয়ে নিন",
+      "mark_as_settled": "পরিশোধিত হিসেবে চিহ্নিত করুন",
+      "confirm_delete_person":
+          "আপনি কি নিশ্চিত যে এই ব্যক্তি এবং তার সব লেনদেন মুছে ফেলতে চান?",
+      "confirm_delete_transaction":
+          "আপনি কি নিশ্চিত যে এই লেনদেনটি মুছে ফেলতে চান?",
+      "delete_transaction": "লেনদেন মুছে ফেলুন",
+      "amount_required": "টাকার পরিমাণ প্রয়োজন",
+      "enter_valid_amount": "সঠিক পরিমাণ লিখুন",
+      "name_required": "নাম প্রয়োজন",
+      "enter_name": "একটি নাম লিখুন",
+      "enter_phone_number": "ফোন নম্বর লিখুন (ঐচ্ছিক)",
+      "enter_address": "ঠিকানা লিখুন (ঐচ্ছিক)",
+      "enter_note": "নোট লিখুন (ঐচ্ছিক)",
+      "transaction_added": "লেনদেন সফলভাবে যোগ করা হয়েছে",
+      "transaction_updated": "লেনদেন সফলভাবে আপডেট করা হয়েছে",
+      "transaction_deleted": "লেনদেন সফলভাবে মুছে ফেলা হয়েছে",
+      "person_deleted": "ব্যক্তি সফলভাবে মুছে ফেলা হয়েছে",
+      "person_added": "ব্যক্তি সফলভাবে যোগ করা হয়েছে",
+      "person_updated": "ব্যক্তি সফলভাবে আপডেট করা হয়েছে",
+      "success": "সফল",
+      "settled_successfully": "সফলভাবে হিসাব মিটিয়ে ফেলা হয়েছে",
+      "confirm_settle_up":
+          "আপনি কি নিশ্চিত যে আপনি পুরো হিসাব মিটিয়ে ফেলতে চান?",
+      "error": "ত্রুটি",
+      "failed_to_load_transactions": "লেনদেন লোড করতে ব্যর্থ হয়েছে",
+      "failed_to_save_contact": "যোগাযোগ সংরক্ষণ করতে ব্যর্থ হয়েছে",
+      "failed_to_save_transaction": "লেনদেন সংরক্ষণ করতে ব্যর্থ হয়েছে",
+      "failed_to_settle_up": "হিসাব মিটিয়ে ফেলতে ব্যর্থ হয়েছে",
 
       // ------------------------------- Auth & Settings New Keys -------------------------------
       'pro_user': 'প্রো ইউজার',
@@ -1606,6 +1801,163 @@ class AppTranslations extends Translations {
       'no_content_in_response': 'কোনো ডেটা পাওয়া যায়নি',
       'failed_to_parse_response': 'প্রতিক্রিয়া বিশ্লেষণ করতে ব্যর্থ',
       'ai_request_failed': 'এআই রিকোয়েস্ট ফেইল',
+
+      // App Lock Translations
+      'unlock_your_app': 'আপনার অ্যাপ আনলক করুন',
+      'use_biometric_or_pin': 'আপনার বায়োমেট্রিক বা পিন ব্যবহার করুন',
+      'authenticating': 'যাচাই করা হচ্ছে...',
+      'authenticate_to_unlock': 'হিসাব রাখি আনলক করতে যাচাই করুন',
+      'device_check_failed': 'ডিভাইস চেক ব্যর্থ হয়েছে',
+      'biometric_check_failed': 'বায়োমেট্রিক চেক ব্যর্থ হয়েছে',
+      'authentication_failed': 'যাচাইকরণ ব্যর্থ',
+      'biometric_hardware_not_available':
+          'এই ডিভাইসে বায়োমেট্রিক হার্ডওয়্যার উপলব্ধ নয়',
+      'no_biometric_enrolled':
+          'ডিভাইস সেটিংসে কোন ফিঙ্গারপ্রিন্ট / ফেস নিবন্ধিত নয়',
+      'locked_out': 'অনেক চেষ্টার পর লক হয়েছে। পরে আবার চেষ্টা করুন',
+      'permanently_locked_out':
+          'বায়োমেট্রিক লক হয়েছে। ডিভাইস পিন ব্যবহার করে আনলক করুন',
+      'passcode_not_set': 'এই ডিভাইসে স্ক্রিন লক সেট করা নেই',
+      'app_lock': 'অ্যাপ লক',
+      'app_lock_enabled': 'অ্যাপ লক সক্রিয়',
+      'enable_app_lock': 'অ্যাপ লক সক্রিয় করুন',
+      'disable_app_lock': 'অ্যাপ লক নিষ্ক্রিয় করুন',
+      'app_lock_enabled_description':
+          'আপনার আর্থিক তথ্য ডিভাইস নিরাপত্তা দ্বারা সুরক্ষিত।',
+      'app_lock_disabled_description':
+          'ফিঙ্গারপ্রিন্ট, ফেস আইডি বা পিন ব্যবহার করে আপনার আর্থিক তথ্য সুরক্ষিত করুন।',
+      'please_enter_pin': 'অনুগ্রহ করে পিন লিখুন',
+      'incorrect_pin': 'ভুল পিন। আবার চেষ্টা করুন।',
+      'no_pin_set': 'এই অ্যাপের জন্য কোনো পিন সেট করা নেই',
+      'failed_to_set_pin': 'পিন সেট করতে ব্যর্থ',
+      'failed_to_clear_pin': 'পিন মুছতে ব্যর্থ',
+      'failed_to_set_biometric': 'বায়োমেট্রিক পছন্দ সেট করতে ব্যর্থ',
+      'enter_app_pin': 'আপনার অ্যাপ পিন প্রবেश করুন',
+      'enter_pin_hint': '০০০০',
+      'unlock': 'আনলক করুন',
+      'biometric_not_available': 'এই ডিভাইসে বায়োমেট্রিক উপলব্ধ নেই',
+      'set_app_pin': 'অ্যাপ পিন সেট করুন',
+      'create_secure_pin': 'আপনার অ্যাপ রক্ষা করতে একটি নিরাপদ পিন তৈরি করুন',
+      'enter_pin': 'পিন লিখুন',
+      'confirm_pin': 'পিন নিশ্চিত করুন',
+      'set_pin': 'পিন সেট করুন',
+      'pin_must_be_4_digits': 'পিন কমপক্ষে ৪ অঙ্কের হতে হবে',
+      'pins_do_not_match': 'পিনগুলি মেলে না',
+      'app_lock_enabled_success': 'অ্যাপ লক সফলভাবে সক্রিয় করা হয়েছে!',
+      'failed_to_enable_app_lock': 'অ্যাপ লক সক্রিয় করতে ব্যর্থ',
+
+      // Savings Feature
+      'savingsGoals': 'সঞ্চয় লক্ষ্য',
+      'noSavingsGoalsYet': 'এখনও কোনো সঞ্চয় লক্ষ্য নেই',
+      'createYourFirstGoal': 'আজই সঞ্চয় শুরু করুন আপনার প্রথম লক্ষ্য তৈরি করে',
+      'createGoal': 'লক্ষ্য তৈরি করুন',
+      'saved': 'সঞ্চিত',
+      'target': 'লক্ষ্য',
+
+      'goalCompleted': 'লক্ষ্য সম্পন্ন',
+      'goalsCompleted': 'লক্ষ্য সম্পন্ন',
+      'totalSaved': 'মোট সঞ্চিত',
+      'deleteGoal': 'লক্ষ্য মুছুন',
+      'confirmDeleteGoal': 'আপনি কি এই লক্ষ্যটি মুছতে চান?',
+      'goalDeleted': 'লক্ষ্য সফলভাবে মুছা হয়েছে',
+
+      // Phase 5: Create/Edit Goal
+      'editGoal': 'লক্ষ্য সম্পাদনা করুন',
+      'goalName': 'লক্ষ্যের নাম',
+      'enterGoalName': 'যেমন, জরুরি তহবিল, ছুটির দিন',
+      'goalNameRequired': 'লক্ষ্যের নাম প্রয়োজন',
+      'goalNameTooShort': 'লক্ষ্যের নাম কমপক্ষে ২ অক্ষরের হতে হবে',
+      'targetAmount': 'লক্ষ্য পরিমাণ',
+      'enterAmount': 'লক্ষ্য পরিমাণ লিখুন',
+      'invalidAmount': 'অনুগ্রহ করে একটি বৈধ পরিমাণ লিখুন',
+      'amountMustBePositive': 'পরিমাণ ০ এর চেয়ে বেশি হতে হবে',
+
+      'goalSummary': 'লক্ষ্যের সারসংক্ষেপ',
+      'notSet': 'সেট করা হয়নি',
+      'update': 'আপডেট করুন',
+      'create': 'তৈরি করুন',
+      'goalCreated': 'লক্ষ্য সফলভাবে তৈরি করা হয়েছে!',
+      'goalUpdated': 'লক্ষ্য সফলভাবে আপডেট করা হয়েছে!',
+
+      // Phase 6: Goal Details
+      'progress': 'অগ্রগতি',
+      'completed': 'সম্পন্ন',
+      'inProgress': 'চলমান',
+      'addOrRemoveAmount': 'পরিমাণ যোগ বা অপসারণ করুন',
+      'goalInfo': 'লক্ষ্য তথ্য',
+      'createdAt': 'তৈরি করা হয়েছে',
+      'recentTransactions': 'সাম্প্রতিক লেনদেন',
+
+      'viewAll': 'সব দেখুন',
+      'added': 'যোগ করা হয়েছে',
+      'removed': 'অপসারণ করা হয়েছে',
+
+      // Phase 7: Add/Remove Amount
+      'add': 'যোগ করুন',
+      'remove': 'অপসারণ করুন',
+
+      'enterNote': 'নোট যোগ করুন (ঐচ্ছিক)',
+      'transactionSummary': 'লেনদেনের সারসংক্ষেপ',
+      'type': 'ধরন',
+      'adding': 'যোগ করা হচ্ছে',
+      'removing': 'অপসারণ করা হচ্ছে',
+      'newBalance': 'নতুন ব্যালেন্স',
+      'transactionAdded': 'লেনদেন সফলভাবে যোগ করা হয়েছে!',
+      'cannotRemoveMoreThanSaved':
+          'বর্তমান ব্যালেন্সের চেয়ে বেশি অপসারণ করতে পারবেন না',
+
+      // Phase 8: Transactions List
+      'allTransactions': 'সমস্ত লেনদেন',
+      'confirmDelete': 'মুছে ফেলার নিশ্চিতকরণ',
+      'deleteTransactionWarning': 'আপনি কি এই লেনদেনটি মুছে ফেলতে নিশ্চিত?',
+      'transactionDeleted': 'লেনদেন সফলভাবে মুছে ফেলা হয়েছে',
+      'editTransactionTBD': 'লেনদেন সম্পাদন বৈশিষ্ট্য শীঘ্রই আসছে',
+
+      // Phase 9: Edit/Delete Transaction
+      'editTransaction': 'লেনদেন সম্পাদন করুন',
+      'transactionUpdated': 'লেনদেন সফলভাবে আপডেট করা হয়েছে',
+
+      // OPTIONAL: Enhanced Features
+      'dailySavingNeeded': 'প্রতিদিন সঞ্চয় প্রয়োজন',
+      'milestone': 'মাইলফলক',
+      'milestone25': '২৫% মাইলফলক',
+      'milestone50': '৫০% মাইলফলক',
+      'milestone75': '৭৫% মাইলফলক',
+      'milestoneComplete': 'লক্ষ্য সম্পন্ন',
+      'commonNotes': 'সাধারণ নোট',
+      'addMoney': 'টাকা যোগ করুন',
+      'started': 'শুরু হয়েছে',
+      'keepGoing': 'চালিয়ে যান!',
+      'milestoneAchieved': 'মাইলফলক অর্জিত! 🎉',
+      'milestoneReached_one': 'আপনি আপনার লক্ষ্যের',
+      'milestoneReached_other': 'এ পৌঁছেছেন',
+      'moneyAdded': 'টাকা যোগ করা হয়েছে',
+      'moneyRemoved': 'টাকা তোলা হয়েছে',
+      'viewMore': 'আরও দেখুন',
+      'commonTags': 'সাধারণ ট্যাগ',
+      'deleteTransaction': 'লেনদেন মুছুন',
+      'optional': 'ঐচ্ছিক',
+      'recentActivity': 'সাম্প্রতিক লেনদেন',
+      'more': 'আরও',
+      'edit_record': 'সম্পাদন করুন',
+
+      // ------------------------------- Notes Feature -------------------------------
+      'no_notes_yet': 'এখনও কোনো নোট নেই',
+      'create_first_note': 'প্রথম নোট তৈরি করতে + ট্যাপ করুন',
+      'delete_note_title': 'নোট মুছুন',
+      'delete_note_message': 'আপনি কি নিশ্চিত যে আপনি এই নোটটি মুছে ফেলতে চান?',
+      'note_deleted': 'নোট মুছে ফেলা হয়েছে',
+      'add_note': 'নোট যোগ করুন',
+      'edit_note': 'নোট সম্পাদনা করুন',
+      'write_your_note_here': 'আপনার নোট এখানে লিখুন...',
+      'discard_changes': 'পরিবর্তন বাতিল করবেন?',
+      'discard_note_message':
+          'আপনার কিছু পরিবর্তন সেভ করা হয়নি। আপনি কি নিশ্চিত যে আপনি সেগুলি বাতিল করতে চান?',
+      'discard': 'বাতিল',
+      'note_content_empty': 'নোটের বিষয়বস্তু ফাঁকা রাখা যাবে না',
+      'note_updated': 'নোট সফলভাবে আপডেট করা হয়েছে',
+      'note_added': 'নোট সফলভাবে যোগ করা হয়েছে',
+      'failed_to_save_note': 'নোট সংরক্ষণ করতে ব্যর্থ হয়েছে',
     },
   };
 }

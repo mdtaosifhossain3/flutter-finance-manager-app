@@ -34,6 +34,10 @@ class _ReminderViewState extends State<ReminderView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(
+        leading: IconButton(
+          onPressed: () => Get.back(),
+          icon: const Icon(Icons.arrow_back),
+        ),
         title: "reminder".tr,
         actions: [
           IconButton(

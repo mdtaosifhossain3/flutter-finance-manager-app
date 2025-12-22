@@ -156,7 +156,7 @@ class _VerifyOtpViewState extends State<VerifyOtpView> {
                               Navigator.pop(context); // Close loading dialog
 
                               if (result['success'] == true) {
-                                Get.offAll(() => const MainView());
+                                Get.offAll(const MainView());
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text(result['message'])),
                                 );

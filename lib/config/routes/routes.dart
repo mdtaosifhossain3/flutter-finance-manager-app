@@ -1,4 +1,6 @@
 import 'package:finance_manager_app/config/routes/routes_name.dart';
+import 'package:finance_manager_app/models/givenTakenModel/contact_lend_model.dart';
+import 'package:finance_manager_app/models/givenTakenModel/lend_transaction_model.dart';
 import 'package:finance_manager_app/views/budgetView/pages/add_budget_view.dart';
 import 'package:finance_manager_app/views/categoryView/category_view.dart';
 import 'package:finance_manager_app/views/categoryView/pages/transaction_form_view.dart';
@@ -8,6 +10,10 @@ import 'package:finance_manager_app/views/notificationView/notification_view.dar
 import 'package:finance_manager_app/views/reportView/report_view.dart';
 import 'package:finance_manager_app/views/settingView/setting_view.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
+import 'package:finance_manager_app/views/givenTakenView/given_taken_view.dart';
+import 'package:finance_manager_app/views/givenTakenView/pages/add_edit_person_view.dart';
+import 'package:finance_manager_app/views/givenTakenView/pages/person_details_view.dart';
+import 'package:finance_manager_app/views/givenTakenView/pages/add_edit_transaction_view.dart';
 import 'package:get/get.dart';
 
 import '../../views/budgetView/budget_view.dart';
@@ -96,6 +102,32 @@ class Routes {
     GetPage(
       name: RoutesName.settingView,
       page: () => SettingsPage(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.givenTakenView,
+      page: () => const GivenTakenView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.addEditPersonView,
+      page: () => const AddEditPersonView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.personDetailsView,
+      page: () => PersonDetailsView(contact: Get.arguments as ContactLend),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.addEditTransactionView,
+      page: () {
+        final args = Get.arguments as Map<String, dynamic>;
+        return AddEditTransactionView(
+          contactId: args['contactId'] as int,
+          transaction: args['transaction'] as LendTransaction?,
+        );
+      },
       transition: Transition.rightToLeft,
     ),
   ];

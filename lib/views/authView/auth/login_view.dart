@@ -105,6 +105,8 @@ class _LoginViewState extends State<LoginView> {
                       onPressed: authProvider.isLoading
                           ? null
                           : () {
+                              FocusScope.of(context).unfocus();
+
                               if (_formKey.currentState!.validate()) {
                                 authProvider.login(
                                   _emailController.text.trim(),

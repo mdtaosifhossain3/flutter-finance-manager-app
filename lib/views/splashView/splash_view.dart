@@ -16,7 +16,10 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     // Initialize app logic
-    SplashViewModel.initApp(context);
+    //  SplashViewModel.initApp(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SplashViewModel.initApp(context);
+    });
   }
 
   @override

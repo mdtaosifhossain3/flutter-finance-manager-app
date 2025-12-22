@@ -1,238 +1,158 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../myColors/app_colors.dart';
 
 class AppThemes {
-  static final ThemeData darkTheme = ThemeData(
-    brightness: Brightness.dark,
-    primaryColor: AppColors.primaryBlue,
-    scaffoldBackgroundColor: AppColors.darkMainBackground,
-    cardColor: AppColors.darkCardBackground,
-    dividerColor: AppColors.border,
-    appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.darkMainBackground,
-      surfaceTintColor: AppColors.darkMainBackground,
-      elevation: 0,
-      iconTheme: const IconThemeData(color: AppColors.textPrimary),
-      titleTextStyle: const TextStyle(
-        color: AppColors.textPrimary,
-        fontSize: 20,
-        fontFamily: 'Poppins',
-        fontWeight: FontWeight.w600,
-      ),
-    ),
+  static ThemeData getTheme(Brightness brightness, String langCode) {
+    final bool isDark = brightness == Brightness.dark;
+    final String? fontFamily = langCode == 'bn'
+        ? GoogleFonts.notoSansBengali().fontFamily
+        : GoogleFonts.poppins().fontFamily;
 
-    colorScheme: const ColorScheme.dark(
-      primary: AppColors.primaryBlue,
-      secondary: AppColors.secondaryBlue,
-      surface: AppColors.darkSecondaryBackground,
-      onPrimary: AppColors.textPrimary,
-      onSecondary: AppColors.textSecondary,
-      onTertiary: AppColors.textMuted,
-      onSurface: AppColors.textSecondary,
-      error: AppColors.error,
-      outline: AppColors.border,
-    ),
+    final Color primaryColor = AppColors.primaryBlue;
+    final Color scaffoldBackgroundColor = isDark
+        ? AppColors.darkMainBackground
+        : AppColors.lightMainBackground;
+    final Color cardColor = isDark
+        ? AppColors.darkCardBackground
+        : AppColors.lightCardBackground;
+    final Color dividerColor = isDark
+        ? AppColors.border
+        : AppColors.lightBorder;
 
+    final Color textPrimary = isDark
+        ? AppColors.textPrimary
+        : AppColors.lightTextPrimary;
+    final Color textSecondary = isDark
+        ? AppColors.textSecondary
+        : AppColors.lightTextSecondary;
+    final Color textMuted = isDark
+        ? AppColors.textMuted
+        : AppColors.lightTextMuted;
 
-    textTheme: const TextTheme(
-      // ---------------- HEADLINES ----------------
-      headlineLarge: TextStyle( // Main page titles
-        fontSize: 30,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'Poppins',
-        color: AppColors.textPrimary,
+    return ThemeData(
+      brightness: brightness,
+      primaryColor: primaryColor,
+      scaffoldBackgroundColor: scaffoldBackgroundColor,
+      cardColor: cardColor,
+      dividerColor: dividerColor,
+      fontFamily: fontFamily,
+      appBarTheme: AppBarTheme(
+        backgroundColor: scaffoldBackgroundColor,
+        surfaceTintColor: scaffoldBackgroundColor,
+        elevation: 0,
+        iconTheme: IconThemeData(color: textPrimary),
+        titleTextStyle: TextStyle(
+          color: textPrimary,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          fontFamily: fontFamily,
+        ),
       ),
-      headlineMedium: TextStyle( // Section titles
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Poppins',
-        color: AppColors.textPrimary,
-      ),
-      headlineSmall: TextStyle( // Card / widget titles
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Poppins',
-        color: AppColors.textPrimary,
-      ),
+      colorScheme: isDark
+          ? const ColorScheme.dark(
+              primary: AppColors.primaryBlue,
+              secondary: AppColors.secondaryBlue,
+              surface: AppColors.darkSecondaryBackground,
+              onPrimary: AppColors.textPrimary,
+              onSecondary: AppColors.textSecondary,
+              onTertiary: AppColors.textMuted,
+              onSurface: AppColors.textSecondary,
+              error: AppColors.error,
+              outline: AppColors.border,
+            )
+          : const ColorScheme.light(
+              primary: AppColors.primaryBlue,
+              secondary: AppColors.secondaryBlue,
+              surface: AppColors.lightSecondaryBackground,
+              onPrimary: AppColors.lightTextPrimary,
+              onSecondary: AppColors.lightTextSecondary,
+              onSurface: AppColors.lightTextSecondary,
+              error: AppColors.error,
+              outline: AppColors.lightBorder,
+            ),
+      textTheme: TextTheme(
+        // ---------------- HEADLINES ----------------
+        headlineLarge: TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.w700,
+          color: textPrimary,
+          fontFamily: fontFamily,
+        ),
+        headlineMedium: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: textPrimary,
+          fontFamily: fontFamily,
+        ),
+        headlineSmall: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: textPrimary,
+          fontFamily: fontFamily,
+        ),
 
-      // ---------------- TITLES ----------------
-      titleLarge: TextStyle( // AppBar / Dialog titles
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Poppins',
-        color: AppColors.textPrimary,
-      ),
-      titleMedium: TextStyle( // Emphasis body titles
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Poppins',
-        color: AppColors.textPrimary,
-      ),
-      titleSmall: TextStyle( // Small titles in lists
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Poppins',
-        color: AppColors.textSecondary,
-      ),
+        // ---------------- TITLES ----------------
+        titleLarge: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: textPrimary,
+          fontFamily: fontFamily,
+        ),
+        titleMedium: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: textPrimary,
+          fontFamily: fontFamily,
+        ),
+        titleSmall: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: textSecondary,
+          fontFamily: fontFamily,
+        ),
 
-      // ---------------- BODY ----------------
-      bodyLarge: TextStyle( // Main paragraphs / balances
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Poppins',
-        color: AppColors.textPrimary,
-      ),
-      bodyMedium: TextStyle( // Secondary body
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Poppins',
-        color: AppColors.textSecondary,
-      ),
-      bodySmall: TextStyle( // Muted info / captions
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Poppins',
-        color: AppColors.textMuted,
-      ),
+        // ---------------- BODY ----------------
+        bodyLarge: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: textPrimary,
+          fontFamily: fontFamily,
+        ),
+        bodyMedium: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: textSecondary,
+          fontFamily: fontFamily,
+        ),
+        bodySmall: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: textMuted,
+          fontFamily: fontFamily,
+        ),
 
-      // ---------------- LABELS ----------------
-      labelLarge: TextStyle( // Buttons
-        fontSize: 15,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Poppins',
-        color: AppColors.textPrimary,
+        // ---------------- LABELS ----------------
+        labelLarge: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: textPrimary,
+          fontFamily: fontFamily,
+        ),
+        labelMedium: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          color: textSecondary,
+          fontFamily: fontFamily,
+        ),
+        labelSmall: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w400,
+          color: textMuted,
+          fontFamily: fontFamily,
+        ),
       ),
-      labelMedium: TextStyle( // Chips, input labels
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Poppins',
-        color: AppColors.textSecondary,
-      ),
-      labelSmall: TextStyle( // Very small tags
-        fontSize: 11,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Poppins',
-        color: AppColors.textMuted,
-      ),
-    ),
-  );
-
-  static final ThemeData lightTheme = ThemeData(
-    brightness: Brightness.light,
-    primaryColor: AppColors.primaryBlue,
-    scaffoldBackgroundColor: AppColors.lightMainBackground,
-    cardColor: AppColors.lightCardBackground,
-    dividerColor: AppColors.lightBorder,
-    appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.lightMainBackground,
-      surfaceTintColor: AppColors.lightMainBackground,
-      elevation: 0,
-      iconTheme: const IconThemeData(color: AppColors.lightTextPrimary),
-      titleTextStyle: const TextStyle(
-        color: AppColors.lightTextPrimary,
-        fontSize: 20,
-        fontFamily: 'Poppins',
-        fontWeight: FontWeight.w600,
-      ),
-    ),
-
-    colorScheme: const ColorScheme.light(
-      primary: AppColors.primaryBlue,
-      secondary: AppColors.secondaryBlue,
-      surface: AppColors.lightSecondaryBackground,
-      onPrimary: AppColors.lightTextPrimary,
-      onSecondary: AppColors.lightTextSecondary,
-      onSurface: AppColors.lightTextSecondary,
-      error: AppColors.error,
-      outline: AppColors.lightBorder,
-    ),
-
-    // textTheme: const TextTheme(
-    //   bodyLarge: TextStyle(color: AppColors.lightTextPrimary),
-    //   bodyMedium: TextStyle(color: AppColors.lightTextSecondary),
-    //   bodySmall: TextStyle(color: AppColors.lightTextMuted),
-    // ),
-    textTheme: const TextTheme(
-      // ---------------- HEADLINES ----------------
-      headlineLarge: TextStyle( // Main page titles
-        fontSize: 30,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'Poppins',
-        color: AppColors.lightTextPrimary,
-      ),
-      headlineMedium: TextStyle( // Section titles
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Poppins',
-        color: AppColors.lightTextPrimary,
-      ),
-      headlineSmall: TextStyle( // Card / widget titles
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Poppins',
-        color: AppColors.lightTextPrimary,
-      ),
-
-      // ---------------- TITLES ----------------
-      titleLarge: TextStyle( // AppBar / Dialog titles
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Poppins',
-        color: AppColors.lightTextPrimary,
-      ),
-      titleMedium: TextStyle( // Emphasis body titles
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Poppins',
-        color: AppColors.lightTextPrimary,
-      ),
-      titleSmall: TextStyle( // Small titles in lists
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Poppins',
-        color: AppColors.lightTextSecondary,
-      ),
-
-      // ---------------- BODY ----------------
-      bodyLarge: TextStyle( // Main paragraphs / balances
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Poppins',
-        color: AppColors.lightTextPrimary,
-      ),
-      bodyMedium: TextStyle( // Secondary body
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Poppins',
-        color: AppColors.lightTextSecondary,
-      ),
-      bodySmall: TextStyle( // Muted info / captions
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Poppins',
-        color: AppColors.lightTextMuted,
-      ),
-
-      // ---------------- LABELS ----------------
-      labelLarge: TextStyle( // Buttons
-        fontSize: 15,
-        fontWeight: FontWeight.w600,
-        fontFamily: 'Poppins',
-        color: AppColors.lightTextPrimary,
-      ),
-      labelMedium: TextStyle( // Chips, input labels
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
-        fontFamily: 'Poppins',
-        color: AppColors.lightTextSecondary,
-      ),
-      labelSmall: TextStyle( // Very small tags
-        fontSize: 11,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Poppins',
-        color: AppColors.lightTextMuted,
-      ),
-    )
-  );
+    );
+  }
 }

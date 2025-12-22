@@ -1,4 +1,5 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/config/routes/routes_name.dart';
 import 'package:finance_manager_app/providers/authProvider/auth_provider.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/providers/budget/budget_provider.dart';
@@ -57,6 +58,25 @@ class _SettingsPageState extends State<SettingsPage> {
             'icon': Icons.language,
             'color': Colors.deepPurple,
             'action': (BuildContext ctx) => _showLanguageOptions(ctx),
+          },
+          // {
+          //   'key': 'app_lock'.tr,
+          //   'icon': Icons.lock,
+          //   'color': Colors.red,
+          //   'action': (BuildContext ctx) => _showAppLockOptions(ctx),
+          // },
+        ],
+      },
+      {
+        'title': 'features'.tr,
+        'items': [
+          {
+            'key': 'given_taken'.tr,
+            'icon': Icons.handshake_outlined,
+            'color': Colors.orange,
+            'action': (BuildContext ctx) {
+              Get.toNamed(RoutesName.givenTakenView);
+            },
           },
         ],
       },
@@ -152,7 +172,13 @@ class _SettingsPageState extends State<SettingsPage> {
     ];
 
     return Scaffold(
-      appBar: customAppBar(title: "settings".tr),
+      appBar: customAppBar(
+        title: "settings".tr,
+        leading: IconButton(
+          onPressed: () => Get.back(),
+          icon: const Icon(Icons.arrow_back),
+        ),
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -722,3 +748,264 @@ class _StatusConfig {
     required this.gradientColors,
   });
 }
+
+// class _AppLockBottomSheet extends StatelessWidget {
+//   const _AppLockBottomSheet();
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final appLock = context.watch<AppLockProvider>();
+
+//     return Container(
+//       decoration: BoxDecoration(
+//         color: Theme.of(context).scaffoldBackgroundColor,
+//         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+//       ),
+//       padding: EdgeInsets.only(
+//         left: 24,
+//         right: 24,
+//         top: 12,
+//         bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+//       ),
+//       child: Column(
+//         mainAxisSize: MainAxisSize.min,
+//         children: [
+//           // Drag handle
+//           Container(
+//             width: 36,
+//             height: 4,
+//             margin: const EdgeInsets.only(bottom: 20),
+//             decoration: BoxDecoration(
+//               color: Colors.grey.shade300,
+//               borderRadius: BorderRadius.circular(2),
+//             ),
+//           ),
+
+//           // Icon
+//           Container(
+//             width: 64,
+//             height: 64,
+//             decoration: BoxDecoration(
+//               color: appLock.isEnabled
+//                   ? Colors.green.shade50
+//                   : Colors.grey.shade100,
+//               shape: BoxShape.circle,
+//             ),
+//             child: Icon(
+//               appLock.isEnabled ? Icons.lock : Icons.lock_open,
+//               size: 32,
+//               color: appLock.isEnabled ? Colors.green : Colors.grey.shade600,
+//             ),
+//           ),
+
+//           const SizedBox(height: 20),
+
+//           // Title
+//           Text(
+//             appLock.isEnabled ? 'app_lock_enabled'.tr : 'enable_app_lock'.tr,
+//             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+//           ),
+
+//           const SizedBox(height: 8),
+
+//           // Description
+//           Text(
+//             appLock.isEnabled
+//                 ? 'app_lock_enabled_description'.tr
+//                 : 'app_lock_disabled_description'.tr,
+//             textAlign: TextAlign.center,
+//             style: TextStyle(
+//               fontSize: 14,
+//               color: Colors.grey.shade600,
+//               height: 1.4,
+//             ),
+//           ),
+
+//           const SizedBox(height: 28),
+
+//           // Action button
+//           SizedBox(
+//             width: double.infinity,
+//             height: 52,
+//             child: ElevatedButton(
+//               onPressed: () async {
+//                 if (appLock.isEnabled) {
+//                   // Disable app lock
+//                   await context.read<AppLockProvider>().toggle(false);
+//                   if (context.mounted) Navigator.pop(context);
+//                 } else {
+//                   // Enable app lock - show PIN setup dialog
+//                   if (context.mounted) {
+//                     Navigator.pop(context);
+//                     _showPINSetupDialog(context);
+//                   }
+//                 }
+//               },
+//               style: ElevatedButton.styleFrom(
+//                 backgroundColor: appLock.isEnabled
+//                     ? Colors.red.shade500
+//                     : Colors.green.shade600,
+//                 foregroundColor: Colors.white,
+//                 elevation: 0,
+//                 shape: RoundedRectangleBorder(
+//                   borderRadius: BorderRadius.circular(12),
+//                 ),
+//               ),
+//               child: Text(
+//                 appLock.isEnabled
+//                     ? 'disable_app_lock'.tr
+//                     : 'enable_app_lock'.tr,
+//                 style: const TextStyle(
+//                   fontSize: 16,
+//                   fontWeight: FontWeight.w600,
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   void _showPINSetupDialog(BuildContext context) {
+//     final TextEditingController pinController = TextEditingController();
+//     final TextEditingController confirmPinController = TextEditingController();
+//     bool obscurePin = true;
+//     bool obscureConfirmPin = true;
+
+//     showDialog(
+//       context: context,
+//       barrierDismissible: false,
+//       builder: (ctx) => StatefulBuilder(
+//         builder: (context, setState) => AlertDialog(
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(16),
+//           ),
+//           title: Text(
+//             'set_app_pin'.tr,
+//             style: Theme.of(
+//               context,
+//             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+//           ),
+//           content: SingleChildScrollView(
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 Text(
+//                   'create_secure_pin'.tr,
+//                   style: Theme.of(
+//                     context,
+//                   ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
+//                 ),
+//                 const SizedBox(height: 20),
+
+//                 // PIN input
+//                 TextField(
+//                   controller: pinController,
+//                   obscureText: obscurePin,
+//                   keyboardType: TextInputType.number,
+//                   maxLength: 6,
+//                   decoration: InputDecoration(
+//                     labelText: 'enter_pin'.tr,
+//                     hintText: '0000',
+//                     border: OutlineInputBorder(
+//                       borderRadius: BorderRadius.circular(8),
+//                     ),
+//                     suffixIcon: IconButton(
+//                       icon: Icon(
+//                         obscurePin ? Icons.visibility_off : Icons.visibility,
+//                       ),
+//                       onPressed: () => setState(() => obscurePin = !obscurePin),
+//                     ),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 16),
+
+//                 // Confirm PIN input
+//                 TextField(
+//                   controller: confirmPinController,
+//                   obscureText: obscureConfirmPin,
+//                   keyboardType: TextInputType.number,
+//                   maxLength: 6,
+//                   decoration: InputDecoration(
+//                     labelText: 'confirm_pin'.tr,
+//                     hintText: '0000',
+//                     border: OutlineInputBorder(
+//                       borderRadius: BorderRadius.circular(8),
+//                     ),
+//                     suffixIcon: IconButton(
+//                       icon: Icon(
+//                         obscureConfirmPin
+//                             ? Icons.visibility_off
+//                             : Icons.visibility,
+//                       ),
+//                       onPressed: () => setState(
+//                         () => obscureConfirmPin = !obscureConfirmPin,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.pop(ctx);
+//                 pinController.dispose();
+//                 confirmPinController.dispose();
+//               },
+//               child: Text(
+//                 'cancel'.tr,
+//                 style: TextStyle(color: Colors.grey.shade600),
+//               ),
+//             ),
+//             ElevatedButton(
+//               onPressed: () async {
+//                 final pin = pinController.text.trim();
+//                 final confirmPin = confirmPinController.text.trim();
+
+//                 // Validation
+//                 if (pin.isEmpty) {
+//                   Get.snackbar('error_title'.tr, 'please_enter_pin'.tr);
+//                   return;
+//                 }
+
+//                 if (pin.length < 4) {
+//                   Get.snackbar('error_title'.tr, 'pin_must_be_4_digits'.tr);
+//                   return;
+//                 }
+
+//                 if (pin != confirmPin) {
+//                   Get.snackbar('error_title'.tr, 'pins_do_not_match'.tr);
+//                   return;
+//                 }
+
+//                 // Set PIN and enable lock
+//                 final success = await context
+//                     .read<AppLockProvider>()
+//                     .setPINAndEnable(pin);
+
+//                 if (context.mounted) {
+//                   Navigator.pop(ctx);
+//                   pinController.dispose();
+//                   confirmPinController.dispose();
+
+//                   if (success) {
+//                     Get.snackbar('app_lock'.tr, 'app_lock_enabled_success'.tr);
+//                   } else {
+//                     Get.snackbar(
+//                       'error_title'.tr,
+//                       'failed_to_enable_app_lock'.tr,
+//                     );
+//                   }
+//                 }
+//               },
+//               child: Text('set_pin'.tr),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

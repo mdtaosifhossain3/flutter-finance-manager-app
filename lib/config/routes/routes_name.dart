@@ -19,4 +19,8 @@ class RoutesName {
   static const settingView = "/setting_view";
   static const notificationView = "/notification_view";
   static const profileSetupView = "/profile_setup_view";
+  static const givenTakenView = "/given_taken_view";
+  static const addEditPersonView = "/add_edit_person_view";
+  static const personDetailsView = "/person_details_view";
+  static const addEditTransactionView = "/add_edit_transaction_view";
 }

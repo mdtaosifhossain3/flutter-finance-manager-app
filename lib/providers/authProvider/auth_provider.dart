@@ -11,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:finance_manager_app/services/auth_service.dart';
+import 'package:finance_manager_app/services/uid_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -45,8 +46,10 @@ class AuthProvider extends ChangeNotifier {
       if (user != null) {
         final profile = await getUserProfile(user.uid);
 
+        // Update UidService
+        await UidService.instance.setUid(user.uid);
+
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_uid', user.uid);
         await prefs.setString('userName', profile!.name);
         await prefs.setString('email', email);
         Get.offAll(MainView());
@@ -77,8 +80,10 @@ class AuthProvider extends ChangeNotifier {
       );
 
       if (user != null) {
+        // Update UidService
+        await UidService.instance.setUid(user.uid);
+
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_uid', user.uid);
         await prefs.setString('userName', name);
         await prefs.setString('email', email);
 
@@ -123,8 +128,10 @@ class AuthProvider extends ChangeNotifier {
 
       final user = await _service.signInWithGoogle();
       if (user != null) {
+        // Update UidService
+        await UidService.instance.setUid(user.uid);
+
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_uid', user.uid);
         final profile = await getUserProfile(user.uid);
         if (profile != null) {
           await prefs.setString('userName', profile.name);
@@ -153,8 +160,9 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('user_uid');
+    // Clear UidService
+    await UidService.instance.clearUid();
+
     await FirebaseAuth.instance.signOut();
     // await GoogleSignIn().signOut(); // If you want to sign out from Google as well
     Get.offAll(const LoginView());
@@ -183,8 +191,10 @@ class AuthProvider extends ChangeNotifier {
         await user.delete();
 
         // 3. Clear Local Data
+        await UidService.instance.clearUid();
+
         final prefs = await SharedPreferences.getInstance();
-        await prefs.clear(); // Clears all shared prefs including user_uid
+        await prefs.clear();
 
         Get.offAll(const LoginView());
         Get.snackbar(
@@ -267,6 +277,7 @@ class AuthProvider extends ChangeNotifier {
       }
     } else {
       message = e.toString();
+      // print(e);
     }
 
     Get.snackbar(

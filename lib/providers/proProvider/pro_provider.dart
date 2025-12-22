@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finance_manager_app/views/mainView/main_view.dart';
 import 'package:finance_manager_app/views/pricingView/pricing_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class ProProvider extends ChangeNotifier {
   DateTime? subscriptionEndDate;
 
   // Constants
-  static const int _trialDurationDays = 4;
+  static const int _trialDurationDays = 20;
 
   ProProvider() {
     // _initializeProStatus(); // Removed automatic init
@@ -251,7 +252,7 @@ class ProProvider extends ChangeNotifier {
             child: ElevatedButton(
               onPressed: () {
                 Get.back();
-                Get.to(() => const PricingView());
+                Get.to(PricingView());
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
@@ -272,14 +273,28 @@ class ProProvider extends ChangeNotifier {
             ),
           ),
           const SizedBox(height: 10),
-          TextButton(
-            onPressed: () => Get.back(),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-            ),
-            child: Text(
-              'later'.tr,
-              style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Get.back();
+                Get.to(MainView());
+              },
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                'later'.tr,
+                style: const TextStyle(
+                  color: Colors.blue,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
         ],
