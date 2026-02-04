@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -121,5 +122,17 @@ class ReminderDbHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  /// Full delete - clears all rows safely
+  static Future<void> deleteFull() async {
+    try {
+      await initDB();
+      await db!.rawDelete('DELETE FROM $tableName');
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error deleting all notes: $e");
+      }
+    }
   }
 }

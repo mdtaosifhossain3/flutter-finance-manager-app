@@ -18,10 +18,19 @@ class MonthlyPdfGenerator {
       context,
       listen: false,
     );
-    final transactions = addExpenseProvider.transactionData;
-    // ✅ Filter only transactions for the selected month
-    final monthlyTransactions = transactions
-        .where((t) => t.date.year == month.year && t.date.month == month.month)
+
+    // Calculate start and end of the month
+    final startOfMonth = DateTime(month.year, month.month, 1);
+    final endOfMonth = DateTime(month.year, month.month + 1, 0, 23, 59, 59);
+
+    final dt = await addExpenseProvider.addTransactionDbHelper
+        .getTransactionsByDateRange(
+          startOfMonth.toIso8601String(),
+          endOfMonth.toIso8601String(),
+        );
+
+    final monthlyTransactions = dt
+        .map((e) => TransactionModel.fromMap(e))
         .toList();
 
     if (monthlyTransactions.isEmpty) {

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../providers/notesProvider/notes_provider.dart';
 import 'pages/add_edit_note_view.dart';
 import 'widgets/note_card.dart';
+import 'package:finance_manager_app/utils/custom_loader.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -38,13 +39,13 @@ class _NotesViewState extends State<NotesView> {
         ),
       ),
       body: notesProvider.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CustomLoader())
           : notesProvider.notes.isEmpty
           ? _buildEmptyState(theme)
           : _buildNotesGrid(notesProvider),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.to(() => const AddEditNoteView());
+          Get.to(AddEditNoteView());
         },
         child: const Icon(Icons.add, color: AppColors.textPrimary),
       ),
@@ -80,7 +81,10 @@ class _NotesViewState extends State<NotesView> {
   /// Build staggered grid of notes
   Widget _buildNotesGrid(NotesProvider notesProvider) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.04,
+        vertical: 12.0,
+      ),
       child: CustomScrollView(
         slivers: [
           SliverGrid(
@@ -95,7 +99,7 @@ class _NotesViewState extends State<NotesView> {
               return NoteCard(
                 note: note,
                 onTap: () {
-                  Get.to(() => AddEditNoteView(note: note));
+                  Get.to(AddEditNoteView(note: note));
                 },
                 onLongPress: () {
                   _showNoteOptions(context, note.id!);
@@ -126,7 +130,7 @@ class _NotesViewState extends State<NotesView> {
                     noteId,
                   );
                   if (note != null) {
-                    Get.to(() => AddEditNoteView(note: note));
+                    Get.to(AddEditNoteView(note: note));
                   }
                 },
               ),

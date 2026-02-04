@@ -32,33 +32,49 @@ class PreviewScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-          child: Column(
-            children: [
-              PreviewCardWidget(parsedDataEx: provider.parsedDataEx),
-              const SizedBox(height: 24),
-              PreviewCardButton(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.04,
+                  vertical: 24,
+                ),
+                child: PreviewCardWidget(parsedDataEx: provider.parsedDataEx),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                border: Border(
+                  top: BorderSide(
+                    color: Theme.of(
+                      context,
+                    ).dividerColor.withValues(alpha: 0.1),
+                  ),
+                ),
+              ),
+              child: PreviewCardButton(
                 editTransactionButton: () {
                   HapticFeedback.selectionClick();
-                  provider
-                      .editTransaction(); // Just notifies listeners, doesn't change nav
-                  Get.back(); // Go back to input screen
+                  provider.editTransaction();
+                  Get.back();
                 },
                 deleteTransactionButton: () {
                   HapticFeedback.lightImpact();
-                  provider.deleteTransaction(); // Clears data
-                  Get.back(); // Go back to input screen
+                  provider.deleteTransaction();
+                  Get.back();
                 },
                 saveTransactionButton: () {
                   HapticFeedback.mediumImpact();
                   provider.saveTransaction(context);
-                  Get.offAll(MainView()); // Navigate to Home
+                  Get.offAll(MainView());
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

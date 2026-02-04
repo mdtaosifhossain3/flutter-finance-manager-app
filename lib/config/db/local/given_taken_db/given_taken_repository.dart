@@ -119,4 +119,9 @@ class GivenTakenRepository {
   Future<void> closeDB() async {
     return await _dbHelper.closeDB();
   }
+
+  /// Delete all data for the current user
+  Future<void> deleteFullData() async {
+    return await _dbHelper.deleteFullData();
+  }
 }

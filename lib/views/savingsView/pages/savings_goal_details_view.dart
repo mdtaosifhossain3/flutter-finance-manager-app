@@ -78,7 +78,6 @@ class _SavingsGoalDetailsViewState extends State<SavingsGoalDetailsView> {
       // Floating Action Button
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          //    Get.to(() => AddTransactionView(goal: _currentGoal));
           AddTransactionDialog.show(context, _currentGoal);
         },
         backgroundColor: Theme.of(context).primaryColor,
@@ -739,7 +738,7 @@ class _SavingsGoalDetailsViewState extends State<SavingsGoalDetailsView> {
             Center(
               child: TextButton(
                 onPressed: () {
-                  Get.to(() => TransactionsListView(goal: _currentGoal));
+                  Get.to(TransactionsListView(goal: _currentGoal));
                 },
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(

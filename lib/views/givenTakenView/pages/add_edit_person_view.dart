@@ -126,6 +126,7 @@ class _AddEditPersonViewState extends State<AddEditPersonView> {
                   ),
                 ),
                 const SizedBox(height: 30),
+
                 _buildTextField(
                   label: 'person_name'.tr,
                   controller: _nameController,
@@ -164,7 +165,7 @@ class _AddEditPersonViewState extends State<AddEditPersonView> {
                     children: [
                       Expanded(
                         child: _buildTypeButton(
-                          label: 'given'.tr,
+                          label: 'get'.tr,
                           type: 'given',
                           color: AppColors.success,
                         ),
@@ -172,7 +173,7 @@ class _AddEditPersonViewState extends State<AddEditPersonView> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildTypeButton(
-                          label: 'taken'.tr,
+                          label: 'pay'.tr,
                           type: 'taken',
                           color: AppColors.error,
                         ),

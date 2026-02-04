@@ -6,6 +6,7 @@ import 'package:finance_manager_app/views/savingsView/widgets/savings_card_widge
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:finance_manager_app/utils/custom_loader.dart';
 
 class SavingsView extends StatefulWidget {
   const SavingsView({super.key});
@@ -19,8 +20,10 @@ class _SavingsViewState extends State<SavingsView> {
   void initState() {
     super.initState();
     // Load all savings goals when view initializes
-    Future.microtask(() {
-      context.read<SavingsProvider>().loadGoals();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<SavingsProvider>().loadGoals();
+      }
     });
   }
 
@@ -28,6 +31,12 @@ class _SavingsViewState extends State<SavingsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Get.back();
+          },
+        ),
         title: 'savingsGoals'.tr,
         actions: [
           Padding(
@@ -58,11 +67,7 @@ class _SavingsViewState extends State<SavingsView> {
           builder: (context, provider, child) {
             // Loading state
             if (provider.isLoading) {
-              return Center(
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).primaryColor,
-                ),
-              );
+              return Center(child: CustomLoader());
             }
 
             // Error state

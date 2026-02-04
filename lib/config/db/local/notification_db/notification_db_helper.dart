@@ -1,4 +1,5 @@
 import 'package:finance_manager_app/models/notificationModel/notification_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -86,5 +87,17 @@ class NotificationDbHelper {
   Future<void> clearAll() async {
     final db = await database;
     await db.delete(tableName);
+  }
+
+  /// Full delete - clears all rows safely
+  Future<void> deleteFull() async {
+    try {
+      final db = await database;
+      await db.rawDelete('DELETE FROM $tableName');
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error deleting all notes: $e");
+      }
+    }
   }
 }

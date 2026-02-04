@@ -4,6 +4,18 @@ import 'package:intl/intl.dart';
 class HelperFunctions {
   HelperFunctions._();
   // Add your helper functions here
+
+  static String formatCompactNumber(double value) {
+    if (value >= 1000000) {
+      double sized = value / 1000000;
+      return '${sized.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')}M';
+    } else if (value >= 1000) {
+      double sized = value / 1000;
+      return '${sized.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')}k';
+    }
+    return value.toInt().toString();
+  }
+
   static String formatDateToMonthDay(DateTime date) {
     final DateFormat formatter = DateFormat('MMMM d');
     return formatter.format(date);

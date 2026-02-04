@@ -48,10 +48,13 @@ class _MonthlyBudgetChartWidgetState extends State<MonthlyBudgetChartWidget> {
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
+                          interval: (provider.getMaxY() / 5) == 0
+                              ? 100
+                              : (provider.getMaxY() / 5),
                           reservedSize: 45,
                           getTitlesWidget: (value, meta) {
                             return Text(
-                              '৳ ${HelperFunctions.recievedIntAndconvertToBanglaDigits(value.toInt())}',
+                              '৳ ${HelperFunctions.formatCompactNumber(value)}',
                               style: Theme.of(context).textTheme.labelSmall,
                             );
                           },

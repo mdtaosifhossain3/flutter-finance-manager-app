@@ -31,7 +31,7 @@ class SavingsCardWidget extends StatelessWidget {
         : AppColors.lightTextSecondary;
 
     return GestureDetector(
-      onTap: () => Get.to(() => SavingsGoalDetailsView(goal: goal)),
+      onTap: () => Get.to(SavingsGoalDetailsView(goal: goal)),
       child: Container(
         decoration: BoxDecoration(
           color: cardColor,

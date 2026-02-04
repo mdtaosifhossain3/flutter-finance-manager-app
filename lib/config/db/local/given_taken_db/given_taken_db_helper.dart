@@ -182,7 +182,7 @@ class GivenTakenDbHelper {
           colType: type,
           colAmount: initialAmount,
           colDate: now,
-          colNote: 'Initial balance',
+          colNote: '',
           colCreatedAt: now,
         });
       }
@@ -371,5 +371,12 @@ class GivenTakenDbHelper {
       where: '$colId = ?',
       whereArgs: [contactId],
     );
+  }
+
+  /// Delete all data for the current user
+  Future<void> deleteFullData() async {
+    final db = await database;
+    await db.delete(transactionsTable);
+    await db.delete(contactsTable);
   }
 }

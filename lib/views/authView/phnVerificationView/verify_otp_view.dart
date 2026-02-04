@@ -1,6 +1,7 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/services/otp/verify_otp_service.dart';
 import 'package:finance_manager_app/views/mainView/main_view.dart';
+import 'package:finance_manager_app/utils/custom_loader.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -139,9 +140,7 @@ class _VerifyOtpViewState extends State<VerifyOtpView> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      CircularProgressIndicator(
-                                        color: Colors.black,
-                                      ),
+                                      CustomLoader(color: Colors.black),
                                     ],
                                   ),
                                 );

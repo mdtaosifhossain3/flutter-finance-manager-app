@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReminderHelper {
   static late final tz.Location _bdLocation;
@@ -116,7 +117,7 @@ class ReminderHelper {
   @pragma('vm:entry-point')
   static void notificationTapBackground(NotificationResponse response) {
     if (response.payload == 'reminder_page') {
-      Get.to(() => ReminderView());
+      Get.to(ReminderView());
     } else if (response.payload == 'daily_tip') {
       // Insert daily tip into database when user taps it
       final notiHelper = NotificationDbHelper();
@@ -249,6 +250,15 @@ class ReminderHelper {
       if (tipsKeys.isEmpty) {
         return;
       }
+
+      final prefs = await SharedPreferences.getInstance();
+      final allNotifications = prefs.getBool('allNotifications') ?? true;
+      final dailyTip = prefs.getBool('dailyTip') ?? true;
+
+      if (!allNotifications || !dailyTip) {
+        return;
+      }
+
       final random = Random();
       final tipKey = tipsKeys[random.nextInt(tipsKeys.length)];
 
@@ -308,9 +318,17 @@ class ReminderHelper {
     try {
       // 1. Permission check for exact alarms / scheduling
       //  final bool allowed = await _checkAndRequestExactAlarmPermission();
-      // if (!allowed) {
       //   return;
       // }
+
+      final prefs = await SharedPreferences.getInstance();
+      final allNotifications = prefs.getBool('allNotifications') ?? true;
+      final dailyTransactionReview =
+          prefs.getBool('dailyTransactionReview') ?? true;
+
+      if (!allNotifications || !dailyTransactionReview) {
+        return;
+      }
 
       // 2. Build next 9:00 PM in Asia/Dhaka
       final now = tz.TZDateTime.now(_bdLocation);
@@ -399,6 +417,14 @@ class ReminderHelper {
       // 1. Permission check
       final bool allowed = await _checkAndRequestExactAlarmPermission();
       if (!allowed) {
+        return;
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      final allNotifications = prefs.getBool('allNotifications') ?? true;
+      final budgetNotification = prefs.getBool('budgetNotification') ?? true;
+
+      if (!allNotifications || !budgetNotification) {
         return;
       }
 

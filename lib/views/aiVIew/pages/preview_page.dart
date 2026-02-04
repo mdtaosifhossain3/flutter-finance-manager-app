@@ -20,38 +20,35 @@ class PreviewPage extends StatelessWidget {
       ),
       child: provider.isLoading
           ? Center(
-        child:  SizedBox(
-          width: 56,
-          height: 56,
-          child: CircularProgressIndicator(
-            strokeWidth: 4,
-            color: Colors.white,
-          ),
-        ),
-      )
+              child: SizedBox(
+                width: 56,
+                height: 56,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              ),
+            )
           : Column(
-        children: [
-          PreviewCardWidget(parsedDataEx: provider.parsedDataEx),
-          const SizedBox(height: 24),
-          PreviewCardButton(
-            editTransactionButton: () {
-              HapticFeedback.selectionClick();
-              provider.editTransaction();
-            },
-            deleteTransactionButton: () {
-              HapticFeedback.lightImpact();
-              provider.deleteTransaction();
-            },
-            saveTransactionButton: () {
-              HapticFeedback.mediumImpact();
-              provider.saveTransaction(context);
-            },
-          ),
-        ],
-      ),
+              children: [
+                PreviewCardWidget(parsedDataEx: provider.parsedDataEx),
+                const SizedBox(height: 24),
+                PreviewCardButton(
+                  editTransactionButton: () {
+                    HapticFeedback.selectionClick();
+                    provider.editTransaction();
+                  },
+                  deleteTransactionButton: () {
+                    HapticFeedback.lightImpact();
+                    provider.deleteTransaction();
+                  },
+                  saveTransactionButton: () {
+                    HapticFeedback.mediumImpact();
+                    provider.saveTransaction(context);
+                  },
+                ),
+              ],
+            ),
     );
-
-
-
   }
 }

@@ -233,6 +233,19 @@ class ReminderProvider with ChangeNotifier {
     }
   }
 
+  /// Delete all reminders
+  Future<void> deleteFullReminders() async {
+    try {
+      _errorMessage = null;
+      await ReminderDbHelper.deleteFull();
+      _reminders.clear();
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Error deleting all reminders: $e';
+      notifyListeners();
+    }
+  }
+
   /// Clear error message
   void clearError() {
     _errorMessage = null;

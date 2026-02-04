@@ -15,6 +15,7 @@ import 'package:in_app_update/in_app_update.dart';
 import 'dart:math' as math;
 
 import 'package:provider/provider.dart';
+import 'package:finance_manager_app/utils/custom_loader.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -52,6 +53,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
     _checkForUpdate();
     _progressController = AnimationController(
       duration: Duration(milliseconds: 1500),
@@ -66,7 +68,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     // Schedule async call after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       DialogService.checkAndShowDialogs(context);
-
       // Fetch initial data
       if (mounted) {
         context.read<AddExpenseProvider>().getTransactionsForMonth(
@@ -107,27 +108,38 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.04,
-                ),
-                child: Column(
-                  children: [
-                    _buildExpensesChart(),
-                    SizedBox(height: 16),
-                    _buildTransactionHistory(),
-                    SizedBox(height: 100),
-                  ],
-                ),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: SizedBox(height: MediaQuery.of(context).padding.top),
+          ),
+          SliverToBoxAdapter(child: _buildHeader()),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.04,
+              ),
+              child: Column(
+                children: [
+                  _buildExpensesChart(),
+                  SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "historyTitle".tr,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 14),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          _buildTransactionHistorySliver(),
+          SliverToBoxAdapter(child: SizedBox(height: 100)),
+        ],
       ),
     );
   }
@@ -160,9 +172,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             children: [
               GestureDetector(
                 onTap: () async {
-                  // Get.to(SentOtpView());
                   Get.toNamed(RoutesName.notificationView);
-                  //   Get.to(PricingView());
                 },
 
                 child: Container(
@@ -204,88 +214,86 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           CurvedAnimation(parent: _progressController, curve: Curves.easeInOut),
         );
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(
-            width: 280,
-            height: 280,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                // Background circle
-                Container(
-                  width: 280,
-                  height: 280,
-                  decoration: BoxDecoration(shape: BoxShape.circle),
-                ),
-                // Animated progress circle
-                AnimatedBuilder(
-                  animation: progressAnimation,
-                  builder: (context, child) {
-                    return CustomPaint(
-                      size: Size(280, 280),
-                      painter: CircularProgressPainter(
-                        progress: progressAnimation.value,
-                        strokeWidth: 20,
-                        backgroundColor: Theme.of(context).dividerColor,
-                        segmentColors: [
-                          AppColors.primaryBlue,
-                          AppColors.success,
-                          AppColors.warning,
-                          AppColors.error,
-                        ],
-                      ),
-                    );
-                  },
-                ),
-
-                // Center content
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      remaining < 0 ? 'overspent'.tr : 'remaining'.tr,
-                      style: Theme.of(context).textTheme.headlineMedium,
+    return Column(
+      children: [
+        SizedBox(
+          width: 280,
+          height: 280,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Background circle
+              Container(
+                width: 280,
+                height: 280,
+                decoration: BoxDecoration(shape: BoxShape.circle),
+              ),
+              // Animated progress circle
+              AnimatedBuilder(
+                animation: progressAnimation,
+                builder: (context, child) {
+                  return CustomPaint(
+                    size: Size(280, 280),
+                    painter: CircularProgressPainter(
+                      progress: progressAnimation.value,
+                      strokeWidth: 20,
+                      backgroundColor: Theme.of(context).dividerColor,
+                      segmentColors: [
+                        AppColors.primaryBlue,
+                        AppColors.success,
+                        AppColors.warning,
+                        AppColors.error,
+                      ],
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      '${remaining < 0 ? '-' : ''}${HelperFunctions.convertToBanglaDigits(remaining.abs().toString())}',
+                  );
+                },
+              ),
 
-                      // HelperFunctions.convertToBanglaDigits(
-                      //   context
-                      //       .watch<HomeViewProvider>()
-                      //       .getTotals()["expenses"]
-                      //       .toString(),
-                      // ),
-                      //style: Theme.of(context).textTheme.headlineLarge,
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Poppins',
-                        color: remaining < 0
-                            ? AppColors.error
-                            : context.watch<ThemeProvider>().themeMode ==
-                                  ThemeMode.dark
-                            ? AppColors.textPrimary
-                            : AppColors.lightTextPrimary,
-                      ),
-                    ),
-                    SizedBox(height: 4),
+              // Center content
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    remaining < 0 ? 'overspent'.tr : 'remaining'.tr,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    '${remaining < 0 ? '-' : ''}${HelperFunctions.convertToBanglaDigits(remaining.abs().toString())}',
 
-                    Text(
-                      '${"outOfText".tr} ৳${HelperFunctions.convertToBanglaDigits(income.toString())}',
-                      style: Theme.of(context).textTheme.labelMedium,
+                    // HelperFunctions.convertToBanglaDigits(
+                    //   context
+                    //       .watch<HomeViewProvider>()
+                    //       .getTotals()["expenses"]
+                    //       .toString(),
+                    // ),
+                    //style: Theme.of(context).textTheme.headlineLarge,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Poppins',
+                      color: remaining < 0
+                          ? AppColors.error
+                          : context.watch<ThemeProvider>().themeMode ==
+                                ThemeMode.dark
+                          ? AppColors.textPrimary
+                          : AppColors.lightTextPrimary,
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                  SizedBox(height: 4),
+
+                  Text(
+                    '${"outOfText".tr} ৳${HelperFunctions.convertToBanglaDigits(income.toString())}',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                ],
+              ),
+            ],
           ),
-          SizedBox(height: 10),
-          _buildPeriodSelector(),
-        ],
-      ),
+        ),
+        SizedBox(height: 10),
+        _buildPeriodSelector(),
+      ],
     );
   }
 
@@ -333,66 +341,36 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildTransactionHistory() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "historyTitle".tr,
-              style: Theme.of(context).textTheme.headlineSmall,
+  Widget _buildTransactionHistorySliver() {
+    return Consumer<HomeViewProvider>(
+      builder: (context, provider, _) {
+        final filteredTxns = provider.filteredTransactionsForHome;
+        // Show loading if initial data fetch is happening
+        if (context.watch<AddExpenseProvider>().isLoading) {
+          return SliverToBoxAdapter(child: Center(child: CustomLoader()));
+        }
+
+        if (filteredTxns.isEmpty) {
+          return SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(child: Text("noTransactions".tr)),
             ),
-            // TextButton(
-            //   onPressed: () {
-            //     Get.to(ExpensesView());
-            //   },
-            //   child: Text(
-            //     "seeAllButton".tr,
-            //     style: Theme.of(
-            //       context,
-            //     ).textTheme.labelMedium?.copyWith(color: AppColors.primaryBlue),
-            //   ),
-            // ),
-          ],
-        ),
+          );
+        }
 
-        SizedBox(height: 14),
-
-        Consumer<HomeViewProvider>(
-          builder: (context, provider, _) {
-            final filteredTxns = provider.filteredTransactionsForHome;
-
-            // Show loading if initial data fetch is happening
-            if (context.watch<AddExpenseProvider>().isLoading) {
-              return Center(child: CircularProgressIndicator());
-            }
-
-            return AnimatedSwitcher(
-              duration: Duration(milliseconds: 300),
-              child: filteredTxns.isEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Center(child: Text("noTransactions".tr)),
-                    )
-                  : ListView.builder(
-                      key: ValueKey<String>(
-                        provider.dwm,
-                      ), // rebuild on period change
-                      //   reverse: true,
-                      itemCount: filteredTxns.length,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final tx = filteredTxns[index];
-                        return HomeViewCardWidget(transaction: tx);
-                      },
-                    ),
-            );
-          },
-        ),
-      ],
+        return SliverPadding(
+          padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.04,
+          ),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final tx = filteredTxns[index];
+              return HomeViewCardWidget(transaction: tx);
+            }, childCount: filteredTxns.length),
+          ),
+        );
+      },
     );
   }
 }

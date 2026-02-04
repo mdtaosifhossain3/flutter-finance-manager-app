@@ -29,7 +29,7 @@ class AuthProvider extends ChangeNotifier {
       // Fallback to Firebase Auth check if needed, or just go to Welcome/Login
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        await prefs.setString('user_uid', user.uid);
+        await UidService.instance.setUid(user.uid);
         Get.offAll(MainView());
       } else {
         Get.offAll(const LoginView());
@@ -53,6 +53,7 @@ class AuthProvider extends ChangeNotifier {
         await prefs.setString('userName', profile!.name);
         await prefs.setString('email', email);
         Get.offAll(MainView());
+
         Get.snackbar(
           "successTitle".tr,
           "logged_in_success".tr,
@@ -144,6 +145,7 @@ class AuthProvider extends ChangeNotifier {
         }
 
         Get.offAll(MainView());
+
         Get.snackbar(
           "successTitle".tr,
           "google_login_success".tr,

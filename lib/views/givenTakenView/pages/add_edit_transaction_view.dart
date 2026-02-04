@@ -89,7 +89,7 @@ class _AddEditTransactionViewState extends State<AddEditTransactionView> {
                   children: [
                     Expanded(
                       child: _buildTypeButton(
-                        label: 'given'.tr,
+                        label: 'get'.tr,
                         type: 'given',
                         color: AppColors.success,
                       ),
@@ -97,7 +97,7 @@ class _AddEditTransactionViewState extends State<AddEditTransactionView> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildTypeButton(
-                        label: 'taken'.tr,
+                        label: 'pay'.tr,
                         type: 'taken',
                         color: AppColors.error,
                       ),

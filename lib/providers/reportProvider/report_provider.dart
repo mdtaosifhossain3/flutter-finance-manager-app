@@ -218,9 +218,7 @@ class ReportProvider extends ChangeNotifier {
       final endOfMonth = DateTime(date.year, date.month + 1, 0);
 
       final monthTxns = historyTransactions.where((tx) {
-        return tx.date.isAfter(
-              startOfMonth.subtract(const Duration(days: 1)),
-            ) &&
+        return !tx.date.isBefore(startOfMonth) &&
             tx.date.isBefore(endOfMonth.add(const Duration(days: 1)));
       }).toList();
 
@@ -273,7 +271,7 @@ class ReportProvider extends ChangeNotifier {
     final endOfMonth = DateTime(now.year, now.month + 1, 0);
 
     for (var tx in reportTransactions) {
-      if (tx.date.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
+      if (!tx.date.isBefore(startOfMonth) &&
           tx.date.isBefore(endOfMonth.add(const Duration(days: 1)))) {
         if (tx.type == TransactionType.expense) {
           totalExpense += tx.amount;

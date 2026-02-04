@@ -4,6 +4,17 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
     'en_US': {
+      "chargeOntimeText": "One-time charge: ৳2 (incl. VAT, SD & SC)",
+      "check_sms_title": "Check SMS",
+      "check_sms_desc":
+          "You have successfully subscribed. Please wait for the confirmation.",
+      "yes": "Yes",
+      "no": "No",
+      "coming_soon_title": "Coming Soon",
+      "coming_soon_desc":
+          "This payment method will be available soon. Please stay with us.",
+      "enter_mobile_title": "Enter Mobile Number",
+      "enter_mobile_desc": "Only Robi (018) and Airtel (016) numbers",
       "more": "More",
       "login": "Login",
       "register": "Register",
@@ -12,6 +23,7 @@ class AppTranslations extends Translations {
       "forget_password": "Forgot Password?",
       "reset_password": "Reset Password",
       "continue_google": "Continue with Google",
+      "continue": "Continue",
       "create_account": "Create Account",
       "name": "Name",
       "send_reset_link": "Send reset link",
@@ -25,36 +37,36 @@ class AppTranslations extends Translations {
 
       "feedbackSuccess": "Thank you for your feedback!",
       "aboutbody":
-          "FinzyCash is a smart and modern money management app designed "
+          "Hishab Rakhi is a smart and modern money management app designed "
           "specifically for Bangladeshi users. It helps you track daily expenses, "
           "add income, plan budgets, view detailed financial reports, set reminders, "
           "and improve your savings habits with AI-powered assistance.\n\n"
-          "FinzyCash is built with a focus on simplicity, privacy, and accuracy, "
+          "Hishab Rakhi is built with a focus on simplicity, privacy, and accuracy, "
           "ensuring users can manage their finances without any hassle.\n\n"
           "This app is proudly developed by MD Taosif Hossain and powered by "
           "Fluttbiz IT Solutions.",
 
       "dev": "Developer: MD Taosif Hossain",
       "companyName": "Company: Fluttbiz IT Solutions",
-      "q1": "How does FinzyCash work?",
+      "q1": "How does Hishab Rakhi work?",
       "a1":
           "You can add expenses, income, budgets, and track detailed reports easily.",
 
       "q2": "Is my data safe?",
       "a2": "Yes, your data is securely stored and never shared with anyone.",
 
-      "q3": "Is FinzyCash free?",
-      "a3": "Yes, FinzyCash is free with optional Pro features.",
+      "q3": "Is Hishab Rakhi free?",
+      "a3": "Yes, Hishab Rakhi is free with optional Pro features.",
 
-      "q4": "What is FinzyCash Pro?",
+      "q4": "What is Hishab Rakhi Pro?",
       "a4":
-          "FinzyCash Pro unlocks advanced features like unlimited AI taps and premium tools.",
+          "Hishab Rakhi Pro unlocks advanced features like unlimited AI taps and premium tools.",
 
       "q5": "Can I track both income and expenses?",
       "a5":
           "Yes, the app allows complete tracking of expenses, income, and reports.",
 
-      "q6": "Does FinzyCash support Bangla?",
+      "q6": "Does Hishab Rakhi support Bangla?",
       "a6": "Yes, the app fully supports the Bangla language.",
 
       "q7": "How does the AI help?",
@@ -93,7 +105,7 @@ class AppTranslations extends Translations {
       'please_wait': 'Please wait a moment...',
       'processing': 'Processing...',
       'input_placeholder_detailed': 'Example: "Spent 50 on groceries"',
-
+      'proceed': 'Proceed',
       'preferences': 'Preferences',
       'manage_app_settings':
           'Manage your app settings to match your style and needs',
@@ -106,6 +118,7 @@ class AppTranslations extends Translations {
       'reportTitle': 'Report',
       'search': 'Super AI search',
       'income': 'Income',
+      'pro_features': 'Pro Features',
       "home": "Home",
       "report": "Report",
       "budget": "Budget",
@@ -206,8 +219,24 @@ class AppTranslations extends Translations {
       'auth_failed': 'Authentication failed.',
       'google_sign_in_failed': 'Google Sign-In failed: ',
       'plan_expired': 'Plan Expired',
+      'reset_delete_options': 'Reset/Delete',
+      'reset_delete_description': 'Manage your app data and account settings.',
+      'reset_app_data': 'Reset App Data',
+      'reset_app_data_desc':
+          'Clear all local data (transactions, budgets, etc.) without deleting your account.',
+      'delete_account': 'Delete Account',
+      'delete_account_desc':
+          'Permanently delete your account and all associated data.',
+      'reset_app_data_confirmation':
+          'Are you sure you want to reset app data? This will delete all local transactions and budgets. This action cannot be undone.',
+      'delete_account_confirmation':
+          'Are you sure you want to delete your account? This will permanently delete your account and all data from the cloud and local storage. This action cannot be undone.',
+      'app_data_reset_success': 'App data reset successfully.',
+      'reset': 'Reset',
+      'delete': 'Delete',
 
       // ------------------------------- Pricing View -------------------------------
+      'check_out': 'Check Out',
       'manage_plan': 'Manage Plan',
       'choose_pricing_plan': 'Choose Your Pricing Plan',
       'set_reminder': 'Set Reminder',
@@ -222,10 +251,25 @@ class AppTranslations extends Translations {
       '900_credits': '900 AI Credits',
       '2700_credits': '2700 AI Credits',
       '2700_credits_pro': '2700 AI Credit',
+      '5500_credits_pro': '5500 AI Credits',
+      '11000_credits': '11000 AI Credits',
       '27000_credits': '27000 AI Credits',
       'monthly': 'monthly',
       '3_months': '3 month',
       '6_months': '6 month',
+      'credits_left': 'Credits Left',
+      'no_credits': 'No Credits Left',
+      'buy_now': 'Buy Now',
+      '500_credits_for_30tk': '60 Credits for ৳30',
+      'purchase_credits_title': 'Purchase AI Credits',
+      'purchase_credits_desc': 'Get 60 AI credits for only ৳30',
+      'purchase_plan_msg':
+          'Please purchase a plan to continue using AI features.',
+      'or_continue_with': 'Or continue with',
+      'enter_email': 'Enter your email',
+      'enter_password': 'Enter your password',
+      'whatsapp_error': 'Could not open WhatsApp. Please try again.',
+      'feedback_footer': 'We value your feedback to improve our app.',
       '1_year': '1 year',
       'choose_plan': 'Choose Plan',
       'payment_success': 'Payment Success',
@@ -235,6 +279,37 @@ class AppTranslations extends Translations {
       'subscribe_instruction': 'Now subscribe to your preferred plan',
       'purchase_now_button': 'Purchase Now',
       'subscription_success_msg': 'Subscription Successful!',
+      'data_backup': 'Data Backup',
+      'unlimited_ai_credits': 'Unlimited AI Credits',
+      'premium_support': 'Premium Support',
+      'go_premium': 'Go Premium',
+      'unlock_all_features':
+          'Unlock all features and supercharge your experience',
+      'cancel_anytime': 'Cancel anytime • Secure payment',
+      'select_subscription': 'Select Subscription',
+      'choose_best_plan': 'Choose the plan that works best for you',
+      'daily_plan': 'Daily Plan',
+      'monthly_plan': 'Monthly Plan',
+      'per_day': 'per day',
+      'per_month': 'per month',
+      'all_premium_features': 'All Premium Features',
+      'renews_daily': 'Renews Daily',
+      'cancel_anytime_short': 'Cancel Anytime',
+      'save_34_percent': 'Save 67% vs Daily',
+      'best_value': 'Best Value',
+      'flexible': 'FLEXIBLE',
+      'most_popular': 'MOST POPULAR',
+      'continue_with': 'Continue with',
+      'powered_by_bdapps': 'Powered by BDApps • Secure Payment',
+      'all_plans_include': 'All Plans Include',
+      'ai_credits': 'AI Credits',
+      'advanced_reports': 'Advanced Reports',
+      'unsubscribe': 'Unsubscribe (Pro Plan)',
+      'unsubscribe_confirmation': 'Are you sure you want to unsubscribe?',
+      'unsubscribe_success': 'Unsubscribed successfully',
+      'buy_more_ai_credits_plan': 'AI credits plan',
+      'not_subscribed_error': 'You are not subscribed to the service',
+      'already_subscribed': 'This number is already subscribed',
 
       // ------------------------------- OTP Views -------------------------------
       'registration': 'Registration',
@@ -254,6 +329,21 @@ class AppTranslations extends Translations {
       'verify_number': 'Verify Number',
       'retry_otp_desc':
           'If you don\'t receive OTP, try again after a few seconds.',
+
+      // ------------------------------- Balance Check Dialog -------------------------------
+      'balance_check_title': 'Check Balance',
+      'balance_check_message':
+          'Please make sure you have enough balance in your account before proceeding.',
+
+      // ------------------------------- SMS Confirmation Dialog -------------------------------
+      'subscription_initiated_title': 'Subscription Initiated',
+      'subscription_initiated_desc':
+          'Successfully subscribed. Please wait for the confirmation SMS.',
+      'okay': 'Okay',
+      'sms_confirmation_title': 'SMS Confirmation',
+      'sms_confirmation_message':
+          'Please wait while we confirm your subscription via SMS.',
+      'seconds': 'seconds',
 
       //-------------------------------Welcome View-------------------------------
       "welcomeViewTitle": "Easy way to\nManage your Money",
@@ -539,7 +629,6 @@ class AppTranslations extends Translations {
       "createBudgetButton": "Create Budget",
       "addCategory": "Add",
       "categoryAmount": "Amount",
-      "delete": "Delete",
       "pleaseSelectCategory": "Please select a category",
       "pleaseEnterValidAmount": "Please enter a valid amount",
       "budgetCreatedSuccess": "Budget created successfully!",
@@ -696,7 +785,6 @@ class AppTranslations extends Translations {
       "reset_confirmation_title": "Reset App?",
       "reset_confirmation_message":
           "Are you sure you want to reset? This will delete all your transactions and data. This action cannot be undone.",
-      "yes": "Yes",
 
       // ------------------------------- Notification View -------------------------------
       "notificationsTitle": "Notifications",
@@ -707,6 +795,18 @@ class AppTranslations extends Translations {
       "monthlyFinancialReportTitle": "Monthly Financial Report",
       "monthlyFinancialReportDescription":
           "Here's your monthly financial report! Review your income and expenses this month.",
+
+      "notification_settings": "Notification Settings",
+      "all_notifications": "All Notifications",
+      "all_notifications_desc": "Enable or disable all app notifications",
+      "notification_types": "Notification Types",
+      "daily_finance_tip_desc":
+          "Get daily tips to improve your financial health",
+      "daily_transaction_review": "Daily Transaction Review",
+      "daily_transaction_review_desc":
+          "Reminder to review your daily transactions",
+      "budget_alerts_desc": "Get notified when you exceed your budget limits",
+      "budget_alerts": "Budget Alerts",
 
       "viewInsights": "View Insights",
       "close": "Close",
@@ -900,7 +1000,7 @@ class AppTranslations extends Translations {
       'failed_to_enable_app_lock': 'Failed to enable app lock',
 
       // Savings Feature
-      'savingsGoals': 'Savings Goals',
+      'savingsGoals': 'Savings',
       'noSavingsGoalsYet': 'No Savings Goals Yet',
       'createYourFirstGoal': 'Start saving today by creating your first goal',
       'createGoal': 'Create Goal',
@@ -1007,6 +1107,21 @@ class AppTranslations extends Translations {
       'failed_to_save_note': 'Failed to save note',
     },
     'bn_BD': {
+      'proceed': 'এগিয়ে যান',
+
+      "chargeOntimeText": "এককালীন চার্জ: ৳২ (ভ্যাট, এসডি এবং এএসসি সহ)",
+
+      "check_sms_title": "এসএমএস চেক করুন",
+      "check_sms_desc":
+          "আপনি সফলভাবে সাবস্ক্রাইব করেছেন। নিশ্চিতকরণের জন্য অপেক্ষা করুন।",
+      "yes": "হ্যাঁ",
+      "no": "না",
+      "coming_soon_title": "শীঘ্রই আসছে",
+      "coming_soon_desc":
+          "এই পেমেন্ট মেথডটি শীঘ্রই চালু হবে। অনুগ্রহ করে আমাদের সাথেই থাকুন।",
+      "enter_mobile_title": "মোবাইল নম্বর দিন",
+      "enter_mobile_desc": "শুধুমাত্র রবি (018) এবং এয়ারটেল (016) নম্বর",
+
       "login": "লগইন",
       "register": "রেজিস্টার",
       "email": "ইমেইল",
@@ -1014,6 +1129,7 @@ class AppTranslations extends Translations {
       "forget_password": "পাসওয়ার্ড ভুলে গেছেন?",
       "reset_password": "পাসওয়ার্ড রিসেট",
       "continue_google": "গুগল দিয়ে চালু করুন",
+      "continue": "চালিয়ে যান",
       "create_account": "একাউন্ট তৈরি করুন",
       "name": "নাম",
       "send_reset_link": "রিসেট লিংক পাঠান",
@@ -1027,18 +1143,18 @@ class AppTranslations extends Translations {
       "feedbackSuccess": "আপনার মতামতের জন্য ধন্যবাদ!",
 
       "aboutbody":
-          "FinzyCash একটি স্মার্ট এবং আধুনিক মানি ম্যানেজমেন্ট অ্যাপ, যা বিশেষভাবে "
+          "Hishab Rakhi একটি স্মার্ট এবং আধুনিক মানি ম্যানেজমেন্ট অ্যাপ, যা বিশেষভাবে "
           "বাংলাদেশি ব্যবহারকারীদের জন্য তৈরি। এই অ্যাপের মাধ্যমে আপনি দৈনিক খরচ ট্র্যাক করতে পারবেন, "
           "আয় যোগ করতে পারবেন, বাজেট প্ল্যান করতে পারবেন, বিস্তারিত রিপোর্ট দেখতে পারবেন, "
           "রিমাইন্ডার সেট করতে পারবেন এবং AI-এর সাহায্যে আপনার সেভিংস অভ্যাস আরও উন্নত করতে পারবেন।\n\n"
-          "FinzyCash তৈরি করা হয়েছে সহজ ব্যবহার, নিরাপত্তা এবং নির্ভুলতার উপর গুরুত্ব দিয়ে, "
+          "Hishab Rakhi তৈরি করা হয়েছে সহজ ব্যবহার, নিরাপত্তা এবং নির্ভুলতার উপর গুরুত্ব দিয়ে, "
           "যাতে আপনি ঝামেলাহীনভাবে আপনার ব্যক্তিগত অর্থ ব্যবস্থাপনা করতে পারেন।\n\n"
           "এই অ্যাপটি তৈরি করেছেন তাওসিফ হোসেন এবং প্রযুক্তিগত সহায়তা দিয়েছে "
           "Fluttbiz IT Solutions।",
       "version:": "ভার্সন: 1.0.0",
       "dev": "ডেভেলপার: তাওসিফ হোসেন",
       "companyName": "প্রতিষ্ঠান:Fluttbiz IT Solutions",
-      "q1": "FinzyCash কীভাবে কাজ করে?",
+      "q1": "Hishab Rakhi কীভাবে কাজ করে?",
       "a1":
           "আপনি খুব সহজেই খরচ, আয়, বাজেট যোগ করতে পারবেন এবং বিস্তারিত রিপোর্ট দেখতে পারবেন।",
 
@@ -1046,13 +1162,13 @@ class AppTranslations extends Translations {
       "a2":
           "হ্যাঁ, আপনার ডেটা নিরাপদভাবে সংরক্ষিত হয় এবং কারও সাথে শেয়ার করা হয় না।",
 
-      "q3": "FinzyCash কি ফ্রি?",
-      "a3": "হ্যাঁ, FinzyCash ফ্রি, তবে কিছু প্রো ফিচারও রয়েছে।",
+      "q3": "Hishab Rakhi কি ফ্রি?",
+      "a3": "হ্যাঁ, Hishab Rakhi ফ্রি, তবে কিছু প্রো ফিচারও রয়েছে।",
 
       "q5": "আমি কি আয় ও খরচ দুটোই ট্র্যাক করতে পারবো?",
       "a5": "হ্যাঁ, আপনি আয়, খরচ এবং রিপোর্ট সম্পূর্ণভাবে ট্র্যাক করতে পারবেন।",
 
-      "q6": "FinzyCash কি বাংলা সাপোর্ট করে?",
+      "q6": "Hishab Rakhi কি বাংলা সাপোর্ট করে?",
       "a6": "হ্যাঁ, অ্যাপটি পুরোপুরি বাংলা সাপোর্ট করে।",
 
       // Pricing View
@@ -1060,6 +1176,38 @@ class AppTranslations extends Translations {
       'subscribe_instruction': 'এখন আপনার পছন্দের প্ল্যানটি সাবস্ক্রাইব করুন',
       'purchase_now_button': 'ক্রয় করুন',
       'subscription_success_msg': 'সাবস্ক্রিপশন সফল হয়েছে!',
+      'go_premium': 'প্রো-তে আপগ্রেড করুন',
+      'unlock_all_features':
+          'সব ফিচার আনলক করুন এবং আপনার অভিজ্ঞতাকে নতুন মাত্রা দিন',
+      'cancel_anytime': 'যেকোনো সময় বাতিল করা যাবে • নিরাপদ পেমেন্ট',
+      'unlimited_ai_credits': 'আনলিমিটেড AI ক্রেডিট',
+      'premium_support': 'প্রিমিয়াম সাপোর্ট',
+      'data_backup': 'ডেটা ব্যাকআপ',
+      'select_subscription': 'সাবস্ক্রিপশন নির্বাচন করুন',
+      'choose_best_plan': 'আপনার জন্য সেরা প্ল্যানটি বেছে নিন',
+      'daily_plan': 'দৈনিক প্ল্যান',
+      'monthly_plan': 'মাসিক প্ল্যান',
+      'per_day': 'প্রতি দিন',
+      'per_month': 'প্রতি মাস',
+      'all_premium_features': 'সব প্রিমিয়াম ফিচার',
+      'renews_daily': 'প্রতিদিন রিনিউ হবে',
+      'cancel_anytime_short': 'যেকোনো সময় বাতিল করুন',
+      'save_34_percent': 'দৈনিকের চেয়ে ৬৭% সাশ্রয়',
+      'best_value': 'সেরা অফার',
+      'flexible': 'ফ্লেক্সিবল',
+      'most_popular': 'জনপ্রিয়',
+      'continue_with': 'চালিয়ে যান',
+      'powered_by_bdapps': 'পাওয়ার্ড বাই bdapps • নিরাপদ পেমেন্ট',
+      'all_plans_include': 'সব প্ল্যানে অন্তর্ভুক্ত',
+      'ai_credits': 'AI ক্রেডিট',
+      'advanced_reports': 'অ্যাডভান্সড রিপোর্ট',
+      'unsubscribe': 'আনসাবস্ক্রাইব (প্রো)',
+      'unsubscribe_confirmation':
+          'আপনি কি নিশ্চিত যে আপনি আনসাবস্ক্রাইব করতে চান?',
+      'unsubscribe_success': 'সফলভাবে আনসাবস্ক্রাইব করা হয়েছে',
+      'buy_more_ai_credits_plan': 'AI ক্রেডিট',
+      'not_subscribed_error': 'আপনি এই সার্ভিসে সাবস্ক্রাইব করেননি',
+      'already_subscribed': 'এই নাম্বারটি ইতিমধ্যে সাবস্ক্রাইব করা আছে',
 
       "q7": "AI কীভাবে সাহায্য করে?",
       "a7":
@@ -1117,6 +1265,7 @@ class AppTranslations extends Translations {
       'reportTitle': 'রিপোর্ট',
       'search': 'অনুসন্ধান করুন',
       'income': 'আয়',
+      'pro_features': 'প্রো ফিচারস',
       "home": "হোম",
       "report": "রিপোর্ট",
       "budget": "বাজেট",
@@ -1166,7 +1315,22 @@ class AppTranslations extends Translations {
       "reset_confirmation_title": "অ্যাপ রিসেট করবেন?",
       "reset_confirmation_message":
           "আপনি কি রিসেট করতে চান? রিসেট করলে আপনার সব লেনদেন ও ডেটা মুছে যাবে।",
-      "yes": "হ্যাঁ",
+      'reset_delete_options': 'রিসেট/ডিলিট',
+      'reset_delete_description':
+          'আপনার অ্যাপ ডেটা এবং অ্যাকাউন্ট সেটিংস ম্যানেজ করুন।',
+      'reset_app_data': 'অ্যাপ ডেটা রিসেট করুন',
+      'reset_app_data_desc':
+          'অ্যাকাউন্ট ডিলিট না করে শুধুমাত্র লোকাল ডেটা (লেনদেন, বাজেট ইত্যাদি) মুছে ফেলুন।',
+      'delete_account': 'অ্যাকাউন্ট ডিলিট করুন',
+      'delete_account_desc':
+          'আপনার অ্যাকাউন্ট এবং সমস্ত ডেটা স্থায়ীভাবে মুছে ফেলুন।',
+      'reset_app_data_confirmation':
+          'আপনি কি নিশ্চিত যে আপনি অ্যাপ ডেটা রিসেট করতে চান? এটি সমস্ত লোকাল লেনদেন এবং বাজেট মুছে ফেলবে। এই কাজটি আর ফিরিয়ে আনা যাবে না।',
+      'delete_account_confirmation':
+          'আপনি কি নিশ্চিত যে আপনি আপনার অ্যাকাউন্ট ডিলিট করতে চান? এটি ক্লাউড এবং লোকাল স্টোরেজ থেকে আপনার অ্যাকাউন্ট এবং সমস্ত ডেটা স্থায়ীভাবে মুছে ফেলবে। এই কাজটি আর ফিরিয়ে আনা যাবে না।',
+      'app_data_reset_success': 'অ্যাপ ডেটা সফলভাবে রিসেট করা হয়েছে।',
+      'reset': 'রিসেট',
+      'delete': 'ডিলিট',
       //-------------------------------Welcome View-------------------------------
       "welcomeViewTitle": "সহজে টাকার ব্যবস্থাপনা",
       "welcomeViewSubtitle":
@@ -1396,6 +1560,22 @@ class AppTranslations extends Translations {
       "budget_exceeded_message_end": "-এর জন্য নির্ধারিত বাজেট শেষ হয়ে গেছে।",
       "budget_expired_message_start": "আপনার",
       "budget_expired_message_end": "বাজেটের সময়সীমা শেষ হয়েছে।",
+
+      // ------------------------------- Balance Check Dialog -------------------------------
+      'balance_check_title': 'ব্যালেন্স চেক করুন',
+      'balance_check_message':
+          'অনুগ্রহ করে নিশ্চিত করুন যে আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স আছে।',
+
+      // ------------------------------- SMS Confirmation Dialog -------------------------------
+      'subscription_initiated_title': 'সাবস্ক্রিপশন সফল হয়েছে',
+      'subscription_initiated_desc':
+          'সফলভাবে সাবস্ক্রাইব করা হয়েছে। অনুগ্রহ করে নিশ্চিতকরণ এসএমএসের জন্য অপেক্ষা করুন।',
+      'okay': 'ঠিক আছে',
+      'sms_confirmation_title': 'এসএমএস নিশ্চিতকরণ',
+      'sms_confirmation_message':
+          'আমরা এসএমএসের মাধ্যমে আপনার সাবস্ক্রিপশন নিশ্চিত করার সময় অনুগ্রহ করে অপেক্ষা করুন।',
+      'seconds': 'সেকেন্ড',
+
       // -------------------------------Budget Card -------------------------------
       "of": "এর",
       "left": "বাকি",
@@ -1445,7 +1625,6 @@ class AppTranslations extends Translations {
       "createBudgetButton": "বাজেট তৈরি করুন",
       "addCategory": "যোগ করুন",
       "categoryAmount": "টাকা",
-      "delete": "মুছুন",
       "pleaseSelectCategory": "একটি ক্যাটাগরি নির্বাচন করুন",
       "pleaseEnterValidAmount": "সঠিক টাকার পরিমাণ লিখুন",
       "budgetCreatedSuccess": "বাজেট তৈরি হয়েছে সফলভাবে!",
@@ -1555,11 +1734,23 @@ class AppTranslations extends Translations {
       "weeklyFinancialSummaryDescription": "এই সপ্তাহের খরচের সারাংশ দেখে নিন!",
       "monthlyFinancialReportTitle": "মাসিক আর্থিক রিপোর্ট",
       "monthlyFinancialReportDescription": "গত মাসের আয়-খরচ এক নজরে দেখে নিন!",
+
+      "notification_settings": "নোটিফিকেশন সেটিংস",
+      "all_notifications": "সকল নোটিফিকেশন",
+      "all_notifications_desc": "অ্যাপের সকল নোটিফিকেশন চালু বা বন্ধ করুন",
+      "notification_types": "নোটিফিকেশনের ধরন",
+      "daily_finance_tip_desc":
+          "আপনার আর্থিক স্বাস্থ্যের উন্নতির জন্য প্রতিদিনের টিপস পান",
+      "daily_transaction_review": "দৈনিক লেনদেন পর্যালোচনা",
+      "daily_transaction_review_desc":
+          "আপনার প্রতিদিনের লেনদেন পর্যালোচনা করার রিমাইন্ডার",
+      "budget_alerts_desc": "বাজেট সীমা অতিক্রম করলে নোটিফিকেশন পান",
       "viewInsights": "বিস্তারিত দেখুন",
       "close": "বন্ধ",
+      "budget_alerts": "বাজেট রিমাইন্ডার",
 
       "add_with_ai": "AI দিয়ে যোগ করুন",
-      "smart_categorization": "স্মার্ট শ্রেণীবিন্যাস",
+      "smart_categorization": "স্মার্ট ক্যাটাগরি",
       "add_manually": "ম্যানুয়ালি যোগ করুন",
       "enter_details": "বিবরণ নিজে লিখুন",
       "spent_on_food": "খাবারের খরচ",
@@ -1668,7 +1859,7 @@ class AppTranslations extends Translations {
       "download": "ডাউনলোড",
       "given_taken_summary": "দেনা-পাওনা সারসংক্ষেপ",
       "get": "পাবেন",
-      "pay": "দেবেন",
+      "pay": "দিবেন",
       "settle_up": "হিসাব মিটিয়ে নিন",
       "mark_as_settled": "পরিশোধিত হিসেবে চিহ্নিত করুন",
       "confirm_delete_person":
@@ -1753,6 +1944,7 @@ class AppTranslations extends Translations {
       'plan_expired': 'প্ল্যানের মেয়াদ শেষ',
 
       // ------------------------------- Pricing View -------------------------------
+      'check_out': 'চেক আউট',
       'manage_plan': 'প্ল্যান ম্যানেজ করুন',
       'choose_pricing_plan': 'আপনার প্রাইসিং প্ল্যান বেছে নিন',
       'set_reminder': 'রিমাইন্ডার সেট করুন',
@@ -1768,8 +1960,25 @@ class AppTranslations extends Translations {
       '2700_credits': '২৭০০ AI ক্রেডিট',
       '2700_credits_pro':
           '২৭০০ AI ক্রেডিট', // Assuming same as smart based on prototype visual, though usually pro is more
+      '5500_credits_pro': '৫৫০০ AI ক্রেডিট',
+      '11000_credits': '১১০০০ AI ক্রেডিট',
       '27000_credits': '২৭০০০ AI ক্রেডিট',
       'monthly': 'মাসিক',
+      'credits_left': 'ক্রেডিট বাকি',
+      'no_credits': 'কোনো ক্রেডিট নেই',
+      'buy_now': 'এখন কিনুন',
+      '500_credits_for_30tk': '৬০ ক্রেডিট ৳৩০ তে',
+      'purchase_credits_title': 'AI ক্রেডিট কিনুন',
+      'purchase_credits_desc': 'মাত্র ৳৩০ এ ৬০ AI ক্রেডিট পান',
+      'purchase_plan_msg':
+          'এআই বৈশিষ্ট্যগুলি ব্যবহার চালিয়ে যেতে দয়া করে একটি পরিকল্পনা কিনুন।',
+      'or_continue_with': 'অথবা চালিয়ে যান',
+      'enter_email': 'আপনার ইমেইল দিন',
+      'enter_password': 'আপনার পাসওয়ার্ড দিন',
+      'whatsapp_error':
+          'হোয়াটসঅ্যাপ খোলা যাচ্ছে না। অনুগ্রহ করে আবার চেষ্টা করুন।',
+      'feedback_footer':
+          'আমাদের অ্যাপ উন্নত করতে আমরা আপনার মতামতকে গুরুত্ব দিই।',
       '3_months': '৩ মাস',
       '6_months': '৬ মাস',
       '1_year': '১ বছর',
@@ -1847,7 +2056,7 @@ class AppTranslations extends Translations {
       'failed_to_enable_app_lock': 'অ্যাপ লক সক্রিয় করতে ব্যর্থ',
 
       // Savings Feature
-      'savingsGoals': 'সঞ্চয় লক্ষ্য',
+      'savingsGoals': 'সঞ্চয়',
       'noSavingsGoalsYet': 'এখনও কোনো সঞ্চয় লক্ষ্য নেই',
       'createYourFirstGoal': 'আজই সঞ্চয় শুরু করুন আপনার প্রথম লক্ষ্য তৈরি করে',
       'createGoal': 'লক্ষ্য তৈরি করুন',

@@ -1,16 +1,20 @@
+import 'dart:async';
+
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
-import 'package:finance_manager_app/config/routes/routes_name.dart';
 import 'package:finance_manager_app/providers/authProvider/auth_provider.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
-import 'package:finance_manager_app/providers/budget/budget_provider.dart';
-import 'package:finance_manager_app/providers/category/transaction_provider.dart';
+
 import 'package:finance_manager_app/providers/languageProvider/language_translator_provider.dart';
 import 'package:finance_manager_app/providers/proProvider/pro_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
-import 'package:finance_manager_app/views/pricingView/pricing_view.dart';
+import 'package:finance_manager_app/utils/helper_functions.dart';
+import 'package:finance_manager_app/views/pricingView/premium_feature_view.dart';
 import 'package:finance_manager_app/views/settingView/pages/about_page.dart';
 import 'package:finance_manager_app/views/settingView/pages/faq_page.dart';
 import 'package:finance_manager_app/views/settingView/pages/feedback_page.dart';
+import 'package:finance_manager_app/views/settingView/pages/notification_settings_view.dart';
+import 'package:finance_manager_app/views/settingView/pages/reset_delete_view.dart';
+import 'package:finance_manager_app/views/settingView/pages/unsubscirbe_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +35,20 @@ class _SettingsPageState extends State<SettingsPage> {
   void initState() {
     super.initState();
     _loadUserData();
+  }
+
+  // Helper function to extract values
+  String extractValue(String body, String key) {
+    final startIndex = body.indexOf(key);
+    if (startIndex != -1) {
+      final substring = body.substring(startIndex);
+      final endIndex = substring.indexOf('\n');
+      if (endIndex != -1) {
+        return substring.substring(key.length, endIndex).trim();
+      }
+      return substring.substring(key.length).trim();
+    }
+    return '';
   }
 
   Future<void> _loadUserData() async {
@@ -59,44 +77,28 @@ class _SettingsPageState extends State<SettingsPage> {
             'color': Colors.deepPurple,
             'action': (BuildContext ctx) => _showLanguageOptions(ctx),
           },
-          // {
-          //   'key': 'app_lock'.tr,
-          //   'icon': Icons.lock,
-          //   'color': Colors.red,
-          //   'action': (BuildContext ctx) => _showAppLockOptions(ctx),
-          // },
-        ],
-      },
-      {
-        'title': 'features'.tr,
-        'items': [
           {
-            'key': 'given_taken'.tr,
-            'icon': Icons.handshake_outlined,
+            'key': 'notifications'.tr,
+            'icon': Icons.notifications,
             'color': Colors.orange,
             'action': (BuildContext ctx) {
-              Get.toNamed(RoutesName.givenTakenView);
+              Get.to(NotificationSettingsView());
+            },
+          },
+          {
+            'key': 'premium'.tr,
+            'icon': Icons.workspace_premium,
+            'color': Colors.amber,
+            'action': (BuildContext ctx) {
+              Get.to(PremiumFeatureView());
             },
           },
         ],
       },
+
       {
         'title': 'support'.tr,
         'items': [
-          // {
-          //   'key': 'shareApp'.tr,
-          //   'icon': Icons.share,
-          //   'color': AppColors.success,
-          //   'action': (BuildContext ctx) {},
-          // },
-          // {
-          //   'key': 'contactSupport'.tr,
-          //   'icon': Icons.support_agent,
-          //   'color': AppColors.primaryBlue,
-          //   'action': (BuildContext ctx) {
-          //     Get.to(ContactSupportPage());
-          //   },
-          // },
           {
             'key': 'faq'.tr,
             'icon': Icons.help_outline,
@@ -113,36 +115,6 @@ class _SettingsPageState extends State<SettingsPage> {
               Get.to(FeedbackPage());
             },
           },
-        ],
-      },
-      // {
-      //   'title': "",
-      //   'items': [
-      //     {
-      //       'key': 'about'.tr,
-      //       'icon': Icons.info_outline,
-      //       'color': Colors.grey,
-      //       'action': (BuildContext ctx) {},
-      //     },
-      //     // {
-      //     //   'key': 'termsPolicies'.tr,
-      //     //   'icon': Icons.description_outlined,
-      //     //   'color': Colors.indigo,
-      //     //   'action': (BuildContext ctx) {},
-      //     // },
-      //   ],
-      // },
-      {
-        'title': 'other'.tr,
-        'items': [
-          {
-            'key': 'premium'.tr,
-            'icon': Icons.workspace_premium,
-            'color': Colors.amber,
-            'action': (BuildContext ctx) {
-              Get.to(() => const PricingView());
-            },
-          },
           {
             'key': 'about'.tr,
             'icon': Icons.info_outline,
@@ -151,14 +123,12 @@ class _SettingsPageState extends State<SettingsPage> {
               Get.to(AboutPage());
             },
           },
-          {
-            'key': 'resetApp'.tr,
-            'icon': Icons.restore,
-            'color': AppColors.error,
-            'action': (BuildContext ctx) {
-              _showResetConfirmationDialog(ctx);
-            },
-          },
+        ],
+      },
+
+      {
+        'title': 'other'.tr,
+        'items': [
           {
             'key': 'logout'.tr,
             'icon': Icons.logout,
@@ -167,18 +137,29 @@ class _SettingsPageState extends State<SettingsPage> {
               _showLogoutConfirmationDialog(ctx);
             },
           },
+          {
+            'key': 'unsubscribe'.tr,
+            'icon': Icons.cancel_outlined,
+            'color': Colors.red,
+            'action': (BuildContext ctx) {
+              Get.to(UnsubscirbeView());
+              // _showUnsubscribeConfirmationDialog(ctx);
+            },
+          },
+          {
+            'key': 'reset_delete_options'.tr,
+            'icon': Icons.settings_backup_restore,
+            'color': AppColors.error,
+            'action': (BuildContext ctx) {
+              Get.to(const ResetDeleteView());
+            },
+          },
         ],
       },
     ];
 
     return Scaffold(
-      appBar: customAppBar(
-        title: "settings".tr,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back),
-        ),
-      ),
+      appBar: customAppBar(title: "settings".tr),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -192,16 +173,28 @@ class _SettingsPageState extends State<SettingsPage> {
                     ? proProvider.remainingSubscriptionDays
                     : proProvider.remainingTrialDays;
 
+                final isDark = Theme.of(context).brightness == Brightness.dark;
+
                 // Status configuration
                 final statusConfig = isPro
                     ? _StatusConfig(
                         label: 'pro_user'.tr,
                         icon: Icons.verified,
-                        color: const Color(0xFFFFD700),
-                        gradientColors: [
-                          const Color(0xFFFFF9C4),
-                          Theme.of(context).cardColor,
-                        ],
+                        // Darker gold for light mode to be readable and "clean", lighter gold for dark mode
+                        color: isDark
+                            ? const Color(0xFFFFD700)
+                            : const Color(0xFFCA8A04),
+                        gradientColors: isDark
+                            ? [
+                                const Color(0xFFFFD700).withValues(alpha: 0.15),
+                                Theme.of(context).cardColor,
+                              ]
+                            : [
+                                const Color(
+                                  0xFFFEFCE8,
+                                ), // Very subtle yellow (Yellow 50)
+                                Theme.of(context).cardColor,
+                              ],
                       )
                     : isTrial
                     ? _StatusConfig(
@@ -240,7 +233,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     child: InkWell(
                       onTap: isPro
                           ? null
-                          : () => Get.to(() => const PricingView()),
+                          : () => Get.to(const PremiumFeatureView()),
                       borderRadius: BorderRadius.circular(24),
                       child: Padding(
                         padding: const EdgeInsets.all(24),
@@ -334,10 +327,11 @@ class _SettingsPageState extends State<SettingsPage> {
                                         ),
                                         if ((isPro || isTrial) && daysLeft > 0)
                                           Text(
-                                            '$daysLeft ${'days_left'.tr}',
+                                            '${HelperFunctions.convertToBanglaDigits(daysLeft.toString())} ${'days_left'.tr}',
                                             style: TextStyle(
-                                              color: statusConfig.color
-                                                  .withValues(alpha: 0.8),
+                                              color: Theme.of(
+                                                context,
+                                              ).textTheme.bodyMedium?.color,
                                               fontSize: 11,
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -348,7 +342,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   if (!isPro)
                                     ElevatedButton(
                                       onPressed: () =>
-                                          Get.to(() => const PricingView()),
+                                          Get.to(PremiumFeatureView()),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: statusConfig.color,
                                         foregroundColor: Colors.white,
@@ -550,7 +544,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   trailing: current == 'light'
                       ? Icon(Icons.check, color: AppColors.primaryBlue)
                       : null,
-                  onTap: () {
+                  onTap: () async {
+                    await Provider.of<ProProvider>(
+                      context,
+                      listen: false,
+                    ).enablePro(365, 1000);
                     provider.setTheme('Light');
                     Navigator.pop(ctx);
                   },
@@ -639,58 +637,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void _showResetConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'reset_confirmation_title'.tr,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: AppColors.error,
-          ),
-        ),
-        content: Text(
-          'reset_confirmation_message'.tr,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              'cancel'.tr,
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(ctx); // Close dialog first
-
-              // 1. Delete Local Data
-              await context.read<AddExpenseProvider>().deleteFullTransaction();
-              if (!context.mounted) return;
-              await context.read<BudgetProvider>().deleteFullBudget();
-
-              // 2. Delete Cloud Data & Account
-              // This will also clear SharedPreferences and navigate to Login
-              if (context.mounted) {
-                await context.read<AuthProvider>().deleteAccount();
-              }
-            },
-            child: Text(
-              'yes'.tr,
-              style: TextStyle(
-                color: AppColors.error,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -748,264 +694,3 @@ class _StatusConfig {
     required this.gradientColors,
   });
 }
-
-// class _AppLockBottomSheet extends StatelessWidget {
-//   const _AppLockBottomSheet();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final appLock = context.watch<AppLockProvider>();
-
-//     return Container(
-//       decoration: BoxDecoration(
-//         color: Theme.of(context).scaffoldBackgroundColor,
-//         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-//       ),
-//       padding: EdgeInsets.only(
-//         left: 24,
-//         right: 24,
-//         top: 12,
-//         bottom: MediaQuery.of(context).viewInsets.bottom + 32,
-//       ),
-//       child: Column(
-//         mainAxisSize: MainAxisSize.min,
-//         children: [
-//           // Drag handle
-//           Container(
-//             width: 36,
-//             height: 4,
-//             margin: const EdgeInsets.only(bottom: 20),
-//             decoration: BoxDecoration(
-//               color: Colors.grey.shade300,
-//               borderRadius: BorderRadius.circular(2),
-//             ),
-//           ),
-
-//           // Icon
-//           Container(
-//             width: 64,
-//             height: 64,
-//             decoration: BoxDecoration(
-//               color: appLock.isEnabled
-//                   ? Colors.green.shade50
-//                   : Colors.grey.shade100,
-//               shape: BoxShape.circle,
-//             ),
-//             child: Icon(
-//               appLock.isEnabled ? Icons.lock : Icons.lock_open,
-//               size: 32,
-//               color: appLock.isEnabled ? Colors.green : Colors.grey.shade600,
-//             ),
-//           ),
-
-//           const SizedBox(height: 20),
-
-//           // Title
-//           Text(
-//             appLock.isEnabled ? 'app_lock_enabled'.tr : 'enable_app_lock'.tr,
-//             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-//           ),
-
-//           const SizedBox(height: 8),
-
-//           // Description
-//           Text(
-//             appLock.isEnabled
-//                 ? 'app_lock_enabled_description'.tr
-//                 : 'app_lock_disabled_description'.tr,
-//             textAlign: TextAlign.center,
-//             style: TextStyle(
-//               fontSize: 14,
-//               color: Colors.grey.shade600,
-//               height: 1.4,
-//             ),
-//           ),
-
-//           const SizedBox(height: 28),
-
-//           // Action button
-//           SizedBox(
-//             width: double.infinity,
-//             height: 52,
-//             child: ElevatedButton(
-//               onPressed: () async {
-//                 if (appLock.isEnabled) {
-//                   // Disable app lock
-//                   await context.read<AppLockProvider>().toggle(false);
-//                   if (context.mounted) Navigator.pop(context);
-//                 } else {
-//                   // Enable app lock - show PIN setup dialog
-//                   if (context.mounted) {
-//                     Navigator.pop(context);
-//                     _showPINSetupDialog(context);
-//                   }
-//                 }
-//               },
-//               style: ElevatedButton.styleFrom(
-//                 backgroundColor: appLock.isEnabled
-//                     ? Colors.red.shade500
-//                     : Colors.green.shade600,
-//                 foregroundColor: Colors.white,
-//                 elevation: 0,
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(12),
-//                 ),
-//               ),
-//               child: Text(
-//                 appLock.isEnabled
-//                     ? 'disable_app_lock'.tr
-//                     : 'enable_app_lock'.tr,
-//                 style: const TextStyle(
-//                   fontSize: 16,
-//                   fontWeight: FontWeight.w600,
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
-//   void _showPINSetupDialog(BuildContext context) {
-//     final TextEditingController pinController = TextEditingController();
-//     final TextEditingController confirmPinController = TextEditingController();
-//     bool obscurePin = true;
-//     bool obscureConfirmPin = true;
-
-//     showDialog(
-//       context: context,
-//       barrierDismissible: false,
-//       builder: (ctx) => StatefulBuilder(
-//         builder: (context, setState) => AlertDialog(
-//           shape: RoundedRectangleBorder(
-//             borderRadius: BorderRadius.circular(16),
-//           ),
-//           title: Text(
-//             'set_app_pin'.tr,
-//             style: Theme.of(
-//               context,
-//             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-//           ),
-//           content: SingleChildScrollView(
-//             child: Column(
-//               mainAxisSize: MainAxisSize.min,
-//               children: [
-//                 Text(
-//                   'create_secure_pin'.tr,
-//                   style: Theme.of(
-//                     context,
-//                   ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
-//                 ),
-//                 const SizedBox(height: 20),
-
-//                 // PIN input
-//                 TextField(
-//                   controller: pinController,
-//                   obscureText: obscurePin,
-//                   keyboardType: TextInputType.number,
-//                   maxLength: 6,
-//                   decoration: InputDecoration(
-//                     labelText: 'enter_pin'.tr,
-//                     hintText: '0000',
-//                     border: OutlineInputBorder(
-//                       borderRadius: BorderRadius.circular(8),
-//                     ),
-//                     suffixIcon: IconButton(
-//                       icon: Icon(
-//                         obscurePin ? Icons.visibility_off : Icons.visibility,
-//                       ),
-//                       onPressed: () => setState(() => obscurePin = !obscurePin),
-//                     ),
-//                   ),
-//                 ),
-//                 const SizedBox(height: 16),
-
-//                 // Confirm PIN input
-//                 TextField(
-//                   controller: confirmPinController,
-//                   obscureText: obscureConfirmPin,
-//                   keyboardType: TextInputType.number,
-//                   maxLength: 6,
-//                   decoration: InputDecoration(
-//                     labelText: 'confirm_pin'.tr,
-//                     hintText: '0000',
-//                     border: OutlineInputBorder(
-//                       borderRadius: BorderRadius.circular(8),
-//                     ),
-//                     suffixIcon: IconButton(
-//                       icon: Icon(
-//                         obscureConfirmPin
-//                             ? Icons.visibility_off
-//                             : Icons.visibility,
-//                       ),
-//                       onPressed: () => setState(
-//                         () => obscureConfirmPin = !obscureConfirmPin,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//           actions: [
-//             TextButton(
-//               onPressed: () {
-//                 Navigator.pop(ctx);
-//                 pinController.dispose();
-//                 confirmPinController.dispose();
-//               },
-//               child: Text(
-//                 'cancel'.tr,
-//                 style: TextStyle(color: Colors.grey.shade600),
-//               ),
-//             ),
-//             ElevatedButton(
-//               onPressed: () async {
-//                 final pin = pinController.text.trim();
-//                 final confirmPin = confirmPinController.text.trim();
-
-//                 // Validation
-//                 if (pin.isEmpty) {
-//                   Get.snackbar('error_title'.tr, 'please_enter_pin'.tr);
-//                   return;
-//                 }
-
-//                 if (pin.length < 4) {
-//                   Get.snackbar('error_title'.tr, 'pin_must_be_4_digits'.tr);
-//                   return;
-//                 }
-
-//                 if (pin != confirmPin) {
-//                   Get.snackbar('error_title'.tr, 'pins_do_not_match'.tr);
-//                   return;
-//                 }
-
-//                 // Set PIN and enable lock
-//                 final success = await context
-//                     .read<AppLockProvider>()
-//                     .setPINAndEnable(pin);
-
-//                 if (context.mounted) {
-//                   Navigator.pop(ctx);
-//                   pinController.dispose();
-//                   confirmPinController.dispose();
-
-//                   if (success) {
-//                     Get.snackbar('app_lock'.tr, 'app_lock_enabled_success'.tr);
-//                   } else {
-//                     Get.snackbar(
-//                       'error_title'.tr,
-//                       'failed_to_enable_app_lock'.tr,
-//                     );
-//                   }
-//                 }
-//               },
-//               child: Text('set_pin'.tr),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

@@ -6,8 +6,12 @@ import 'package:finance_manager_app/views/categoryView/category_view.dart';
 import 'package:finance_manager_app/views/categoryView/pages/transaction_form_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
 import 'package:finance_manager_app/views/mainView/main_view.dart';
+import 'package:finance_manager_app/views/noteView/notes_view.dart';
 import 'package:finance_manager_app/views/notificationView/notification_view.dart';
+import 'package:finance_manager_app/views/pricingView/check_out_view.dart';
+import 'package:finance_manager_app/views/reminderView/reminder_view.dart';
 import 'package:finance_manager_app/views/reportView/report_view.dart';
+import 'package:finance_manager_app/views/savingsView/savings_view.dart';
 import 'package:finance_manager_app/views/settingView/setting_view.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
 import 'package:finance_manager_app/views/givenTakenView/given_taken_view.dart';
@@ -128,6 +132,26 @@ class Routes {
           transaction: args['transaction'] as LendTransaction?,
         );
       },
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.reminderView,
+      page: () => ReminderView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.savingsView,
+      page: () => SavingsView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.noteView,
+      page: () => NotesView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.checkOutView,
+      page: () => CheckOutView(),
       transition: Transition.rightToLeft,
     ),
   ];

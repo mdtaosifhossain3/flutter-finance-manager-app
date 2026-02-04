@@ -1,5 +1,6 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../config/app_name.dart';
 import 'splash_view_model.dart';
@@ -15,6 +16,12 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+    );
     // Initialize app logic
     //  SplashViewModel.initApp(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -25,6 +32,8 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -48,8 +57,8 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
                     ),
                     child: Image.asset(
                       "assets/images/logo_foreground.png",
-                      width: 100,
-                      height: 100,
+                      width: 90,
+                      height: 90,
                     ),
                   ),
                   const SizedBox(height: 20),

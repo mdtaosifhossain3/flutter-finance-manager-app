@@ -4,6 +4,7 @@ import 'package:finance_manager_app/config/theme/app_theme.dart';
 import 'package:finance_manager_app/config/translator/app_translator.dart';
 import 'package:finance_manager_app/firebase_options.dart';
 import 'package:finance_manager_app/providers/aiProvider/ai_provider.dart';
+import 'package:finance_manager_app/providers/notification_provider.dart';
 
 import 'package:finance_manager_app/providers/budget/budget_provider.dart';
 import 'package:finance_manager_app/providers/category/category_item_provider.dart';
@@ -30,14 +31,8 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await dotenv.load(fileName: '.env');
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // // Initialize UidService early
-  // await UidService.instance.initialize();
-  // final appLockProvider = AppLockProvider();
-  // await appLockProvider.load();
 
   runApp(
     MultiProvider(
@@ -103,6 +98,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => GivenTakenProvider()),
         ChangeNotifierProvider(create: (_) => NotesProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: MyApp(),
     ),
@@ -115,30 +111,25 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Finance Manager',
-      debugShowCheckedModeBanner: false,
-      theme: AppThemes.getTheme(
-        Brightness.light,
-        context.watch<LanguageTranslatorProvider>().locale.languageCode,
-      ),
-      darkTheme: AppThemes.getTheme(
-        Brightness.dark,
-        context.watch<LanguageTranslatorProvider>().locale.languageCode,
-      ),
-      themeMode: context
-          .watch<ThemeProvider>()
-          .themeMode, // system / light / dark
-      getPages: Routes.views,
-      translations: AppTranslations(),
-      locale: context.watch<LanguageTranslatorProvider>().locale,
-      fallbackLocale: const Locale('en', 'US'),
-      home: SplashView(),
-      onUnknownRoute: (RouteSettings settings) {
-        return MaterialPageRoute(
-          builder: (context) => Scaffold(
-            body: Center(child: Text('Route not found: ${settings.name}')),
+    return Consumer2<LanguageTranslatorProvider, ThemeProvider>(
+      builder: (context, provider, themeProvider, child) {
+        return GetMaterialApp(
+          title: 'Finance Manager',
+          debugShowCheckedModeBanner: false,
+          theme: AppThemes.getTheme(
+            Brightness.light,
+            provider.locale.languageCode,
           ),
+          darkTheme: AppThemes.getTheme(
+            Brightness.dark,
+            provider.locale.languageCode,
+          ),
+          themeMode: themeProvider.themeMode, // system / light / dark
+          getPages: Routes.views,
+          translations: AppTranslations(),
+          locale: provider.locale,
+          fallbackLocale: const Locale('en', 'US'),
+          home: SplashView(),
         );
       },
     );

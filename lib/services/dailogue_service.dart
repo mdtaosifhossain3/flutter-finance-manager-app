@@ -119,7 +119,7 @@ class DialogService {
             child: Text("viewInsights".tr),
             onPressed: () {
               MonthlyPdfGenerator.generateMonthlyReportPdf(
-                DateTime.now(),
+                DateTime(DateTime.now().year, DateTime.now().month - 1, 1),
                 context,
               );
 

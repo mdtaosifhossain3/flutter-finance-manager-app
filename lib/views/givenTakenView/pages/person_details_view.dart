@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
+import 'package:finance_manager_app/utils/custom_loader.dart';
 
 class PersonDetailsView extends StatefulWidget {
   final ContactLend contact;
@@ -62,22 +63,20 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
             ),
             actions: [
               IconButton(
-                onPressed: () =>
-                    GivenTakenReportService.generateAndHandleReport(
-                      contact: contact,
-                      transactions: _transactions,
-                      isShare: false,
-                    ),
+                onPressed: () => GivenTakenReportService.generateAndHandleImage(
+                  contact: contact,
+                  transactions: _transactions,
+                  isShare: false,
+                ),
                 icon: const Icon(Icons.download_outlined),
                 tooltip: 'download'.tr,
               ),
               IconButton(
-                onPressed: () =>
-                    GivenTakenReportService.generateAndHandleReport(
-                      contact: contact,
-                      transactions: _transactions,
-                      isShare: true,
-                    ),
+                onPressed: () => GivenTakenReportService.generateAndHandleImage(
+                  contact: contact,
+                  transactions: _transactions,
+                  isShare: true,
+                ),
                 icon: const Icon(Icons.share_outlined),
                 tooltip: 'share'.tr,
               ),
@@ -88,38 +87,39 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
             ],
           ),
           body: SafeArea(
-            child: Column(
-              children: [
-                _buildSummaryCard(contact),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'transactions_history'.tr,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '${_transactions.length} ${'records'.tr}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildSummaryCard(contact),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'transactions_history'.tr,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
-                      ),
-                    ],
+                        Text(
+                          '${_transactions.length} ${'records'.tr}',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.textSecondary),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: _isLoading
-                      ? const Center(child: CircularProgressIndicator())
+                  const SizedBox(height: 12),
+                  _isLoading
+                      ? const Center(child: CustomLoader())
                       : _transactions.isEmpty
                       ? _buildEmptyState()
                       : _buildTransactionsList(),
-                ),
-              ],
+
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                ],
+              ),
             ),
           ),
           floatingActionButton: FloatingActionButton.extended(
@@ -206,12 +206,70 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      if (contact.phone != null && contact.phone!.isNotEmpty)
-                        Text(
-                          HelperFunctions.convertToBanglaDigits(contact.phone!),
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: AppColors.textSecondary),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          if (contact.phone != null &&
+                              contact.phone!.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.phone_outlined,
+                                    size: 16,
+                                    color: AppColors.textSecondary.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                  ),
+                                  Text(
+                                    HelperFunctions.convertToBanglaDigits(
+                                      contact.phone!,
+                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: AppColors.textSecondary,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          SizedBox(width: 5),
+                          if (contact.address != null &&
+                              contact.address!.isNotEmpty) ...[
+                            // const SizedBox(height: 4),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    size: 16,
+                                    color: AppColors.textSecondary.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                  ),
+                                  Text(
+                                    contact.address!,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: AppColors.textSecondary,
+                                        ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -277,7 +335,7 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
                 Row(
                   children: [
                     _buildSummaryItem(
-                      label: 'given'.tr,
+                      label: 'get'.tr,
                       amount: contact.totalGiven,
                       icon: Icons.arrow_upward_rounded,
                       color: AppColors.success,
@@ -288,7 +346,7 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
                       color: Colors.grey.withValues(alpha: 0.2),
                     ),
                     _buildSummaryItem(
-                      label: 'taken'.tr,
+                      label: 'pay'.tr,
                       amount: contact.totalTaken,
                       icon: Icons.arrow_downward_rounded,
                       color: AppColors.error,
@@ -366,6 +424,8 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
 
   Widget _buildTransactionsList() {
     return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
       itemCount: _transactions.length,
       itemBuilder: (context, index) {
@@ -415,7 +475,7 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isGiven ? 'given'.tr : 'taken'.tr,
+                    isGiven ? 'get'.tr : 'pay'.tr,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,

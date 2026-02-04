@@ -78,13 +78,19 @@ class HomeViewProvider extends ChangeNotifier {
   String dwm = 'periodMonth'.tr;
   void setDWM(val) {
     dwm = val;
+    _isCacheValid = false; // Invalidate cache when period changes
     notifyListeners();
   }
+
+  // Cache for totals
+  Map<String, int>? _cachedTotals;
+  bool _isCacheValid = false;
 
   AddExpenseProvider transactionProvider;
   HomeViewProvider({required this.transactionProvider}) {
     // Listen to updates from AddExpenseProvider
     transactionProvider.addListener(() {
+      _isCacheValid = false; // Invalidate cache when transactions change
       notifyListeners(); // <-- Rebuild home when transactions change
     });
   }
@@ -179,8 +185,14 @@ class HomeViewProvider extends ChangeNotifier {
 
   //Get total income and expense
   Map<String, int> getTotals() {
+    if (_isCacheValid && _cachedTotals != null) {
+      return _cachedTotals!;
+    }
+
     final filtered = filterTransactions(dwm);
-    return calculateTotals(filtered);
+    _cachedTotals = calculateTotals(filtered);
+    _isCacheValid = true;
+    return _cachedTotals!;
   }
 
   void updateSelectedPeriod(String period) {

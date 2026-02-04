@@ -29,7 +29,7 @@ class SendOTPService {
     // Send HTTP POST request to the API
     try {
       final response = await http.post(
-        Uri.parse('https://fluttbizitsolutions.com/api/fn_app_otp_sent.php'),
+        Uri.parse('https://fluttbizitsolutions.com/api/bheseb_otp_sent.php'),
         body: data,
       );
 
@@ -41,12 +41,60 @@ class SendOTPService {
         final ref = _extractValue(body, 'Reference number');
         final refResult = ref.replaceAll(":", "").trim();
         sharedPreferences.setString("REFERENCE_NUMBER", refResult);
+        sharedPreferences.setString("MOBILE_NUMBER_Daily", mobile);
         return {
           'success': true,
           'status': 'S1000',
           'message': 'OTP sent successfully',
         };
       } else if (result == "E1351") {
+        sharedPreferences.setString("MOBILE_NUMBER_Daily", mobile);
+
+        return {'success': true, 'status': 'E1351', 'message': 'Welcome Back!'};
+      } else {
+        return {
+          'success': false,
+          'message': 'Please Enter a valid Robi/Airtel Number',
+        };
+      }
+    } on SocketException {
+      return {'success': false, 'message': 'no_internet_connection'.tr};
+    } on TimeoutException {
+      return {'success': false, 'message': 'connection_timeout'.tr};
+    } catch (e) {
+      return {'success': false, 'message': 'something_went_wrong'.tr};
+    }
+  }
+
+  Future<Map<String, dynamic>> sendOTPMonthly(String mobile) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    // Prepare the request data
+    Map<String, String> data = {'user_mobile': mobile};
+
+    // Send HTTP POST request to the API
+    try {
+      final response = await http.post(
+        Uri.parse('https://fluttbizitsolutions.com/api/heseb_otp_sent.php'),
+        body: data,
+      );
+
+      var body = response.body;
+      final statusCode = _extractValue(body, 'Status code').trim();
+      final result = statusCode.replaceAll(":", "").trim();
+
+      if (result == "S1000") {
+        final ref = _extractValue(body, 'Reference number');
+        final refResult = ref.replaceAll(":", "").trim();
+        sharedPreferences.setString("REFERENCE_NUMBER", refResult);
+        sharedPreferences.setString("MOBILE_NUMBER_Monthly", mobile);
+        return {
+          'success': true,
+          'status': 'S1000',
+          'message': 'OTP sent successfully',
+        };
+      } else if (result == "E1351") {
+        sharedPreferences.setString("MOBILE_NUMBER_Monthly", mobile);
         return {'success': true, 'status': 'E1351', 'message': 'Welcome Back!'};
       } else {
         return {

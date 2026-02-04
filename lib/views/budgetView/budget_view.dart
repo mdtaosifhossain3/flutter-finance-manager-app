@@ -16,6 +16,10 @@ class BudgetView extends StatelessWidget {
     return Scaffold(
       appBar: customAppBar(
         title: 'budgetOverview'.tr,
+        leading: IconButton(
+          onPressed: () => Get.back(),
+          icon: const Icon(Icons.arrow_back),
+        ),
         actions: [
           Padding(
             padding: EdgeInsets.only(

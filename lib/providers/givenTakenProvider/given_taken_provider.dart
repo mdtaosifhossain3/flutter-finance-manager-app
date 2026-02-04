@@ -188,4 +188,17 @@ class GivenTakenProvider with ChangeNotifier {
       rethrow;
     }
   }
+
+  /// Delete all data for the current user
+  Future<void> deleteFullData() async {
+    try {
+      await _repository.deleteFullData();
+      _contacts.clear();
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      rethrow;
+    }
+  }
 }

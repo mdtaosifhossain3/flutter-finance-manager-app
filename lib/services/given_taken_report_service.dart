@@ -2,12 +2,15 @@ import 'dart:io';
 import 'package:finance_manager_app/models/givenTakenModel/contact_lend_model.dart';
 import 'package:finance_manager_app/models/givenTakenModel/lend_transaction_model.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
+import 'package:finance_manager_app/widgets/simple_recipt_widget.dart';
 import 'package:flutter/services.dart';
+import 'package:gal/gal.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:bijoy_helper/bijoy_helper.dart' as BijoyHelper;
@@ -66,6 +69,46 @@ class GivenTakenReportService {
       );
     } else {
       await OpenFilex.open(file.path);
+    }
+  }
+
+  static Future<void> generateAndHandleImage({
+    required ContactLend contact,
+    required List<LendTransaction> transactions,
+    required bool isShare,
+  }) async {
+    final controller = ScreenshotController();
+
+    try {
+      // Capture the widget as an image
+      final Uint8List imageBytes = await controller.captureFromWidget(
+        SimpleReceiptWidget(contact: contact, transactions: transactions),
+        pixelRatio: 3.0,
+        //  delay: const Duration(milliseconds: 200),
+      );
+
+      final directory = await getTemporaryDirectory();
+      final fileName =
+          "Given_Taken_Receipt_${contact.name}_${DateTime.now().millisecondsSinceEpoch}.png";
+      final imagePath = '${directory.path}/$fileName';
+      final file = File(imagePath);
+      await file.writeAsBytes(imageBytes);
+
+      if (isShare) {
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(imagePath)],
+            text: 'given_taken_receipt'.tr,
+          ),
+        );
+      } else {
+        // Save to Gallery
+        await Gal.putImage(imagePath);
+        await OpenFilex.open(file.path);
+        Get.snackbar('success'.tr, 'saved_to_gallery'.tr);
+      }
+    } catch (e) {
+      Get.snackbar('error'.tr, '${'failed_to_generate_receipt'.tr}: $e');
     }
   }
 

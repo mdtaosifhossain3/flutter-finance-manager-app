@@ -21,6 +21,7 @@ class AuthService {
       "name": name,
       "email": email,
       "subscription_end": "",
+      "credits": 0,
       "created_at": FieldValue.serverTimestamp(),
     });
 
@@ -60,6 +61,7 @@ class AuthService {
         "name": res.user!.displayName ?? "",
         "email": res.user!.email ?? "",
         "subscription_end": "",
+        "credits": 0,
         "created_at": FieldValue.serverTimestamp(),
       });
     }

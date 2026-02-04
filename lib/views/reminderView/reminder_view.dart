@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:finance_manager_app/utils/custom_loader.dart';
 
 class ReminderView extends StatefulWidget {
   const ReminderView({super.key});
@@ -43,7 +44,7 @@ class _ReminderViewState extends State<ReminderView> {
           IconButton(
             icon: const Icon(Icons.add_circle_outline, size: 28),
             onPressed: () {
-              Get.to(() => const AddReminderForm());
+              Get.to(AddReminderForm());
             },
             tooltip: 'Add Reminder',
           ),
@@ -54,7 +55,7 @@ class _ReminderViewState extends State<ReminderView> {
         builder: (context, reminderProvider, _) {
           // Show loading state (always prioritize loading)
           if (reminderProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CustomLoader());
           }
 
           // Show empty state only after loading is complete
@@ -140,7 +141,7 @@ class _ReminderViewState extends State<ReminderView> {
                     ),
                     child: GestureDetector(
                       onTap: () {
-                        Get.to(() => ReminderPreviewScreen(reminder: reminder));
+                        Get.to(ReminderPreviewScreen(reminder: reminder));
                       },
                       child: ListTile(
                         contentPadding: const EdgeInsets.symmetric(
@@ -354,7 +355,7 @@ class _ReminderViewState extends State<ReminderView> {
           const SizedBox(height: 32),
           ElevatedButton.icon(
             onPressed: () {
-              Get.to(() => const AddReminderForm());
+              Get.to(AddReminderForm());
             },
             icon: const Icon(Icons.add_rounded),
             label: Text("add_reminder".tr),

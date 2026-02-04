@@ -4,10 +4,12 @@ import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/models/givenTakenModel/contact_lend_model.dart';
 import 'package:finance_manager_app/providers/givenTakenProvider/given_taken_provider.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
+import 'package:finance_manager_app/views/givenTakenView/pages/add_edit_person_view.dart';
 import 'package:finance_manager_app/views/givenTakenView/widgets/contact_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:finance_manager_app/utils/custom_loader.dart';
 
 class GivenTakenView extends StatefulWidget {
   const GivenTakenView({super.key});
@@ -33,10 +35,8 @@ class _GivenTakenViewState extends State<GivenTakenView> {
       appBar: customAppBar(
         title: 'given_taken'.tr,
         leading: IconButton(
+          onPressed: () => Get.back(),
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Get.back();
-          },
         ),
         actions: [
           Padding(
@@ -65,11 +65,7 @@ class _GivenTakenViewState extends State<GivenTakenView> {
         child: Consumer<GivenTakenProvider>(
           builder: (context, provider, child) {
             if (provider.isLoading) {
-              return Center(
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).primaryColor,
-                ),
-              );
+              return Center(child: CustomLoader());
             }
 
             if (provider.error != null) {
@@ -258,7 +254,7 @@ class _GivenTakenViewState extends State<GivenTakenView> {
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
-                                          'taken'.tr,
+                                          'get'.tr,
                                           style: TextStyle(
                                             color: AppColors.success.withValues(
                                               alpha: 0.9,
@@ -327,7 +323,7 @@ class _GivenTakenViewState extends State<GivenTakenView> {
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
-                                          'given'.tr,
+                                          'pay'.tr,
                                           style: TextStyle(
                                             color: AppColors.error.withValues(
                                               alpha: 0.9,
@@ -358,64 +354,6 @@ class _GivenTakenViewState extends State<GivenTakenView> {
                           ),
                         ],
                       ),
-
-                      // Optional: Net Balance Indicator
-                      if (provider.totalWillGet != provider.totalNeedToPay) ...[
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).dividerColor.withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                provider.totalWillGet > provider.totalNeedToPay
-                                    ? Icons.trending_up_rounded
-                                    : Icons.trending_down_rounded,
-                                size: 16,
-                                color:
-                                    provider.totalWillGet >
-                                        provider.totalNeedToPay
-                                    ? AppColors.success
-                                    : AppColors.error,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'net_balance'.tr,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                  color: Theme.of(
-                                    context,
-                                  ).textTheme.bodySmall?.color,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                '৳${HelperFunctions.convertToBanglaDigits((provider.totalWillGet - provider.totalNeedToPay).abs().toString())}',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins',
-                                  color:
-                                      provider.totalWillGet >
-                                          provider.totalNeedToPay
-                                      ? AppColors.success
-                                      : AppColors.error,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ),
@@ -435,10 +373,11 @@ class _GivenTakenViewState extends State<GivenTakenView> {
                           );
                         },
                         onEdit: () {
-                          Get.toNamed(
-                            RoutesName.addEditPersonView,
-                            arguments: contact,
-                          );
+                          // Get.toNamed(
+                          //   RoutesName.addEditPersonView,
+                          //   arguments: contact,
+                          // );
+                          Get.to(AddEditPersonView(contact: contact));
                         },
                         onDelete: () => _confirmDelete(contact),
                       );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finance_manager_app/utils/custom_loader.dart';
 
 class LoadingOverlay extends StatelessWidget {
   final Widget child;
@@ -22,9 +23,7 @@ class LoadingOverlay extends StatelessWidget {
         if (isLoading)
           Container(
             color: color ?? Colors.black.withValues(alpha: 0.5),
-            child: Center(
-              child: progressIndicator ?? const CircularProgressIndicator(),
-            ),
+            child: Center(child: progressIndicator ?? const CustomLoader()),
           ),
       ],
     );

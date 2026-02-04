@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 
 import '../../../globalWidgets/card_widget.dart';
 
+import 'dart:async';
+
 class ExpensesView extends StatefulWidget {
   const ExpensesView({super.key});
   @override
@@ -16,6 +18,7 @@ class ExpensesView extends StatefulWidget {
 
 class _ExpensesScreenState extends State<ExpensesView> {
   final TextEditingController searchController = TextEditingController();
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -24,7 +27,17 @@ class _ExpensesScreenState extends State<ExpensesView> {
   }
 
   @override
+  void dispose() {
+    _debounce?.cancel();
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final provider = context.watch<ReportProvider>();
+    final filteredTxns = provider.filteredTransactions;
+
     return Scaffold(
       appBar: customAppBar(
         title: "expensesTitle".tr,
@@ -38,37 +51,41 @@ class _ExpensesScreenState extends State<ExpensesView> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          _buildSearchBar(),
-          _buildPeriodTabs(),
-          Expanded(
-            child: SingleChildScrollView(
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: _buildSearchBar()),
+          SliverToBoxAdapter(child: _buildPeriodTabs()),
+          SliverToBoxAdapter(
+            child: Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: MediaQuery.of(context).size.width * 0.04,
               ),
               child: Column(
-                children: [
-                  _buildDonutChart(),
-
-                  SizedBox(height: 24),
-                  Consumer<ReportProvider>(
-                    builder: (context, provider, child) {
-                      final filteredTxns = provider.filteredTransactions;
-
-                      return filteredTxns.isEmpty
-                          ? Text("noTransactions".tr)
-                          : Column(
-                              children: filteredTxns
-                                  .map((tx) => CardWidget(transaction: tx))
-                                  .toList(),
-                            );
-                    },
-                  ),
-                ],
+                children: [_buildDonutChart(), SizedBox(height: 24)],
               ),
             ),
           ),
+          filteredTxns.isEmpty
+              ? SliverToBoxAdapter(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text("noTransactions".tr),
+                    ),
+                  ),
+                )
+              : SliverPadding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.04,
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final tx = filteredTxns[index];
+                      return CardWidget(transaction: tx);
+                    }, childCount: filteredTxns.length),
+                  ),
+                ),
+          SliverToBoxAdapter(child: SizedBox(height: 20)),
         ],
       ),
     );
@@ -100,7 +117,10 @@ class _ExpensesScreenState extends State<ExpensesView> {
               contentPadding: const EdgeInsets.symmetric(vertical: 16),
             ),
             onChanged: (value) {
-              provider.setSearchQuery(value);
+              if (_debounce?.isActive ?? false) _debounce!.cancel();
+              _debounce = Timer(const Duration(milliseconds: 500), () {
+                provider.setSearchQuery(value);
+              });
             },
           ),
         );

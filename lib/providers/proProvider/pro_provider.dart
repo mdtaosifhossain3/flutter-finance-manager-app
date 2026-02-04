@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_manager_app/views/mainView/main_view.dart';
-import 'package:finance_manager_app/views/pricingView/pricing_view.dart';
+import 'package:finance_manager_app/views/pricingView/premium_feature_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -15,93 +15,119 @@ class ProProvider extends ChangeNotifier {
   static const String _keyTrialStartDate = 'trial_start_date';
   static const String _keyIsPro = 'is_pro_user';
   static const String _keySubscriptionEndDate = 'subscription_end_date';
+  static const String _keyCredits = 'ai_credits';
 
   // State
   bool isPro = false;
   bool isTrialActive = false;
   int remainingTrialDays = 2;
+  int credits = 0;
   DateTime? subscriptionEndDate;
 
   // Constants
-  static const int _trialDurationDays = 20;
+  static const int _trialDurationDays = 0;
 
   ProProvider() {
     // _initializeProStatus(); // Removed automatic init
   }
 
   Future<void> initializeProStatus() async {
-    // 1. Check Local Storage (Offline First)
-    String? proStatus = await _storage.read(key: _keyIsPro);
-    String? subEndStr = await _storage.read(key: _keySubscriptionEndDate);
+    debugPrint("ProProvider: initializeProStatus called");
 
-    if (proStatus == 'true') {
-      if (subEndStr != null) {
-        subscriptionEndDate = DateTime.parse(subEndStr);
-        // Check if expired locally
-        if (DateTime.now().isAfter(subscriptionEndDate!)) {
-          await _downgradeToFree();
-        } else {
-          isPro = true;
-        }
-      } else {
-        // Legacy/Lifetime fallback
-        isPro = true;
-      }
-    }
-
-    // 2. Sync with Firebase (if user is logged in)
-    // If local says NOT pro, or we just want to verify/restore
     final user = _auth.currentUser;
+    bool syncedFromRemote = false;
+
+    // 1. Try Remote Sync First (if logged in)
     if (user != null) {
+      debugPrint("ProProvider: Syncing with Firebase for user ${user.uid}");
       try {
         final doc = await _firestore.collection('users').doc(user.uid).get();
         if (doc.exists) {
           final data = doc.data();
           final bool remoteIsPro = data?['isPro'] ?? false;
           final String? remoteEndStr = data?['subscription_end'];
+          final int remoteCredits = data?['credits'] ?? 0;
+          final Timestamp? createdAtTimestamp = data?['created_at'];
+          final String? remoteTrialStartStr = data?['trial_start'];
 
+          // --- Sync Credits ---
+          credits = remoteCredits;
+          await _storage.write(key: _keyCredits, value: credits.toString());
+          debugPrint("ProProvider: Synced credits: $credits");
+
+          // --- Sync Pro Status ---
           if (remoteIsPro && remoteEndStr != null) {
             final remoteEndDate = DateTime.parse(remoteEndStr);
-
             if (DateTime.now().isAfter(remoteEndDate)) {
-              // Remote says Pro, but it's expired. Update remote to false.
-              await _firestore.collection('users').doc(user.uid).update({
-                'isPro': false,
-              });
-              await _downgradeToFree();
+              // Remote says Pro, but it's expired.
+              isPro = false;
+              subscriptionEndDate = null;
+              await _storage.write(key: _keyIsPro, value: 'false');
+              await _storage.delete(key: _keySubscriptionEndDate);
+              // Optionally update remote to false here, but let's focus on local state first
             } else {
-              // Remote is valid Pro. Update local.
-              await _enableProLocally(remoteEndDate);
+              // Remote is valid Pro
+              isPro = true;
+              subscriptionEndDate = remoteEndDate;
+              await _storage.write(key: _keyIsPro, value: 'true');
+              await _storage.write(
+                key: _keySubscriptionEndDate,
+                value: remoteEndStr,
+              );
             }
-          } else if (!remoteIsPro && isPro) {
-            // Local says Pro, Remote says NOT Pro.
-            // This is a conflict. Usually remote is source of truth for subscription status
-            // unless we just purchased and haven't synced yet.
-            // For now, let's trust remote if we are online and it explicitly says false.
-            // OR, if we assume local might be ahead (just bought offline), we might keep local.
-            // But the requirement says "if user uninstall... then firebase will called".
-            // So Firebase is the backup.
-            // Let's assume if remote is false, we should check if our local is valid.
-            // If local is valid and remote is false, maybe we should push to remote?
-            // For simplicity and safety against fraud: Trust Remote if it exists.
-            // BUT, if we just bought offline, local is true.
-            // Let's stick to the requirement: "when user come it will chk is pro or not... if user uninstall... data saved again in offline"
-
-            // If we are here, it means local was true (maybe) but remote is false.
-            // If local was false, and remote false, we are good.
-            if (isPro) {
-              // If local is Pro but remote is NOT, it might be an expired sub that wasn't updated locally?
-              // Or a fresh install where we haven't restored yet?
-              // Actually, if local is Pro, we already set isPro=true above.
-              // If remote says false, we should probably downgrade unless we have a pending sync.
-              // For this task, let's assume we sync FROM remote to local on init.
-              await _downgradeToFree();
-            }
+          } else {
+            // Remote says NOT Pro
+            isPro = false;
+            subscriptionEndDate = null;
+            await _storage.write(key: _keyIsPro, value: 'false');
+            await _storage.delete(key: _keySubscriptionEndDate);
           }
+
+          // --- Sync Trial Start Date ---
+          // Prioritize created_at as the true start of the user's journey
+          if (createdAtTimestamp != null) {
+            final createdAt = createdAtTimestamp.toDate();
+            await _storage.write(
+              key: _keyTrialStartDate,
+              value: createdAt.toIso8601String(),
+            );
+            // If we have created_at, that IS the trial start.
+          } else if (remoteTrialStartStr != null) {
+            // Fallback to trial_start if created_at is missing
+            await _storage.write(
+              key: _keyTrialStartDate,
+              value: remoteTrialStartStr,
+            );
+          }
+
+          syncedFromRemote = true;
         }
       } catch (e) {
         debugPrint("Error syncing pro status: $e");
-        // Fallback to local status (already set)
+      }
+    }
+
+    // 2. If Remote Sync didn't happen (Offline/Not Logged In/Error), Check Local
+    if (!syncedFromRemote) {
+      String? proStatus = await _storage.read(key: _keyIsPro);
+      String? subEndStr = await _storage.read(key: _keySubscriptionEndDate);
+      String? creditsStr = await _storage.read(key: _keyCredits);
+
+      if (creditsStr != null) {
+        credits = int.tryParse(creditsStr) ?? 0;
+      }
+
+      if (proStatus == 'true') {
+        if (subEndStr != null) {
+          subscriptionEndDate = DateTime.parse(subEndStr);
+          if (DateTime.now().isAfter(subscriptionEndDate!)) {
+            await _downgradeToFree();
+          } else {
+            isPro = true;
+          }
+        } else {
+          isPro = true;
+        }
       }
     }
 
@@ -112,26 +138,88 @@ class ProProvider extends ChangeNotifier {
     }
 
     // 3. Check Trial Status (if not Pro)
+    // We read from storage again because it might have been updated by remote sync
     String? trialStartStr = await _storage.read(key: _keyTrialStartDate);
     DateTime trialStartDate;
 
-    if (trialStartStr == null) {
-      // First time user, start trial
+    bool isNewTrial = trialStartStr == null;
+
+    if (isNewTrial) {
+      // First time user (or lost data), start trial
       trialStartDate = DateTime.now();
       await _storage.write(
         key: _keyTrialStartDate,
         value: trialStartDate.toIso8601String(),
       );
+
+      // Sync new trial start to Firebase if logged in
+      if (user != null) {
+        try {
+          await _firestore.collection('users').doc(user.uid).set({
+            'trial_start': trialStartDate.toIso8601String(),
+          }, SetOptions(merge: true));
+        } catch (e) {
+          debugPrint("Error syncing trial start: $e");
+        }
+      }
     } else {
       trialStartDate = DateTime.parse(trialStartStr);
     }
 
     _calculateTrialStatus(trialStartDate);
+
+    // Grant trial credits if applicable (New trial or existing trial with no credit history)
+    // Only grant if we have 0 credits currently (and didn't just sync positive credits)
+    // If syncedFromRemote is true, we trust 'credits' (which came from remote).
+    // If syncedFromRemote is false, we trust 'credits' (which came from local).
+    // If credits is 0, we might give trial credits.
+    // BUT, if we synced from remote and remote said 0, maybe they used them all?
+    // We should only grant trial credits if we effectively "just started" the trial or never got them.
+    // The previous check `creditsStr == null` was good for local.
+    // If we synced from remote, `credits` is set.
+    // Let's stick to: If trial active AND credits == 0.
+    // But wait, if I used all my credits, I have 0. I shouldn't get 20 again just because I restarted app.
+    // We need a flag "trial_credits_given".
+    // For now, let's rely on the fact that if we synced, we have the correct credits.
+    // If we created a NEW trial (trialStartStr == null), we give credits.
+
+    if (isTrialActive && isNewTrial) {
+      credits = 20;
+      await _storage.write(key: _keyCredits, value: '20');
+      notifyListeners();
+      debugPrint("ProProvider: Granted trial credits: 20 (New Trial)");
+
+      // Sync the 20 credits to remote immediately
+      if (user != null) {
+        try {
+          await _firestore.collection('users').doc(user.uid).update({
+            'credits': 20,
+          });
+        } catch (e) {
+          debugPrint("Error syncing trial credits: $e");
+        }
+      }
+    } else if (isTrialActive && credits == 0 && !syncedFromRemote) {
+      // Fallback: If we are offline, and have 0 credits, and trial is active...
+      // Maybe we shouldn't give them?
+      // Let's stick to the "New Trial" trigger for now to avoid infinite credits.
+      // User said "When user in Free trial he will get 20 Free trial".
+      // If I clear storage -> login -> syncs trial start (old) -> isNewTrial = false.
+      // So I won't get credits again. This is correct behavior (don't exploit).
+      // Unless I never got them?
+      // If remote credits is 0, and I am in trial... well, I probably used them.
+    }
+  }
+
+  Future<void> unsubscribe() async {
+    await _downgradeToFree();
   }
 
   Future<void> _downgradeToFree() async {
     isPro = false;
     subscriptionEndDate = null;
+    // We don't clear credits on downgrade, user might still have them?
+    // Or maybe we do? For now let's keep them.
     await _storage.write(key: _keyIsPro, value: 'false');
     await _storage.delete(key: _keySubscriptionEndDate);
 
@@ -159,6 +247,28 @@ class ProProvider extends ChangeNotifier {
       value: endDate.toIso8601String(),
     );
     notifyListeners();
+  }
+
+  Future<bool> consumeCredit() async {
+    if (credits > 0) {
+      credits--;
+      await _storage.write(key: _keyCredits, value: credits.toString());
+      notifyListeners();
+
+      // Sync to Firebase
+      final user = _auth.currentUser;
+      if (user != null) {
+        try {
+          await _firestore.collection('users').doc(user.uid).update({
+            'credits': credits,
+          });
+        } catch (e) {
+          debugPrint("Error updating credits: $e");
+        }
+      }
+      return true;
+    }
+    return false;
   }
 
   void _calculateTrialStatus(DateTime startDate) {
@@ -226,9 +336,9 @@ class ProProvider extends ChangeNotifier {
             'premium_required'.tr,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          isExpired ? const SizedBox(height: 12) : const SizedBox(height: 0),
           Text(
-            isExpired ? 'plan_expired'.tr : 'free_trial_ended'.tr,
+            isExpired ? 'plan_expired'.tr : '',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 15,
@@ -252,7 +362,7 @@ class ProProvider extends ChangeNotifier {
             child: ElevatedButton(
               onPressed: () {
                 Get.back();
-                Get.to(PricingView());
+                Get.to(PremiumFeatureView());
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
@@ -304,10 +414,12 @@ class ProProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> enablePro(int durationDays) async {
+  Future<void> enablePro(int durationDays, int credits) async {
     final endDate = DateTime.now().add(Duration(days: durationDays));
 
     // 1. Enable Locally
+    this.credits = credits; // Update local credits
+    await _storage.write(key: _keyCredits, value: credits.toString());
     await _enableProLocally(endDate);
 
     // 2. Sync to Firebase
@@ -317,6 +429,7 @@ class ProProvider extends ChangeNotifier {
         await _firestore.collection('users').doc(user.uid).set({
           'isPro': true,
           'subscription_end': endDate.toIso8601String(),
+          'credits': credits,
         }, SetOptions(merge: true));
       } catch (e) {
         // We still enabled it locally, so user gets what they paid for.
@@ -329,6 +442,7 @@ class ProProvider extends ChangeNotifier {
   Future<void> resetProStatus() async {
     await _storage.deleteAll();
     isPro = false;
+    credits = 0;
 
     final user = _auth.currentUser;
     if (user != null) {
@@ -343,5 +457,32 @@ class ProProvider extends ChangeNotifier {
     }
 
     initializeProStatus();
+  }
+
+  /// Set credits to fixed amount (500)
+  Future<void> setCredits500() async {
+    const int fixedCredits = 60;
+
+    // Skip if already 500
+    if (credits == fixedCredits) return;
+
+    credits = fixedCredits;
+
+    // Save locally
+    await _storage.write(key: _keyCredits, value: fixedCredits.toString());
+
+    notifyListeners();
+
+    // Sync to Firebase if logged in
+    final user = _auth.currentUser;
+    if (user != null) {
+      try {
+        await _firestore.collection('users').doc(user.uid).update({
+          'credits': fixedCredits,
+        });
+      } catch (e) {
+        debugPrint("Error setting fixed credits: $e");
+      }
+    }
   }
 }

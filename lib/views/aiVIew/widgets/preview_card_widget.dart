@@ -25,66 +25,13 @@ class PreviewCardWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Success Header
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.green.withValues(alpha: 0.1),
-                Colors.green.withValues(alpha: 0.05),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check_circle_outline_rounded,
-                  color: Colors.green,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'transaction_detected'.tr,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                    Text(
-                      '${parsedDataEx.length} ${'items_found'.tr}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-
         // Transaction Cards
         ...parsedDataEx.asMap().entries.map((entry) {
           final index = entry.key;
           final transaction = entry.value;
           return Padding(
             padding: EdgeInsets.only(
-              bottom: index < parsedDataEx.length - 1 ? 12 : 0,
+              bottom: index < parsedDataEx.length - 1 ? 16 : 0,
             ),
             child: _buildTransactionCard(context, transaction, index),
           );
@@ -145,32 +92,25 @@ class PreviewCardWidget extends StatelessWidget {
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: theme.dividerColor.withValues(alpha: 0.1)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Column(
         children: [
           // Header Section
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Icon
                 Container(
-                  width: 48,
-                  height: 48,
-                  padding: const EdgeInsets.all(12),
+                  width: 56,
+                  height: 56,
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: Color(
                       transaction.iconBgColor,
-                    ).withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(16),
+                    ).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(18),
                   ),
                   child: SvgPicture.asset(
                     "assets/functional_icons/${transaction.icon}.svg",
@@ -193,12 +133,13 @@ class PreviewCardWidget extends StatelessWidget {
                             : transaction.categoryKey.tr,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
+                          fontSize: 18,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _formatDate(transaction.date),
-                        style: theme.textTheme.bodySmall?.copyWith(
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           color: AppColors.textMuted,
                         ),
                       ),
@@ -217,13 +158,26 @@ class PreviewCardWidget extends StatelessWidget {
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isIncome ? AppColors.success : AppColors.error,
+                        height: 1.2,
                       ),
                     ),
-                    Text(
-                      isIncome ? 'income'.tr : 'expense'.tr,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: AppColors.textMuted,
-                        fontWeight: FontWeight.w500,
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: (isIncome ? AppColors.success : AppColors.error)
+                            .withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        isIncome ? 'income'.tr : 'expense'.tr,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: isIncome ? AppColors.success : AppColors.error,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -231,8 +185,6 @@ class PreviewCardWidget extends StatelessWidget {
               ],
             ),
           ),
-
-          Divider(height: 1, color: theme.dividerColor.withValues(alpha: 0.1)),
 
           // Details Section
           Padding(
@@ -300,10 +252,10 @@ class PreviewCardWidget extends StatelessWidget {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryBlue.withValues(alpha: 0.05),
+                      color: theme.scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                        color: theme.dividerColor.withValues(alpha: 0.1),
                       ),
                     ),
                     child: Row(
@@ -314,6 +266,7 @@ class PreviewCardWidget extends StatelessWidget {
                           child: Checkbox(
                             value: transaction.includeInTotal,
                             activeColor: AppColors.primaryBlue,
+                            checkColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4),
                             ),
@@ -358,8 +311,9 @@ class PreviewCardWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+        color: theme.scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.1)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -416,10 +370,13 @@ class PreviewCardWidget extends StatelessWidget {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

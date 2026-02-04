@@ -23,4 +23,8 @@ class RoutesName {
   static const addEditPersonView = "/add_edit_person_view";
   static const personDetailsView = "/person_details_view";
   static const addEditTransactionView = "/add_edit_transaction_view";
+  static const reminderView = "/reminder_view";
+  static const savingsView = "/savings_view";
+  static const noteView = "/note_view";
+  static const checkOutView = "/check_out_view";
 }

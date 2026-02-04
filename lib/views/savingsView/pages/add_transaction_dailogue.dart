@@ -411,14 +411,12 @@ class _AddTransactionDialogContentState
                             ),
                           ),
                           child: _isLoading
-                              ? const SizedBox(
-                                  height: 18,
-                                  width: 18,
-                                  child: CircularProgressIndicator(
+                              ? SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: const CircularProgressIndicator(
+                                    color: Colors.white,
                                     strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
                                   ),
                                 )
                               : Text(

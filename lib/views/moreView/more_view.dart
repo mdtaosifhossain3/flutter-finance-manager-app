@@ -1,8 +1,5 @@
+import 'package:finance_manager_app/config/routes/routes_name.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
-import 'package:finance_manager_app/views/noteView/notes_view.dart';
-import 'package:finance_manager_app/views/reminderView/reminder_view.dart';
-import 'package:finance_manager_app/views/savingsView/savings_view.dart';
-import 'package:finance_manager_app/views/settingView/setting_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,7 +11,10 @@ class MoreView extends StatelessWidget {
     return Scaffold(
       appBar: customAppBar(title: "miscellaneous_expense".tr),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.04,
+          vertical: 24,
+        ),
         child: Wrap(
           direction: Axis.horizontal,
           spacing: 24,
@@ -22,19 +22,31 @@ class MoreView extends StatelessWidget {
           children: [
             InkWell(
               onTap: () {
-                Get.to(SettingsPage());
+                Get.toNamed(RoutesName.givenTakenView);
               },
               child: Column(
                 children: [
-                  Icon(Icons.settings, size: 28),
+                  Icon(Icons.handshake_outlined, size: 28),
                   SizedBox(height: 8),
-                  Text('settings'.tr),
+                  Text('given_taken'.tr),
                 ],
               ),
             ),
             InkWell(
               onTap: () {
-                Get.to(ReminderView());
+                Get.toNamed(RoutesName.budgetView);
+              },
+              child: Column(
+                children: [
+                  Icon(Icons.wallet_outlined, size: 28),
+                  SizedBox(height: 8),
+                  Text('budget'.tr),
+                ],
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                Get.toNamed(RoutesName.reminderView);
               },
               child: Column(
                 children: [
@@ -46,11 +58,11 @@ class MoreView extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Get.to(SavingsView());
+                Get.toNamed(RoutesName.savingsView);
               },
               child: Column(
                 children: [
-                  Icon(Icons.savings, size: 28),
+                  Icon(Icons.savings_outlined, size: 28),
                   SizedBox(height: 8),
                   Text('savings'.tr),
                 ],
@@ -58,11 +70,11 @@ class MoreView extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Get.to(NotesView());
+                Get.toNamed(RoutesName.noteView);
               },
               child: Column(
                 children: [
-                  Icon(Icons.note, size: 28),
+                  Icon(Icons.note_alt_outlined, size: 28),
                   SizedBox(height: 8),
                   Text('note'.tr),
                 ],

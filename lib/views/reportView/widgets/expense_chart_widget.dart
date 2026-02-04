@@ -23,7 +23,7 @@ class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
     return GestureDetector(
       onTap: () {
         // Handle tap event if needed
-        Get.to(() => ExpensesView());
+        Get.to(ExpensesView());
       },
       child: Container(
         padding: EdgeInsets.all(16),

@@ -171,173 +171,150 @@ class _AddSavingsGoalDialogContentState
             ),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Form Content
-            Flexible(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Goal Name Field
-                      _buildLabel('goalName'.tr, isDark),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _nameController,
-                        style: TextStyle(
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                        decoration: _buildInputDecoration(
-                          hint: 'enterGoalName'.tr,
-                          icon: Icons.label_outline,
-                          isDark: isDark,
-                          primaryColor: primaryColor,
-                        ),
-                        validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return 'goalNameRequired'.tr;
-                          }
-                          if (value!.length < 2) return 'goalNameTooShort'.tr;
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Goal Name Field
+                _buildLabel('goalName'.tr, isDark),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _nameController,
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
+                  decoration: _buildInputDecoration(
+                    hint: 'enterGoalName'.tr,
+                    icon: Icons.label_outline,
+                    isDark: isDark,
+                    primaryColor: primaryColor,
+                  ),
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'goalNameRequired'.tr;
+                    }
+                    if (value!.length < 2) return 'goalNameTooShort'.tr;
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
 
-                      // Target Amount Field
-                      _buildLabel('targetAmount'.tr, isDark),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        autofocus: true,
-                        controller: _amountController,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        style: TextStyle(
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                        decoration: _buildInputDecoration(
-                          hint: '0.00',
-                          // icon: Icons.attach_money,
-                          isDark: isDark,
-                          primaryColor: primaryColor,
-                          prefixText: '৳ ',
-                        ),
-                        validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return 'amountRequired'.tr;
-                          }
-                          final amount = double.tryParse(value!);
-                          if (amount == null) return 'invalidAmount'.tr;
-                          if (amount <= 0) return 'amountMustBePositive'.tr;
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
+                // Target Amount Field
+                _buildLabel('targetAmount'.tr, isDark),
+                const SizedBox(height: 8),
+                TextFormField(
+                  autofocus: true,
+                  controller: _amountController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
+                  decoration: _buildInputDecoration(
+                    hint: '0.00',
+                    // icon: Icons.attach_money,
+                    isDark: isDark,
+                    primaryColor: primaryColor,
+                    prefixText: '৳ ',
+                  ),
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'amountRequired'.tr;
+                    }
+                    final amount = double.tryParse(value!);
+                    if (amount == null) return 'invalidAmount'.tr;
+                    if (amount <= 0) return 'amountMustBePositive'.tr;
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
 
-                      // Start Date Field
-                      _buildLabel('startDate'.tr, isDark),
-                      const SizedBox(height: 8),
-                      InkWell(
-                        onTap: _selectDate,
-                        borderRadius: BorderRadius.circular(12),
-                        child: IgnorePointer(
-                          child: TextFormField(
-                            controller: _dateController,
-                            style: TextStyle(
-                              color: isDark ? Colors.white : Colors.black,
-                            ),
-                            decoration: _buildInputDecoration(
-                              hint: 'selectDate'.tr,
-                              icon: Icons.calendar_today_outlined,
-                              isDark: isDark,
-                              primaryColor: primaryColor,
-                            ),
-                            validator: (value) {
-                              if (value?.isEmpty ?? true) {
-                                return 'dateRequired'.tr;
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
+                // Start Date Field
+                _buildLabel('startDate'.tr, isDark),
+                const SizedBox(height: 8),
+                InkWell(
+                  onTap: _selectDate,
+                  borderRadius: BorderRadius.circular(12),
+                  child: IgnorePointer(
+                    child: TextFormField(
+                      controller: _dateController,
+                      style: TextStyle(
+                        color: isDark ? Colors.white : Colors.black,
                       ),
-                      const SizedBox(height: 32),
-
-                      // Action Buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextButton(
-                              onPressed: _isLoading ? null : () => Get.back(),
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Text(
-                                'cancel'.tr,
-                                style: TextStyle(
-                                  color: isDark
-                                      ? Colors.white70
-                                      : Colors.black54,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: _isLoading ? null : _saveGoal,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: primaryColor,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Colors.white,
-                                            ),
-                                      ),
-                                    )
-                                  : Text(
-                                      widget.goal != null
-                                          ? 'update'.tr
-                                          : 'create'.tr,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ],
+                      decoration: _buildInputDecoration(
+                        hint: 'selectDate'.tr,
+                        icon: Icons.calendar_today_outlined,
+                        isDark: isDark,
+                        primaryColor: primaryColor,
                       ),
-                    ],
+                      validator: (value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'dateRequired'.tr;
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 32),
+
+                // Action Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: _isLoading ? null : () => Get.back(),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          'cancel'.tr,
+                          style: TextStyle(
+                            color: isDark ? Colors.white70 : Colors.black54,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _saveGoal,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: _isLoading
+                            ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: const CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                widget.goal != null ? 'update'.tr : 'create'.tr,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

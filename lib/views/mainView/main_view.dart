@@ -1,13 +1,13 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
+import 'package:finance_manager_app/config/routes/routes_name.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:finance_manager_app/views/aiVIew/add_with_ai.dart';
-import 'package:finance_manager_app/views/budgetView/budget_view.dart';
 import 'package:finance_manager_app/views/categoryView/category_view.dart';
-import 'package:finance_manager_app/views/givenTakenView/given_taken_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
 import 'package:finance_manager_app/views/moreView/more_view.dart';
 import 'package:finance_manager_app/views/reportView/report_view.dart';
 import 'package:finance_manager_app/providers/proProvider/pro_provider.dart';
-import 'package:flutter/gestures.dart';
+import 'package:finance_manager_app/views/settingView/setting_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -21,68 +21,45 @@ class MainView extends StatefulWidget {
 
 class _MainViewState extends State<MainView>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
   int _currentPage = 0;
-
-  static const int _tabCount = 5;
-
-  final List<IconData> _iconItems = [
-    Icons.home,
-    Icons.analytics,
-    Icons.wallet,
-    Icons.handshake_outlined,
-    Icons.more_horiz,
-  ];
-
-  List<String> _labels(BuildContext context) {
-    return ['home'.tr, 'report'.tr, 'budget'.tr, 'given_taken'.tr, 'more'.tr];
-  }
+  late AnimationController _fabAnimationController;
 
   final List<Widget> _pages = const [
     HomeView(),
     ReportView(),
-    BudgetView(),
-    GivenTakenView(),
+    SettingsPage(),
     MoreView(),
-    // SettingsPage(),
   ];
+
+  List<_NavItem> _navItems(BuildContext context) {
+    return [
+      _NavItem(icon: FontAwesomeIcons.house, label: 'home'.tr),
+      _NavItem(icon: FontAwesomeIcons.chartPie, label: 'report'.tr),
+      _NavItem(icon: FontAwesomeIcons.gear, label: 'settings'.tr),
+      _NavItem(icon: FontAwesomeIcons.crown, label: 'pro_button'.tr),
+    ];
+  }
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _tabCount, vsync: this);
-    _tabController.animation?.addListener(_onTabAnimationChange);
-
-    // Ensure Pro status is up to date (e.g. after login)
+    _fabAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProProvider>(context, listen: false).initializeProStatus();
     });
   }
 
-  void _onTabAnimationChange() {
-    if (_tabController.indexIsChanging) return;
-    final value = _tabController.animation!.value.round();
-    if (value != _currentPage && mounted) {
-      _changePage(value);
-    }
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
   }
 
-  void _changePage(int newPage) {
-    // Protect Report (1), Budget (2), Reminder (3)
-    if (newPage == 1 || newPage == 2 || newPage == 3) {
-      final hasAccess = Provider.of<ProProvider>(
-        context,
-        listen: false,
-      ).checkAccess();
-      if (!hasAccess) {
-        // Revert tab controller if it was a tap on the tab bar
-        if (_tabController.index != _currentPage) {
-          _tabController.animateTo(_currentPage);
-        }
-        return;
-      }
-    }
-    setState(() => _currentPage = newPage);
+  void _changePage(int index) {
+    setState(() => _currentPage = index);
   }
 
   void _showAddOptions() {
@@ -121,232 +98,8 @@ class _MainViewState extends State<MainView>
                       listen: false,
                     ).checkAccess();
                     if (hasAccess) {
-                      Get.to(() => const AddWithAiScreen());
+                      Get.to(AddWithAiScreen());
                     }
-
-                    // int count = await ProTapService.incrementTap();
-
-                    // if (count >= 2) {
-                    //   // Show Go Pro screen / modal
-                    //   Get.defaultDialog(
-                    //     title: "",
-                    //     backgroundColor: Colors.white,
-                    //     radius: 20,
-                    //     barrierDismissible: false,
-                    //     contentPadding: const EdgeInsets.all(0),
-
-                    //     content: Column(
-                    //       children: [
-                    //         // Title
-                    //         Text(
-                    //           "more_ai".tr,
-                    //           style: TextStyle(
-                    //             fontSize: 24,
-                    //             fontWeight: FontWeight.bold,
-                    //             color: Colors.black,
-                    //           ),
-                    //           textAlign: TextAlign.center,
-                    //         ),
-
-                    //         const SizedBox(height: 6),
-
-                    //         // Description
-                    //         Padding(
-                    //           padding: const EdgeInsets.symmetric(
-                    //             horizontal: 24,
-                    //           ),
-                    //           child: Text(
-                    //             "endedai".tr,
-                    //             style: TextStyle(
-                    //               fontSize: 14,
-                    //               color: Colors.grey[600],
-                    //               height: 1.5,
-                    //             ),
-                    //             textAlign: TextAlign.center,
-                    //           ),
-                    //         ),
-
-                    //         const SizedBox(height: 20),
-
-                    //         // Amount Box
-                    //         Container(
-                    //           margin: const EdgeInsets.symmetric(
-                    //             horizontal: 24,
-                    //           ),
-                    //           padding: const EdgeInsets.symmetric(
-                    //             vertical: 24,
-                    //             horizontal: 20,
-                    //           ),
-                    //           decoration: BoxDecoration(
-                    //             gradient: const LinearGradient(
-                    //               begin: Alignment.topLeft,
-                    //               end: Alignment.bottomRight,
-                    //               colors: [
-                    //                 Color(0xFF2563EB),
-                    //                 Color(0xFF1E40AF),
-                    //               ],
-                    //             ),
-                    //             borderRadius: BorderRadius.circular(16),
-                    //             boxShadow: [
-                    //               BoxShadow(
-                    //                 color: const Color(
-                    //                   0xFF2563EB,
-                    //                 ).withValues(alpha: 0.3),
-                    //                 blurRadius: 16,
-                    //                 offset: const Offset(0, 8),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //           child: Column(
-                    //             children: [
-                    //               Row(
-                    //                 mainAxisAlignment: MainAxisAlignment.center,
-                    //                 crossAxisAlignment:
-                    //                     CrossAxisAlignment.baseline,
-                    //                 textBaseline: TextBaseline.alphabetic,
-                    //                 children: [
-                    //                   Text(
-                    //                     HelperFunctions.convertToBanglaDigits(
-                    //                       "30",
-                    //                     ),
-                    //                     style: TextStyle(
-                    //                       fontSize: 56,
-                    //                       fontWeight: FontWeight.bold,
-                    //                       color: Colors.white,
-                    //                     ),
-                    //                   ),
-                    //                   const SizedBox(width: 6),
-                    //                   const Text(
-                    //                     "৳",
-                    //                     style: TextStyle(
-                    //                       fontSize: 40,
-                    //                       fontWeight: FontWeight.bold,
-                    //                       color: Color(0xFFBFDBFE),
-                    //                     ),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //               const SizedBox(height: 8),
-                    //               Text(
-                    //                 "30days".tr,
-                    //                 style: TextStyle(
-                    //                   fontSize: 13,
-                    //                   fontWeight: FontWeight.w500,
-                    //                   color: Colors.white,
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ),
-
-                    //         const SizedBox(height: 20),
-
-                    //         // Buttons
-                    //         Padding(
-                    //           padding: const EdgeInsets.symmetric(
-                    //             horizontal: 24,
-                    //           ),
-                    //           child: Row(
-                    //             children: [
-                    //               // Cancel Button
-                    //               Expanded(
-                    //                 child: Container(
-                    //                   height: 52,
-                    //                   decoration: BoxDecoration(
-                    //                     color: Colors.grey[100],
-                    //                     borderRadius: BorderRadius.circular(12),
-                    //                     border: Border.all(
-                    //                       color: Colors.grey[300]!,
-                    //                       width: 1.5,
-                    //                     ),
-                    //                   ),
-                    //                   child: Material(
-                    //                     color: Colors.transparent,
-                    //                     child: InkWell(
-                    //                       onTap: () => Get.back(),
-                    //                       borderRadius: BorderRadius.circular(
-                    //                         12,
-                    //                       ),
-                    //                       child: Center(
-                    //                         child: Text(
-                    //                           "cancelBuy".tr,
-                    //                           style: TextStyle(
-                    //                             color: Colors.grey[700],
-                    //                             fontSize: 16,
-                    //                             fontWeight: FontWeight.w600,
-                    //                             letterSpacing: 0.3,
-                    //                           ),
-                    //                         ),
-                    //                       ),
-                    //                     ),
-                    //                   ),
-                    //                 ),
-                    //               ),
-
-                    //               const SizedBox(width: 12),
-
-                    //               // Buy Now Button
-                    //               Expanded(
-                    //                 child: Container(
-                    //                   height: 52,
-                    //                   decoration: BoxDecoration(
-                    //                     gradient: const LinearGradient(
-                    //                       colors: [
-                    //                         Color(0xFF2563EB),
-                    //                         Color(0xFF1E40AF),
-                    //                       ],
-                    //                     ),
-                    //                     borderRadius: BorderRadius.circular(12),
-                    //                     boxShadow: [
-                    //                       BoxShadow(
-                    //                         color: const Color(
-                    //                           0xFF2563EB,
-                    //                         ).withValues(alpha: 0.3),
-                    //                         blurRadius: 12,
-                    //                         offset: const Offset(0, 6),
-                    //                       ),
-                    //                     ],
-                    //                   ),
-                    //                   child: Material(
-                    //                     color: Colors.transparent,
-                    //                     child: InkWell(
-                    //                       onTap: () {
-                    //                         Get.back();
-                    //                         // Navigate to payment
-                    //                         // Get.to(() => const PaymentScreen());
-                    //                       },
-                    //                       borderRadius: BorderRadius.circular(
-                    //                         12,
-                    //                       ),
-                    //                       child: Center(
-                    //                         child: Text(
-                    //                           "buy".tr,
-                    //                           style: TextStyle(
-                    //                             color: Colors.white,
-                    //                             fontSize: 16,
-                    //                             fontWeight: FontWeight.w600,
-                    //                             letterSpacing: 0.3,
-                    //                           ),
-                    //                         ),
-                    //                       ),
-                    //                     ),
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ),
-
-                    //         const SizedBox(height: 24),
-                    //       ],
-                    //     ),
-                    //   );
-                    // } else {
-                    //   // Normal Free Action
-                    //   if (kDebugMode) {
-                    //     print("Free use: $count/3");
-                    //   }
-                    // }
                   },
                 ),
                 const SizedBox(height: 12),
@@ -356,7 +109,7 @@ class _MainViewState extends State<MainView>
                   subtitle: 'enter_details'.tr,
                   onTap: () {
                     Navigator.pop(context);
-                    Get.to(() => const CategoryView());
+                    Get.to(CategoryView());
                   },
                 ),
                 const SizedBox(height: 8),
@@ -421,75 +174,299 @@ class _MainViewState extends State<MainView>
     );
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  Widget _buildNavItem({
+    required int index,
+    required IconData icon,
+    required String label,
+    VoidCallback? onTap,
+  }) {
+    final isActive = _currentPage == index;
+
+    return Expanded(
+      child: InkWell(
+        onTap: onTap ?? () => _changePage(index),
+        splashColor: AppColors.primaryBlue.withValues(alpha: 0.1),
+        highlightColor: Colors.transparent,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: EdgeInsets.all(isActive ? 10 : 8),
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? AppColors.primaryBlue.withValues(alpha: 0.15)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: FaIcon(
+                  icon,
+                  size: 22,
+                  color: isActive ? AppColors.primaryBlue : AppColors.textMuted,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                  color: isActive ? AppColors.primaryBlue : AppColors.textMuted,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showProBottomSheet() {
+    final theme = Theme.of(context);
+
+    final hasAccess = Provider.of<ProProvider>(
+      context,
+      listen: false,
+    ).checkAccess();
+    if (hasAccess) {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: theme.scaffoldBackgroundColor,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(32),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle bar
+                Center(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 12, bottom: 24),
+                    width: 48,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: AppColors.textMuted.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(2.5),
+                    ),
+                  ),
+                ),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.06,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'pro_features'
+                            .tr, // Make sure to add this key or use a suitable title
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.textTheme.bodyLarge?.color,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      GridView.count(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 20,
+                        crossAxisSpacing: 20,
+                        childAspectRatio: 0.85,
+                        children: [
+                          _proItem(
+                            icon: Icons.auto_awesome_rounded,
+                            label: 'add_with_ai'.tr,
+                            color: Colors.indigo,
+                            onTap: () => Get.to(AddWithAiScreen()),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.handshake,
+                            label: 'given_taken'.tr,
+                            color: Colors.blue,
+                            onTap: () => Get.toNamed(RoutesName.givenTakenView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.wallet,
+                            label: 'budget'.tr,
+                            color: Colors.green,
+                            onTap: () => Get.toNamed(RoutesName.budgetView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.bell,
+                            label: 'reminder'.tr,
+                            color: Colors.orange,
+                            onTap: () => Get.toNamed(RoutesName.reminderView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.piggyBank,
+                            label: 'savings'.tr,
+                            color: Colors.purple,
+                            onTap: () => Get.toNamed(RoutesName.savingsView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.noteSticky,
+                            label: 'note'.tr,
+                            color: Colors.teal,
+                            onTap: () => Get.toNamed(RoutesName.noteView),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 40),
+              ],
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  Widget _proItem({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.pop(context);
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: color.withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
+              ),
+              child: Icon(icon, size: 32, color: color),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: isDark ? Colors.grey[300] : Colors.grey[800],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final labels = _labels(context);
+    final navItems = _navItems(context);
 
     return Scaffold(
-      extendBody: true,
-      body: TabBarView(
-        controller: _tabController,
-        dragStartBehavior: DragStartBehavior.down,
-        physics: const BouncingScrollPhysics(),
-        children: _pages,
-      ),
+      body: _pages[_currentPage],
+      floatingActionButton: ScaleTransition(
+        scale: Tween<double>(begin: 1.0, end: 0.85).animate(
+          CurvedAnimation(
+            parent: _fabAnimationController,
+            curve: Curves.easeInOut,
+          ),
+        ),
 
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentPage,
-        onTap: (index) {
-          // Protect Report (1), Budget (2), Reminder (3)
-          if (index == 1 || index == 2 || index == 3) {
-            final hasAccess = Provider.of<ProProvider>(
-              context,
-              listen: false,
-            ).checkAccess();
-            if (!hasAccess) return;
-          }
-
-          _changePage(index);
-          _tabController.animateTo(index);
-        },
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        selectedItemColor: AppColors.primaryBlue,
-        unselectedItemColor: AppColors.textMuted,
-        elevation: 8,
-        items: List.generate(_iconItems.length, (index) {
-          return BottomNavigationBarItem(
-            icon: Icon(_iconItems[index]),
-            label: labels[index],
-          );
-        }),
+        child: FloatingActionButton(
+          onPressed: _showAddOptions,
+          backgroundColor: AppColors.primaryBlue,
+          elevation: 4,
+          child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+        ),
       ),
-      // ✅ FAB stays here
-      floatingActionButton: _currentPage == 2 || _currentPage == 3
-          ? null
-          : Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: AppColors.primaryBlue,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.add, color: Colors.white, size: 26),
-                onPressed: _showAddOptions,
-              ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
             ),
-      //  floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          ],
+        ),
+        child: BottomAppBar(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          notchMargin: 6,
+          shape: const CircularNotchedRectangle(),
+          color: Colors.transparent,
+          elevation: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildNavItem(
+                index: 0,
+                icon: navItems[0].icon,
+                label: navItems[0].label,
+              ),
+              _buildNavItem(
+                index: 1,
+                icon: navItems[1].icon,
+                label: navItems[1].label,
+              ),
+              const SizedBox(width: 60), // Space for FAB
+
+              _buildNavItem(
+                index: 3,
+                icon: navItems[3].icon,
+                label: navItems[3].label,
+                onTap: _showProBottomSheet,
+              ),
+              _buildNavItem(
+                index: 2,
+                icon: navItems[2].icon,
+                label: navItems[2].label,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
+}
+
+class _NavItem {
+  final IconData icon;
+  final String label;
+
+  _NavItem({required this.icon, required this.label});
 }

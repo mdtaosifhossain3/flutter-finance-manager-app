@@ -20,7 +20,7 @@ class SpeechProvider with ChangeNotifier {
   bool _isListening = false;
   bool _isBangla = false;
   String _lastWords = '';
-  String _selectedLanguage = 'en-US';
+  String _selectedLanguage = 'bn-BD';
 
   // Getters
   bool get speechEnabled => _speechEnabled;

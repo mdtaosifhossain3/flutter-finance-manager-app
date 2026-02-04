@@ -17,76 +17,82 @@ class PreviewCardButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
+        // Delete Button
         Expanded(
-          child: _buildActionButton(
-            icon: Icons.edit,
-            label: 'edit'.tr,
-            color: AppColors.warning,
-            onTap: editTransactionButton,
+          flex: 2,
+          child: SizedBox(
+            height: 56,
+            child: OutlinedButton(
+              onPressed: deleteTransactionButton,
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: AppColors.error.withValues(alpha: 0.2)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                foregroundColor: AppColors.error,
+              ),
+              child: const Icon(Icons.delete_outline_rounded, size: 22),
+            ),
           ),
         ),
-        SizedBox(width: 14),
+        const SizedBox(width: 12),
+
+        // Edit Button
         Expanded(
-          child: _buildActionButton(
-            icon: Icons.delete,
-            label: 'delete'.tr,
-            color: AppColors.error,
-            onTap: deleteTransactionButton,
+          flex: 2,
+          child: SizedBox(
+            height: 56,
+            child: OutlinedButton(
+              onPressed: editTransactionButton,
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(
+                  color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                foregroundColor: AppColors.textSecondary,
+              ),
+              child: const Icon(Icons.edit_outlined, size: 22),
+            ),
           ),
         ),
-        SizedBox(width: 14),
+        const SizedBox(width: 12),
+
+        // Save Button (Primary)
         Expanded(
-          child: _buildActionButton(
-            icon: Icons.check,
-            label: 'save'.tr,
-            color: AppColors.success,
-            isPrimary: true,
-            onTap: saveTransactionButton,
+          flex: 5,
+          child: SizedBox(
+            height: 56,
+            child: ElevatedButton(
+              onPressed: saveTransactionButton,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.check_rounded, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'save'.tr,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-    bool isPrimary = false,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: isPrimary ? color : color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isPrimary
-                ? Colors.transparent
-                : color.withValues(alpha: 0.3),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: isPrimary ? Colors.white : color, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: isPrimary ? Colors.white : color,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
