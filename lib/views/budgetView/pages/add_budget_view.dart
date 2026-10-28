@@ -96,7 +96,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
           padding: const EdgeInsets.only(left: 10.0),
           child: IconButton(
             onPressed: () {
-              Get.back();
+              Navigator.of(context).pop();
             },
             icon: Icon(Icons.arrow_back),
           ),

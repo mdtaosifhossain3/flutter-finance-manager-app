@@ -56,23 +56,29 @@ class AddExpenseProvider extends ChangeNotifier {
     // Yield to let the UI render the first frame
     await Future.delayed(Duration.zero);
     isLoading = true;
+    notifyListeners();
     currentMonth = date;
 
-    final startOfMonth = DateTime(date.year, date.month, 1);
-    final endOfMonth = DateTime(date.year, date.month + 1, 0, 23, 59, 59);
+    try {
+      final startOfMonth = DateTime(date.year, date.month, 1);
+      final endOfMonth = DateTime(date.year, date.month + 1, 0, 23, 59, 59);
 
-    final dt = await addTransactionDbHelper.getTransactionsByDateRange(
-      startOfMonth.toIso8601String(),
-      endOfMonth.toIso8601String(),
-    );
+      final dt = await addTransactionDbHelper.getTransactionsByDateRange(
+        startOfMonth.toIso8601String(),
+        endOfMonth.toIso8601String(),
+      );
 
-    final transactions = dt.map((e) => TransactionModel.fromMap(e)).toList();
+      final transactions = dt.map((e) => TransactionModel.fromMap(e)).toList();
 
-    transactionData = transactions;
-    isLoading = false;
-    notifyListeners();
-
-    return transactions;
+      transactionData = transactions;
+      return transactions;
+    } catch (e) {
+      debugPrint("Error in getTransactionsForMonth: $e");
+      return [];
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
   // Future<void> getAllInitialTransactions() async {
@@ -106,7 +112,12 @@ class AddExpenseProvider extends ChangeNotifier {
   }
 
   Future<void> deleteFullTransaction() async {
-    await addTransactionDbHelper.deleteFull();
-    await getTransactionsForMonth(currentMonth);
+    try {
+      await addTransactionDbHelper.deleteFull();
+      transactionData = [];
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error in deleteFullTransaction: $e");
+    }
   }
 }

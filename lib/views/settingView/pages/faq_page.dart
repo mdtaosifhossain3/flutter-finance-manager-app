@@ -9,7 +9,6 @@ class FAQPage extends StatelessWidget {
     final List<Map<String, String>> faqList = [
       {"q": "q1".tr, "a": "a1".tr},
       {"q": "q2".tr, "a": "a2".tr},
-      {"q": "q3".tr, "a": "a3".tr},
       {"q": "q5".tr, "a": "a5".tr},
       {"q": "q6".tr, "a": "a6".tr},
       {"q": "q7".tr, "a": "a7".tr},

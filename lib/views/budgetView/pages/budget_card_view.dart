@@ -41,8 +41,8 @@ class _BudgetCardViewState extends State<BudgetCardView> {
       appBar: customAppBar(
         title: widget.budget.title,
         leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.arrow_back),
         ),
         actions: [
           Padding(
@@ -84,11 +84,11 @@ class _BudgetCardViewState extends State<BudgetCardView> {
                     content: Text('delete_category_message'.tr),
                     actions: [
                       TextButton(
-                        onPressed: () => Navigator.pop(context, false),
+                        onPressed: () => Navigator.of(context).pop(false),
                         child: Text('cancel'.tr),
                       ),
                       ElevatedButton(
-                        onPressed: () => Navigator.pop(context, true),
+                        onPressed: () => Navigator.of(context).pop(true),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.error,
                           foregroundColor: Colors.white,
@@ -104,18 +104,28 @@ class _BudgetCardViewState extends State<BudgetCardView> {
 
                 if (confirm == true && mounted) {
                   await provider.deleteBudget(widget.budget.id!);
-                  Get.back();
-                  Get.snackbar(
-                    'deleted'.tr,
-                    'budgetDeletedSuccess'.tr,
-                    snackPosition: SnackPosition.TOP,
-                    backgroundColor: AppColors.error,
-                    colorText: Colors.white,
-                    margin: const EdgeInsets.all(16),
-                    borderRadius: 12,
-                    duration: const Duration(seconds: 2),
-                    icon: Icon(Icons.check_circle_rounded, color: Colors.white),
-                  );
+                  if (mounted) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Row(
+                          children: [
+                            const Icon(
+                              Icons.check_circle_rounded,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 8),
+                            Text('budgetDeletedSuccess'.tr),
+                          ],
+                        ),
+                        backgroundColor: AppColors.error,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    );
+                  }
                 }
               },
               icon: const Icon(Icons.delete_outline_rounded),
@@ -125,7 +135,10 @@ class _BudgetCardViewState extends State<BudgetCardView> {
       ),
 
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.04,
+          vertical: 8,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -801,21 +814,28 @@ class _BudgetCardViewState extends State<BudgetCardView> {
                       iconBgColor: iconDataMap['color'].value,
                     );
 
-                    Get.back();
-                    Get.snackbar(
-                      'success'.tr,
-                      'categoryAddedSuccess'.tr,
-                      snackPosition: SnackPosition.TOP,
-                      backgroundColor: AppColors.success,
-                      colorText: Colors.white,
-                      margin: const EdgeInsets.all(16),
-                      borderRadius: 12,
-                      duration: const Duration(seconds: 2),
-                      icon: Icon(
-                        Icons.check_circle_rounded,
-                        color: Colors.white,
-                      ),
-                    );
+                    if (mounted) {
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              const Icon(
+                                Icons.check_circle_rounded,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(width: 8),
+                              Text('categoryAddedSuccess'.tr),
+                            ],
+                          ),
+                          backgroundColor: AppColors.success,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
@@ -947,18 +967,28 @@ class _BudgetCardViewState extends State<BudgetCardView> {
                   amountToAdd: amount,
                 );
 
-                Get.back();
-                Get.snackbar(
-                  'success'.tr,
-                  'amountUpdatedSuccess'.tr,
-                  snackPosition: SnackPosition.TOP,
-                  backgroundColor: AppColors.success,
-                  colorText: Colors.white,
-                  margin: const EdgeInsets.all(16),
-                  borderRadius: 12,
-                  duration: const Duration(seconds: 2),
-                  icon: Icon(Icons.check_circle_rounded, color: Colors.white),
-                );
+                if (mounted) {
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          const Icon(
+                            Icons.check_circle_rounded,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 8),
+                          Text('amountUpdatedSuccess'.tr),
+                        ],
+                      ),
+                      backgroundColor: AppColors.success,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(

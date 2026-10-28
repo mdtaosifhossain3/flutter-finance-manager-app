@@ -244,31 +244,30 @@ class _ReminderPreviewScreenState extends State<ReminderPreviewScreen>
 
     if (confirmed == true) {
       await reminderProvider.deleteReminder(widget.reminder['id']);
-      Get.back(result: true);
-
-      Get.snackbar(
-        '',
-        'delete_success'.tr,
-        titleText: const SizedBox.shrink(),
-        messageText: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'delete_success'.tr,
-                style: const TextStyle(color: Colors.white),
-              ),
+      if (mounted) {
+        Navigator.of(context).pop(true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'delete_success'.tr,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.green[600],
-        colorText: Colors.white,
-        borderRadius: 12,
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 3),
-      );
+            backgroundColor: Colors.green[600],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -285,8 +284,8 @@ class _ReminderPreviewScreenState extends State<ReminderPreviewScreen>
       appBar: customAppBar(
         title: "reminder_details".tr,
         leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.arrow_back),
         ),
         actions: [
           IconButton(
@@ -304,7 +303,7 @@ class _ReminderPreviewScreenState extends State<ReminderPreviewScreen>
               );
               if (result == true && mounted) {
                 await reminderProvider.loadReminders();
-                Get.back(result: true);
+                if (context.mounted) Navigator.of(context).pop(true);
               }
             },
           ),

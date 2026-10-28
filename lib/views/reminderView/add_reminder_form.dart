@@ -59,8 +59,8 @@ class _AddReminderFormState extends State<AddReminderForm> {
             ? "edit_reminder".tr
             : "add_reminder".tr,
         leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.arrow_back),
         ),
       ),
 
@@ -439,7 +439,9 @@ class _AddReminderFormState extends State<AddReminderForm> {
           ),
         );
 
-        Get.back(result: true);
+        if (mounted) {
+          Navigator.of(context).pop(true);
+        }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

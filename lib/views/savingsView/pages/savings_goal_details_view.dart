@@ -783,29 +783,32 @@ class _SavingsGoalDetailsViewState extends State<SavingsGoalDetailsView> {
           'Are you sure you want to delete this transaction?',
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () async {
-              Get.back();
+              Navigator.of(context).pop();
               try {
                 await provider.deleteTransaction(txn.id, _currentGoal.id);
-                Get.snackbar(
-                  'Success',
-                  'Transaction deleted',
-                  backgroundColor: AppColors.success,
-                  colorText: Colors.white,
-                  snackPosition: SnackPosition.BOTTOM,
-                  margin: const EdgeInsets.all(16),
-                );
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Transaction deleted'),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                }
               } catch (e) {
-                Get.snackbar(
-                  'Error',
-                  e.toString(),
-                  backgroundColor: AppColors.error,
-                  colorText: Colors.white,
-                  snackPosition: SnackPosition.BOTTOM,
-                  margin: const EdgeInsets.all(16),
-                );
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(e.toString()),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
               }
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),

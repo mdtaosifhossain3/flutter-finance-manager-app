@@ -44,9 +44,7 @@ class _ExpensesScreenState extends State<ExpensesView> {
         leading: Padding(
           padding: const EdgeInsets.only(left: 10.0),
           child: IconButton(
-            onPressed: () {
-              Get.back();
-            },
+            onPressed: () => Navigator.of(context).maybePop(),
             icon: Icon(Icons.arrow_back),
           ),
         ),

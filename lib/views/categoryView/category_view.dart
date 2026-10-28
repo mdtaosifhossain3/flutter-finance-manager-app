@@ -58,7 +58,7 @@ class _CategorySelectionPageState extends State<CategoryView>
         title: 'category'.tr,
         leading: IconButton(
           onPressed: () {
-            Get.back();
+            Navigator.of(context).pop();
           },
           icon: Icon(Icons.arrow_back),
         ),

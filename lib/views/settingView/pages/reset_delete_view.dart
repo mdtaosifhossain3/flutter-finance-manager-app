@@ -1,6 +1,5 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
-import 'package:finance_manager_app/providers/authProvider/auth_provider.dart';
 import 'package:finance_manager_app/config/db/local/notification_db/notification_db_helper.dart';
 import 'package:finance_manager_app/providers/budget/budget_provider.dart';
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
@@ -21,7 +20,7 @@ class ResetDeleteView extends StatelessWidget {
       appBar: customAppBar(
         title: 'reset_delete_options'.tr,
         leading: IconButton(
-          onPressed: () => Get.back(),
+          onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.arrow_back),
         ),
       ),
@@ -44,18 +43,18 @@ class ResetDeleteView extends StatelessWidget {
                 title: 'reset_app_data'.tr,
                 description: 'reset_app_data_desc'.tr,
                 icon: Icons.restore,
-                color: Colors.orange,
+                color: AppColors.error,
                 onTap: () => _showResetConfirmationDialog(context),
               ),
               const SizedBox(height: 20),
-              _buildOptionCard(
-                context,
-                title: 'delete_account'.tr,
-                description: 'delete_account_desc'.tr,
-                icon: Icons.delete_forever,
-                color: AppColors.error,
-                onTap: () => _showDeleteAccountConfirmationDialog(context),
-              ),
+              // _buildOptionCard(
+              //   context,
+              //   title: 'delete_account'.tr,
+              //   description: 'delete_account_desc'.tr,
+              //   icon: Icons.delete_forever,
+              //   color: AppColors.error,
+              //   onTap: () => _showDeleteAccountConfirmationDialog(context),
+              // ),
             ],
           ),
         ),
@@ -187,89 +186,31 @@ class ResetDeleteView extends StatelessWidget {
                 await context.read<ReminderProvider>().deleteFullReminders();
                 if (!context.mounted) return;
                 await NotificationDbHelper().deleteFull();
-                Get.back(); // Close loading
-
-                Get.snackbar(
-                  'successTitle'.tr,
-                  'app_data_reset_success'.tr,
-                  backgroundColor: AppColors.success,
-                  colorText: Colors.white,
-                );
+                if (context.mounted) {
+                  Navigator.of(context).pop(); // Close loading
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('app_data_reset_success'.tr),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                }
               } catch (e) {
-                Get.back(); // Close loading
-                Get.snackbar(
-                  'error_title'.tr,
-                  e.toString(),
-                  backgroundColor: AppColors.error,
-                  colorText: Colors.white,
-                );
+                if (context.mounted) {
+                  Navigator.of(context).pop(); // Close loading
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(e.toString()),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
               }
             },
             child: Text(
               'reset'.tr,
               style: const TextStyle(
                 color: Colors.orange,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showDeleteAccountConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'delete_account'.tr,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: AppColors.error,
-          ),
-        ),
-        content: Text(
-          'delete_account_confirmation'.tr,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              'cancel'.tr,
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-
-              // 1. Delete Local Data first
-              await context.read<AddExpenseProvider>().deleteFullTransaction();
-              if (!context.mounted) return;
-              await context.read<BudgetProvider>().deleteFullBudget();
-              if (!context.mounted) return;
-              await context.read<SavingsProvider>().deleteFullSavings();
-              if (!context.mounted) return;
-              await context.read<GivenTakenProvider>().deleteFullData();
-              if (!context.mounted) return;
-              await context.read<NotesProvider>().clearAllNotes();
-              if (!context.mounted) return;
-              await context.read<ReminderProvider>().deleteFullReminders();
-              if (!context.mounted) return;
-              await NotificationDbHelper().deleteFull();
-
-              // 2. Delete Cloud Data & Account
-              if (context.mounted) {
-                await context.read<AuthProvider>().deleteAccount();
-              }
-            },
-            child: Text(
-              'delete'.tr,
-              style: const TextStyle(
-                color: AppColors.error,
                 fontWeight: FontWeight.bold,
               ),
             ),

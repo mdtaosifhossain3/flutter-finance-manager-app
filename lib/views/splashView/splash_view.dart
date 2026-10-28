@@ -49,18 +49,7 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Image.asset(
-                      "assets/images/logo_foreground.png",
-                      width: 90,
-                      height: 90,
-                    ),
-                  ),
+                  Image.asset("assets/images/new_logo.PNG", width: 220),
                   const SizedBox(height: 20),
                   Text(
                     appName,

@@ -35,7 +35,7 @@ class _GivenTakenViewState extends State<GivenTakenView> {
       appBar: customAppBar(
         title: 'given_taken'.tr,
         leading: IconButton(
-          onPressed: () => Get.back(),
+          onPressed: () => Navigator.of(context).maybePop(),
           icon: const Icon(Icons.arrow_back),
         ),
         actions: [
@@ -398,14 +398,21 @@ class _GivenTakenViewState extends State<GivenTakenView> {
         title: Text('delete_person'.tr),
         content: Text('confirm_delete_person'.tr),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: Text('cancel'.tr)),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('cancel'.tr),
+          ),
           TextButton(
             onPressed: () async {
               await context.read<GivenTakenProvider>().deleteContact(
                 contact.id!,
               );
-              Get.back();
-              Get.snackbar('success'.tr, 'person_deleted'.tr);
+              if (mounted) {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('person_deleted'.tr)));
+              }
             },
             child: Text(
               'delete'.tr,

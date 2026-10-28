@@ -7,7 +7,7 @@ class ProfileCard extends StatelessWidget {
   final String name;
   final String role;
   final String imagePath;
-  final Map<IconData, String> socialLinks;
+  final Map<dynamic, String> socialLinks;
 
   const ProfileCard({
     super.key,
@@ -99,7 +99,7 @@ class ProfileCard extends StatelessWidget {
     );
   }
 
-  Color _getColorForIcon(IconData icon, BuildContext context) {
+  Color _getColorForIcon(dynamic icon, BuildContext context) {
     if (icon == FontAwesomeIcons.linkedin) return const Color(0xFF0077B5);
     if (icon == FontAwesomeIcons.facebook) return const Color(0xFF1877F2);
     if (icon == Icons.email) return Colors.redAccent;
@@ -108,7 +108,7 @@ class ProfileCard extends StatelessWidget {
 
   Widget _buildSocialIcon(
     BuildContext context, {
-    required IconData icon,
+    required dynamic icon,
     required Color color,
     required VoidCallback onTap,
   }) {
@@ -121,7 +121,9 @@ class ProfileCard extends StatelessWidget {
           color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: FaIcon(icon, color: color, size: 16),
+        child: icon is IconData
+            ? Icon(icon, color: color, size: 16)
+            : FaIcon(icon as FaIconData, color: color, size: 16),
       ),
     );
   }

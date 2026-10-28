@@ -8,7 +8,6 @@ import 'package:finance_manager_app/views/homeView/home_view.dart';
 import 'package:finance_manager_app/views/mainView/main_view.dart';
 import 'package:finance_manager_app/views/noteView/notes_view.dart';
 import 'package:finance_manager_app/views/notificationView/notification_view.dart';
-import 'package:finance_manager_app/views/pricingView/check_out_view.dart';
 import 'package:finance_manager_app/views/reminderView/reminder_view.dart';
 import 'package:finance_manager_app/views/reportView/report_view.dart';
 import 'package:finance_manager_app/views/savingsView/savings_view.dart';
@@ -18,13 +17,12 @@ import 'package:finance_manager_app/views/givenTakenView/given_taken_view.dart';
 import 'package:finance_manager_app/views/givenTakenView/pages/add_edit_person_view.dart';
 import 'package:finance_manager_app/views/givenTakenView/pages/person_details_view.dart';
 import 'package:finance_manager_app/views/givenTakenView/pages/add_edit_transaction_view.dart';
+import 'package:finance_manager_app/views/authView/phnVerificationView/phone_verification_view.dart';
+import 'package:finance_manager_app/views/authView/registerView/register_view.dart';
 import 'package:get/get.dart';
 
 import '../../views/budgetView/budget_view.dart';
 import '../../views/reportView/pages/expenses_view.dart';
-import 'package:finance_manager_app/views/authView/auth/login_view.dart';
-import 'package:finance_manager_app/views/authView/auth/register_view.dart';
-import 'package:finance_manager_app/views/authView/auth/reset_password.dart';
 
 class Routes {
   static var views = [
@@ -33,29 +31,15 @@ class Routes {
       page: () => const SplashView(),
       transition: Transition.rightToLeft,
     ),
-    // GetPage(
-    //   name: RoutesName.welcomeView,
-    //   page: () => const WelcomeView(),
-    //   transition: Transition.rightToLeft,
-    // ),
-    // GetPage(
-    //   name: RoutesName.otepVerifyView,
-    //   page: () => const VerifyOtpView(),
-    //   transition: Transition.rightToLeft,
-    // ),
+
     GetPage(
       name: RoutesName.loginView,
-      page: () => const LoginView(),
+      page: () => const PhoneVerificationView(),
       transition: Transition.rightToLeft,
     ),
     GetPage(
       name: RoutesName.registerView,
       page: () => const RegisterView(),
-      transition: Transition.rightToLeft,
-    ),
-    GetPage(
-      name: RoutesName.resetPasswordView,
-      page: () => const ResetPasswordView(),
       transition: Transition.rightToLeft,
     ),
     GetPage(
@@ -147,11 +131,6 @@ class Routes {
     GetPage(
       name: RoutesName.noteView,
       page: () => NotesView(),
-      transition: Transition.rightToLeft,
-    ),
-    GetPage(
-      name: RoutesName.checkOutView,
-      page: () => CheckOutView(),
       transition: Transition.rightToLeft,
     ),
   ];

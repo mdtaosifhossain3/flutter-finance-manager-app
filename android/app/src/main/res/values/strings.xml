@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="appwidget_text">EXAMPLE</string>
+    <string name="appwidget_text">Hishab Rakhi</string>
     <string name="add_widget">Add widget</string>
     <string name="app_widget_description">This is an app widget description</string>
-</resources>
+    <string name="facebook_app_id">1388724849137722</string>
+    <string name="facebook_client_token">e05f43181ef105f2e2177e64830e866e</string>
+    <string name="fb_login_protocol_scheme">fb1388724849137722</string>
+</resources> 

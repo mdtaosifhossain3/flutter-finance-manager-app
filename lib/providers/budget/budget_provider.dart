@@ -1,5 +1,6 @@
 import 'package:finance_manager_app/config/db/local/budget_db/add_budget_db_helper.dart';
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -21,17 +22,22 @@ class BudgetProvider with ChangeNotifier {
   Future<void> loadBudgets() async {
     // Yield to let the UI render the first frame
     await Future.delayed(Duration.zero);
-    _budgets = await _dbHelper.getBudgets();
-    _categoriesByBudget.clear();
+    try {
+      _budgets = await _dbHelper.getBudgets();
+      _categoriesByBudget.clear();
 
-    for (var budget in _budgets) {
-      final categories = await _dbHelper.getCategoriesByBudget(budget.id!);
-      _categoriesByBudget[budget.id!] = categories;
+      for (var budget in _budgets) {
+        final categories = await _dbHelper.getCategoriesByBudget(budget.id!);
+        _categoriesByBudget[budget.id!] = categories;
+      }
+
+      await scheduleDailyLimitNotification();
+      await checkBudgetExpiry();
+    } catch (e) {
+      debugPrint("Error loading budgets: $e");
+    } finally {
+      notifyListeners();
     }
-
-    await scheduleDailyLimitNotification();
-    await checkBudgetExpiry();
-    notifyListeners();
   }
 
   /// Insert new budget
@@ -153,8 +159,14 @@ class BudgetProvider with ChangeNotifier {
   }
 
   Future<void> deleteFullBudget() async {
-    await _dbHelper.deleteFullBudget();
-    await loadBudgets();
+    try {
+      await _dbHelper.deleteFullBudget();
+      _budgets.clear();
+      _categoriesByBudget.clear();
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error in deleteFullBudget: $e");
+    }
   }
 
   // ----------------------------

@@ -59,7 +59,7 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
             title: contact.name,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () => Get.back(),
+              onPressed: () => Navigator.of(context).pop(),
             ),
             actions: [
               IconButton(
@@ -536,10 +536,13 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
         title: Text('settle_up'.tr),
         content: Text('confirm_settle_up'.tr),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: Text('cancel'.tr)),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('cancel'.tr),
+          ),
           TextButton(
             onPressed: () async {
-              Get.back(); // Close dialog
+              Navigator.of(context).pop(); // Close dialog
               final type = balance > 0 ? 'taken' : 'given';
               final amount = balance.abs();
 
@@ -552,9 +555,23 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
                   note: 'settle_up'.tr,
                 );
                 _loadTransactions();
-                Get.snackbar('success'.tr, 'settled_successfully'.tr);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('settled_successfully'.tr),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
               } catch (e) {
-                Get.snackbar('error'.tr, '${'failed_to_settle_up'.tr}: $e');
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${'failed_to_settle_up'.tr}: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               }
             },
             child: Text(
@@ -568,20 +585,31 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
   }
 
   void _confirmDelete(ContactLend contact) {
-    Get.dialog(
-      AlertDialog(
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
         title: Text('delete_person'.tr),
         content: Text('confirm_delete_person'.tr),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: Text('cancel'.tr)),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text('cancel'.tr),
+          ),
           TextButton(
             onPressed: () async {
               await context.read<GivenTakenProvider>().deleteContact(
                 contact.id!,
               );
-              Get.back(); // Close dialog
-              Get.back(); // Go back to list
-              Get.snackbar('success'.tr, 'person_deleted'.tr);
+              Navigator.of(ctx).pop(); // Close dialog
+              if (mounted) {
+                Navigator.of(context).pop(); // Go back to list
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('person_deleted'.tr),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
             },
             child: Text(
               'delete'.tr,

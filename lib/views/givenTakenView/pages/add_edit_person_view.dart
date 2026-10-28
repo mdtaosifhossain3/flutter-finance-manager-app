@@ -52,7 +52,14 @@ class _AddEditPersonViewState extends State<AddEditPersonView> {
         });
       }
     } catch (e) {
-      Get.snackbar('error'.tr, 'Failed to pick image: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to pick image: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -71,7 +78,7 @@ class _AddEditPersonViewState extends State<AddEditPersonView> {
       appBar: customAppBar(
         title: _isEdit ? 'edit_person'.tr : 'add_person'.tr,
         leading: IconButton(
-          onPressed: () => Get.back(),
+          onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.arrow_back),
         ),
       ),
@@ -319,13 +326,24 @@ class _AddEditPersonViewState extends State<AddEditPersonView> {
           type: _selectedType,
         );
       }
-      Get.back();
-      Get.snackbar(
-        'success'.tr,
-        _isEdit ? 'person_updated'.tr : 'person_added'.tr,
-      );
+      if (mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_isEdit ? 'person_updated'.tr : 'person_added'.tr),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (e) {
-      Get.snackbar('error'.tr, '${'failed_to_save_contact'.tr}: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${'failed_to_save_contact'.tr}: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }

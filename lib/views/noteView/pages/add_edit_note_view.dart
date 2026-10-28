@@ -206,11 +206,14 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
     final content = _contentController.text.trim();
 
     if (content.isEmpty) {
-      Get.snackbar(
-        'error'.tr,
-        'note_content_empty'.tr,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('note_content_empty'.tr),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       return;
     }
 
@@ -226,12 +229,15 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
           updatedAt: now,
         );
         await provider.updateNote(widget.note!.id!, updatedNote);
-        Get.back();
-        Get.snackbar(
-          'success'.tr,
-          'note_updated'.tr,
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        if (mounted) {
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('note_updated'.tr),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } else {
         // Create new note
         final newNote = NoteModel(
@@ -241,19 +247,25 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
           updatedAt: now,
         );
         await provider.addNote(newNote);
-        Get.back();
-        Get.snackbar(
-          'success'.tr,
-          'note_added'.tr,
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        if (mounted) {
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('note_added'.tr),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       }
     } catch (e) {
-      Get.snackbar(
-        'error'.tr,
-        '${'failed_to_save_note'.tr}: $e',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${'failed_to_save_note'.tr}: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -269,11 +281,14 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
         });
       }
     } catch (e) {
-      Get.snackbar(
-        'error'.tr,
-        'Failed to pick image: $e',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to pick image: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }

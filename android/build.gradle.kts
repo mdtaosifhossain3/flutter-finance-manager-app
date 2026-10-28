@@ -1,11 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.android") version "2.1.0" apply false
-}
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
+    id("org.jetbrains.kotlin.android") version "2.3.20" apply false
 }
 
 val newBuildDir: Directory = rootProject.layout.buildDirectory.dir("../../build").get()

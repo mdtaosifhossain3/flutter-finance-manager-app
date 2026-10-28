@@ -1,4 +1,11 @@
 {
   "dart.previewFlutterUiGuides": true,
-  "dart.previewFlutterUiGuidesCustomTracking": false
+  "dart.previewFlutterUiGuidesCustomTracking": false,
+  "python-envs.pythonProjects": [
+    {
+      "path": "lib/providers/category",
+      "envManager": "ms-python.python:venv",
+      "packageManager": "ms-python.python:pip"
+    }
+  ]
 }

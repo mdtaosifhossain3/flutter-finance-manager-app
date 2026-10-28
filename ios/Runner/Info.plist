@@ -47,5 +47,11 @@
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app needs microphone access to capture voice input for the AI assistant.</string>
+	<key>FacebookAppID</key>
+	<string>1388724849137722</string>
+	<key>FacebookClientToken</key>
+	<string>e05f43181ef105f2e2177e64830e866e</string>
+	<key>FacebookDisplayName</key>
+	<string>Hishab Rakhi</string>
 </dict>
 </plist>

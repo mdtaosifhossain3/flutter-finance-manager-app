@@ -167,10 +167,11 @@ class _CardWidgetState extends State<CardWidget> {
                     SizedBox(width: 10),
                     InkWell(
                       onTap: () async {
+                        final navigator = Navigator.of(context);
                         await context
                             .read<AddExpenseProvider>()
                             .deleteTransaction(transaction.id!);
-                        Get.back();
+                        navigator.pop(); // closes bottom sheet
                       },
                       child: Container(
                         padding: EdgeInsets.all(8),

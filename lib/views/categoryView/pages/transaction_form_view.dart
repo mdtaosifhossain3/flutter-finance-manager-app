@@ -82,7 +82,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
           padding: const EdgeInsets.only(left: 10.0),
           child: IconButton(
             onPressed: () {
-              Get.back();
+              Navigator.of(context).pop();
             },
             icon: Icon(Icons.arrow_back),
           ),
@@ -470,7 +470,9 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
       reportProvider.warningshow();
 
       _resetForm();
-      Get.back();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     } catch (e) {
       if (mounted) {
         Navigator.of(context, rootNavigator: true).pop(); // close loading

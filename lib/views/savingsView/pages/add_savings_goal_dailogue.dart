@@ -100,15 +100,18 @@ class _AddSavingsGoalDialogContentState
           startDate: date,
         );
         if (mounted) {
-          Get.back();
-          Get.snackbar(
-            'Success',
-            'goalUpdated'.tr,
-            backgroundColor: AppColors.success,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-            margin: const EdgeInsets.all(16),
-            icon: const Icon(Icons.check_circle, color: Colors.white),
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text('goalUpdated'.tr),
+                ],
+              ),
+              backgroundColor: AppColors.success,
+            ),
           );
         }
       } else {
@@ -118,27 +121,28 @@ class _AddSavingsGoalDialogContentState
           startDate: date,
         );
         if (mounted) {
-          Get.back();
-          Get.snackbar(
-            'Success',
-            'goalCreated'.tr,
-            backgroundColor: AppColors.success,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-            margin: const EdgeInsets.all(16),
-            icon: const Icon(Icons.check_circle, color: Colors.white),
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text('goalCreated'.tr),
+                ],
+              ),
+              backgroundColor: AppColors.success,
+            ),
           );
         }
       }
     } catch (e) {
       if (mounted) {
-        Get.snackbar(
-          'Error',
-          e.toString(),
-          backgroundColor: AppColors.error,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -263,7 +267,9 @@ class _AddSavingsGoalDialogContentState
                   children: [
                     Expanded(
                       child: TextButton(
-                        onPressed: _isLoading ? null : () => Get.back(),
+                        onPressed: _isLoading
+                            ? null
+                            : () => Navigator.of(context).pop(),
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(

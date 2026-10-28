@@ -4,13 +4,20 @@ import 'package:finance_manager_app/data/category/category_item_data.dart';
 import 'package:finance_manager_app/data/category/income_item_data.dart';
 import 'package:finance_manager_app/models/categoryModel/category_item_model.dart';
 import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
+import 'package:finance_manager_app/providers/aiProvider/ai_provider.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:finance_manager_app/providers/aiProvider/ai_provider.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+String _money(int amount) => HelperFunctions.convertToBanglaDigits(
+  '৳${NumberFormat.decimalPattern('en_IN').format(amount)}',
+);
+
+/// Summary plus one card per transaction the assistant found.
 class PreviewCardWidget extends StatelessWidget {
   final List<TransactionModel> parsedDataEx;
 
@@ -18,391 +25,465 @@ class PreviewCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (parsedDataEx.isEmpty) {
-      return _buildEmptyState(context);
+    if (parsedDataEx.isEmpty) return const _EmptyState();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _Summary(transactions: parsedDataEx),
+        const SizedBox(height: 16),
+        for (var i = 0; i < parsedDataEx.length; i++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _TransactionCard(transaction: parsedDataEx[i], index: i),
+          ),
+      ],
+    );
+  }
+}
+
+class _Summary extends StatelessWidget {
+  final List<TransactionModel> transactions;
+
+  const _Summary({required this.transactions});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    var spent = 0, earned = 0;
+    for (final t in transactions) {
+      if (t.type == TransactionType.income) {
+        earned += t.amount;
+      } else {
+        spent += t.amount;
+      }
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Transaction Cards
-        ...parsedDataEx.asMap().entries.map((entry) {
-          final index = entry.key;
-          final transaction = entry.value;
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: index < parsedDataEx.length - 1 ? 16 : 0,
+        Text(
+          'ai_found_count'.trParams({
+            'count': HelperFunctions.convertToBanglaDigits(
+              transactions.length.toString(),
             ),
-            child: _buildTransactionCard(context, transaction, index),
-          );
-        }),
+          }),
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'ai_review_hint'.tr,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: AppColors.textMuted,
+            height: 1.5,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            if (spent > 0)
+              Expanded(
+                child: _TotalTile(
+                  label: 'ai_total_spent'.tr,
+                  amount: spent,
+                  color: AppColors.error,
+                ),
+              ),
+            if (spent > 0 && earned > 0) const SizedBox(width: 12),
+            if (earned > 0)
+              Expanded(
+                child: _TotalTile(
+                  label: 'ai_total_earned'.tr,
+                  amount: earned,
+                  color: AppColors.success,
+                ),
+              ),
+          ],
+        ),
       ],
     );
   }
+}
 
-  Widget _buildEmptyState(BuildContext context) {
+class _TotalTile extends StatelessWidget {
+  final String label;
+  final int amount;
+  final Color color;
+
+  const _TotalTile({
+    required this.label,
+    required this.amount,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
-        ),
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.receipt_long_outlined,
-            size: 64,
-            color: AppColors.textMuted.withValues(alpha: 0.5),
-          ),
-          const SizedBox(height: 16),
           Text(
-            'no_transactions_detected'.tr,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w600,
+            label,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: AppColors.textMuted,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
-            'try_different_input'.tr,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
-            textAlign: TextAlign.center,
+            _money(amount),
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TransactionCard extends StatelessWidget {
+  final TransactionModel transaction;
+  final int index;
+
+  const _TransactionCard({required this.transaction, required this.index});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isIncome = transaction.type == TransactionType.income;
+    final color = Color(transaction.iconBgColor);
+    final amountColor = isIncome ? AppColors.success : AppColors.error;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 16, 8, 14),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                padding: const EdgeInsets.all(11),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: SvgPicture.asset(
+                  "assets/functional_icons/${transaction.icon}.svg",
+                  colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      transaction.title.isNotEmpty
+                          ? transaction.title
+                          : transaction.categoryKey.tr,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${_formatDate(transaction.date)}  ·  '
+                      '${transaction.paymentMethod.tr}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '${isIncome ? '+' : '−'}${_money(transaction.amount)}',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: amountColor,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  context.read<AiProvider>().removeTransactionAt(index);
+                },
+                icon: const Icon(Icons.close_rounded, size: 20),
+                color: AppColors.textMuted,
+                tooltip: 'remove'.tr,
+                visualDensity: VisualDensity.compact,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _CategoryChip(transaction: transaction, index: index),
+                if (isIncome) ...[
+                  const SizedBox(width: 8),
+                  Text(
+                    'ai_count_in_total'.tr,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                  Transform.scale(
+                    scale: 0.8,
+                    child: Switch(
+                      value: transaction.includeInTotal,
+                      activeThumbColor: AppColors.primaryBlue,
+                      onChanged: (v) => context
+                          .read<AiProvider>()
+                          .updateIncludeInTotal(index, v),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTransactionCard(
-    BuildContext context,
-    TransactionModel transaction,
-    int index,
-  ) {
-    final isIncome = transaction.type == TransactionType.income;
-    final theme = Theme.of(context);
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final days = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).difference(DateTime(date.year, date.month, date.day)).inDays;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.cardColor,
+    if (days == 0) return 'today'.tr;
+    if (days == 1) return 'yesterday'.tr;
+    return HelperFunctions.convertToBanglaDigits(
+      '${date.day}/${date.month}/${date.year}',
+    );
+  }
+}
+
+/// Shows the category; tapping it opens a picker.
+class _CategoryChip extends StatelessWidget {
+  final TransactionModel transaction;
+  final int index;
+
+  const _CategoryChip({required this.transaction, required this.index});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = Color(transaction.iconBgColor);
+
+    return Flexible(
+      child: Material(
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.1)),
-      ),
-      child: Column(
-        children: [
-          // Header Section
-          Padding(
-            padding: const EdgeInsets.all(20),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () => _pickCategory(context),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 7, 8, 7),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Icon
-                Container(
-                  width: 56,
-                  height: 56,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Color(
-                      transaction.iconBgColor,
-                    ).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: SvgPicture.asset(
-                    "assets/functional_icons/${transaction.icon}.svg",
-                    colorFilter: ColorFilter.mode(
-                      Color(transaction.iconBgColor),
-                      BlendMode.srcIn,
+                Flexible(
+                  child: Text(
+                    transaction.categoryKey.tr,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 2),
+                Icon(Icons.expand_more_rounded, size: 18, color: color),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-                // Title and Date
-                Expanded(
+  void _pickCategory(BuildContext context) {
+    HapticFeedback.selectionClick();
+    final provider = context.read<AiProvider>();
+    final categories = transaction.type == TransactionType.income
+        ? incomeCategoryItems
+        : categoryItems;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) => _CategorySheet(
+        categories: categories,
+        selectedKey: transaction.categoryKey,
+        onSelected: (category) {
+          provider.updateCategory(index, category);
+          Navigator.pop(sheetContext);
+        },
+      ),
+    );
+  }
+}
+
+class _CategorySheet extends StatelessWidget {
+  final List<CategoryItemModel> categories;
+  final String selectedKey;
+  final ValueChanged<CategoryItemModel> onSelected;
+
+  const _CategorySheet({
+    required this.categories,
+    required this.selectedKey,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.7,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+            child: Text(
+              'ai_choose_category'.tr,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Flexible(
+            child: GridView.builder(
+              shrinkWrap: true,
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                mainAxisExtent: 92,
+              ),
+              itemCount: categories.length,
+              itemBuilder: (context, i) {
+                final c = categories[i];
+                final selected = c.key == selectedKey;
+                return InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    onSelected(c);
+                  },
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        transaction.title.isNotEmpty
-                            ? transaction.title
-                            : transaction.categoryKey.tr,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                      const SizedBox(height: 6),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 48,
+                        height: 48,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: c.color.withValues(
+                            alpha: selected ? 0.25 : 0.1,
+                          ),
+                          shape: BoxShape.circle,
+                          border: selected
+                              ? Border.all(color: c.color, width: 2)
+                              : null,
+                        ),
+                        child: SvgPicture.asset(
+                          "assets/functional_icons/${c.icon}.svg",
+                          colorFilter: ColorFilter.mode(
+                            c.color,
+                            BlendMode.srcIn,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Text(
-                        _formatDate(transaction.date),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textMuted,
+                        c.key.tr,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontWeight: selected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          height: 1.2,
                         ),
                       ),
                     ],
                   ),
-                ),
-
-                // Amount
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      HelperFunctions.convertToBanglaDigits(
-                        transaction.amount.toString(),
-                      ),
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isIncome ? AppColors.success : AppColors.error,
-                        height: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: (isIncome ? AppColors.success : AppColors.error)
-                            .withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        isIncome ? 'income'.tr : 'expense'.tr,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: isIncome ? AppColors.success : AppColors.error,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // Details Section
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    // Category Dropdown
-                    Expanded(
-                      child: _buildCategoryDropdown(
-                        context,
-                        transaction,
-                        index,
-                        isIncome,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    _buildBadge(
-                      context,
-                      icon: Icons.payment,
-                      label: transaction.paymentMethod.tr,
-                      color: theme.colorScheme.secondary,
-                    ),
-                  ],
-                ),
-                if (transaction.notes != null &&
-                    transaction.notes!.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: theme.scaffoldBackgroundColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.notes_rounded,
-                          size: 16,
-                          color: AppColors.textMuted,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            transaction.notes!,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-
-                // Checkbox for Income
-                if (isIncome) ...[
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.scaffoldBackgroundColor,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: theme.dividerColor.withValues(alpha: 0.1),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: Checkbox(
-                            value: transaction.includeInTotal,
-                            activeColor: AppColors.primaryBlue,
-                            checkColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            onChanged: (value) {
-                              // Update provider
-                              context.read<AiProvider>().updateIncludeInTotal(
-                                index,
-                                value ?? true,
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'include_in_total_income'.tr,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.primaryBlue,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
+                );
+              },
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildCategoryDropdown(
-    BuildContext context,
-    TransactionModel transaction,
-    int index,
-    bool isIncome,
-  ) {
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final categories = isIncome ? incomeCategoryItems : categoryItems;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.1)),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: transaction.categoryKey,
-          isExpanded: true,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: theme.colorScheme.primary,
-            size: 20,
-          ),
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: theme.colorScheme.onPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-          dropdownColor: theme.cardColor,
-          borderRadius: BorderRadius.circular(12),
-          items: categories.map((CategoryItemModel category) {
-            return DropdownMenuItem<String>(
-              value: category.key,
-              child: Row(
-                children: [
-                  SvgPicture.asset(
-                    "assets/functional_icons/${category.icon}.svg",
-                    colorFilter: ColorFilter.mode(
-                      Color(transaction.iconBgColor),
-                      BlendMode.srcIn,
-                    ),
-                    width: 16,
-                    height: 16,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(category.key.tr, overflow: TextOverflow.ellipsis),
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            if (newValue != null) {
-              final newCategory = categories.firstWhere(
-                (c) => c.key == newValue,
-              );
-              context.read<AiProvider>().updateCategory(index, newCategory);
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBadge(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 64, horizontal: 24),
+      child: Column(
         children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 6),
+          Icon(
+            Icons.inbox_outlined,
+            size: 56,
+            color: AppColors.textMuted.withValues(alpha: 0.6),
+          ),
+          const SizedBox(height: 16),
           Text(
-            label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
+            'ai_nothing_left'.tr,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: AppColors.textMuted,
+              height: 1.5,
             ),
           ),
         ],
       ),
     );
-  }
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return 'today'.tr;
-    final now = DateTime.now();
-    final difference = now.difference(date).inDays;
-
-    if (difference == 0) return 'today'.tr;
-    if (difference == 1) return 'yesterday'.tr;
-
-    return '${date.day}/${date.month}/${date.year}';
   }
 }

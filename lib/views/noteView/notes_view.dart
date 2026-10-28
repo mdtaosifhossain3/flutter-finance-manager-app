@@ -34,8 +34,8 @@ class _NotesViewState extends State<NotesView> {
       appBar: customAppBar(
         title: 'note'.tr,
         leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.arrow_back),
         ),
       ),
       body: notesProvider.isLoading

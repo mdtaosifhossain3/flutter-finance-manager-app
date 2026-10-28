@@ -1,6 +1,6 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/models/notificationModel/notification_model.dart';
-import 'package:finance_manager_app/services/weekly_pdf_summary_service.dart';
+import 'package:finance_manager_app/services/report_pdf_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../config/db/local/notification_db/notification_db_helper.dart';
@@ -71,14 +71,14 @@ class _NotificationCenterPageState extends State<NotificationCenterPage> {
               separatorBuilder: (context, index) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final n = notifications[index];
-                final isWeekly = n.isWeekly;
+                final isReport = n.reportKind != null;
                 final isTip = n.title == "daily_finance_tip".tr;
 
                 Color iconColor;
                 Color iconBgColor;
                 IconData iconData;
 
-                if (isWeekly) {
+                if (isReport) {
                   iconColor = AppColors.warning;
                   iconBgColor = AppColors.warning.withValues(alpha: 0.1);
                   iconData = Icons.schedule_rounded;
@@ -95,14 +95,14 @@ class _NotificationCenterPageState extends State<NotificationCenterPage> {
                 return Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: () async {
-                      if (n.isWeekly) {
-                        await WeeklyPdfGenerator.generateWeeklyReportPdf(
-                          DateTime.now(),
-                          context,
-                        );
-                      }
-                    },
+                    // The report the notification was about: the week / month
+                    // before the day it was created.
+                    onTap: n.reportKind == null
+                        ? null
+                        : () => ReportPdfService.open(
+                            context,
+                            ReportPeriod.previous(n.reportKind!, n.date),
+                          ),
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
                       padding: const EdgeInsets.all(16),

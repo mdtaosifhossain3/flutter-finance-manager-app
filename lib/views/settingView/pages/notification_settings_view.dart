@@ -14,7 +14,7 @@ class NotificationSettingsView extends StatelessWidget {
       appBar: customAppBar(
         title: "notification_settings".tr,
         leading: IconButton(
-          onPressed: () => Get.back(),
+          onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.arrow_back),
         ),
       ),

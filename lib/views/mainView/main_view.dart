@@ -6,11 +6,9 @@ import 'package:finance_manager_app/views/categoryView/category_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
 import 'package:finance_manager_app/views/moreView/more_view.dart';
 import 'package:finance_manager_app/views/reportView/report_view.dart';
-import 'package:finance_manager_app/providers/proProvider/pro_provider.dart';
 import 'package:finance_manager_app/views/settingView/setting_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
@@ -47,9 +45,6 @@ class _MainViewState extends State<MainView>
       vsync: this,
       duration: const Duration(milliseconds: 200),
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProProvider>(context, listen: false).initializeProStatus();
-    });
   }
 
   @override
@@ -93,13 +88,8 @@ class _MainViewState extends State<MainView>
                   subtitle: 'smart_categorization'.tr,
                   onTap: () async {
                     Navigator.pop(context);
-                    final hasAccess = Provider.of<ProProvider>(
-                      context,
-                      listen: false,
-                    ).checkAccess();
-                    if (hasAccess) {
-                      Get.to(AddWithAiScreen());
-                    }
+
+                    Get.to(AddWithAiScreen());
                   },
                 ),
                 const SizedBox(height: 12),
@@ -176,7 +166,7 @@ class _MainViewState extends State<MainView>
 
   Widget _buildNavItem({
     required int index,
-    required IconData icon,
+    required FaIconData icon,
     required String label,
     VoidCallback? onTap,
   }) {
@@ -227,122 +217,114 @@ class _MainViewState extends State<MainView>
   void _showProBottomSheet() {
     final theme = Theme.of(context);
 
-    final hasAccess = Provider.of<ProProvider>(
-      context,
-      listen: false,
-    ).checkAccess();
-    if (hasAccess) {
-      showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        builder: (context) {
-          return Container(
-            decoration: BoxDecoration(
-              color: theme.scaffoldBackgroundColor,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(32),
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 20,
+                offset: const Offset(0, -5),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 20,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Handle bar
-                Center(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 12, bottom: 24),
-                    width: 48,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: AppColors.textMuted.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(2.5),
-                    ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 12, bottom: 24),
+                  width: 48,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: AppColors.textMuted.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2.5),
                   ),
                 ),
+              ),
 
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width * 0.06,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'pro_features'
-                            .tr, // Make sure to add this key or use a suitable title
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.textTheme.bodyLarge?.color,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      GridView.count(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisCount: 3,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 20,
-                        childAspectRatio: 0.85,
-                        children: [
-                          _proItem(
-                            icon: Icons.auto_awesome_rounded,
-                            label: 'add_with_ai'.tr,
-                            color: Colors.indigo,
-                            onTap: () => Get.to(AddWithAiScreen()),
-                          ),
-                          _proItem(
-                            icon: FontAwesomeIcons.handshake,
-                            label: 'given_taken'.tr,
-                            color: Colors.blue,
-                            onTap: () => Get.toNamed(RoutesName.givenTakenView),
-                          ),
-                          _proItem(
-                            icon: FontAwesomeIcons.wallet,
-                            label: 'budget'.tr,
-                            color: Colors.green,
-                            onTap: () => Get.toNamed(RoutesName.budgetView),
-                          ),
-                          _proItem(
-                            icon: FontAwesomeIcons.bell,
-                            label: 'reminder'.tr,
-                            color: Colors.orange,
-                            onTap: () => Get.toNamed(RoutesName.reminderView),
-                          ),
-                          _proItem(
-                            icon: FontAwesomeIcons.piggyBank,
-                            label: 'savings'.tr,
-                            color: Colors.purple,
-                            onTap: () => Get.toNamed(RoutesName.savingsView),
-                          ),
-                          _proItem(
-                            icon: FontAwesomeIcons.noteSticky,
-                            label: 'note'.tr,
-                            color: Colors.teal,
-                            onTap: () => Get.toNamed(RoutesName.noteView),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.06,
                 ),
-                const SizedBox(height: 40),
-              ],
-            ),
-          );
-        },
-      );
-    }
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'pro_features'
+                          .tr, // Make sure to add this key or use a suitable title
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 20,
+                      crossAxisSpacing: 20,
+                      childAspectRatio: 0.85,
+                      children: [
+                        _proItem(
+                          icon: Icons.auto_awesome_rounded,
+                          label: 'add_with_ai'.tr,
+                          color: Colors.indigo,
+                          onTap: () => Get.to(AddWithAiScreen()),
+                        ),
+                        _proItem(
+                          icon: FontAwesomeIcons.handshake,
+                          label: 'given_taken'.tr,
+                          color: Colors.blue,
+                          onTap: () => Get.toNamed(RoutesName.givenTakenView),
+                        ),
+                        _proItem(
+                          icon: FontAwesomeIcons.wallet,
+                          label: 'budget'.tr,
+                          color: Colors.green,
+                          onTap: () => Get.toNamed(RoutesName.budgetView),
+                        ),
+                        _proItem(
+                          icon: FontAwesomeIcons.bell,
+                          label: 'reminder'.tr,
+                          color: Colors.orange,
+                          onTap: () => Get.toNamed(RoutesName.reminderView),
+                        ),
+                        _proItem(
+                          icon: FontAwesomeIcons.piggyBank,
+                          label: 'savings'.tr,
+                          color: Colors.purple,
+                          onTap: () => Get.toNamed(RoutesName.savingsView),
+                        ),
+                        _proItem(
+                          icon: FontAwesomeIcons.noteSticky,
+                          label: 'note'.tr,
+                          color: Colors.teal,
+                          onTap: () => Get.toNamed(RoutesName.noteView),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _proItem({
-    required IconData icon,
+    required dynamic icon,
     required String label,
     required Color color,
     required VoidCallback onTap,
@@ -371,7 +353,9 @@ class _MainViewState extends State<MainView>
                   width: 1.5,
                 ),
               ),
-              child: Icon(icon, size: 32, color: color),
+              child: icon is IconData
+                  ? Icon(icon, size: 32, color: color)
+                  : FaIcon(icon as FaIconData, size: 32, color: color),
             ),
             const SizedBox(height: 12),
             Text(
@@ -465,7 +449,7 @@ class _MainViewState extends State<MainView>
 }
 
 class _NavItem {
-  final IconData icon;
+  final FaIconData icon;
   final String label;
 
   _NavItem({required this.icon, required this.label});

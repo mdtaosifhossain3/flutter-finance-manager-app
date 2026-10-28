@@ -137,15 +137,18 @@ class _AddTransactionDialogContentState
           note: note.isEmpty ? null : note,
         );
         if (mounted) {
-          Get.back();
-          Get.snackbar(
-            'Success',
-            'transactionUpdated'.tr,
-            backgroundColor: AppColors.success,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-            margin: const EdgeInsets.all(16),
-            icon: const Icon(Icons.check_circle, color: Colors.white),
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text('transactionUpdated'.tr),
+                ],
+              ),
+              backgroundColor: AppColors.success,
+            ),
           );
         }
       } else {
@@ -157,27 +160,28 @@ class _AddTransactionDialogContentState
           note: note.isEmpty ? null : note,
         );
         if (mounted) {
-          Get.back();
-          Get.snackbar(
-            'Success',
-            'transactionAdded'.tr,
-            backgroundColor: AppColors.success,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-            margin: const EdgeInsets.all(16),
-            icon: const Icon(Icons.check_circle, color: Colors.white),
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text('transactionAdded'.tr),
+                ],
+              ),
+              backgroundColor: AppColors.success,
+            ),
           );
         }
       }
     } catch (e) {
       if (mounted) {
-        Get.snackbar(
-          'Error',
-          e.toString(),
-          backgroundColor: AppColors.error,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -386,7 +390,9 @@ class _AddTransactionDialogContentState
                     children: [
                       Expanded(
                         child: OutlinedButton(
-                          onPressed: _isLoading ? null : () => Get.back(),
+                          onPressed: _isLoading
+                              ? null
+                              : () => Navigator.of(context).pop(),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(

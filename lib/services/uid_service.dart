@@ -13,7 +13,13 @@ class UidService {
   /// Should be called early in app startup
   Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();
-    _cachedUid = prefs.getString('user_uid');
+    _cachedUid =
+        prefs.getString('user_uid') ??
+        prefs.getString('USER_PHONE') ??
+        prefs.getString('MOBILE_NUMBER');
+    if (_cachedUid != null && prefs.getString('user_uid') == null) {
+      await prefs.setString('user_uid', _cachedUid!);
+    }
   }
 
   /// Get the current user's UID
@@ -25,13 +31,17 @@ class UidService {
     _cachedUid = uid;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_uid', uid);
+    await prefs.setString('USER_PHONE', uid);
+    await prefs.setString('MOBILE_NUMBER', uid);
   }
 
-  /// Clear the cached UID (call this after logout)
+  /// Clear the cached UID (call this after logout/unsubscribe)
   Future<void> clearUid() async {
     _cachedUid = null;
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user_uid');
+    await prefs.remove('USER_PHONE');
+    await prefs.remove('MOBILE_NUMBER');
   }
 
   /// Check if user is logged in

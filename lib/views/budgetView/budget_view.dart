@@ -17,7 +17,7 @@ class BudgetView extends StatelessWidget {
       appBar: customAppBar(
         title: 'budgetOverview'.tr,
         leading: IconButton(
-          onPressed: () => Get.back(),
+          onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.arrow_back),
         ),
         actions: [

@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:finance_manager_app/config/enums/enums.dart';
 import 'package:finance_manager_app/data/category/category_item_data.dart';
@@ -8,15 +6,26 @@ import 'package:finance_manager_app/data/category/income_item_data.dart';
 import 'package:finance_manager_app/models/categoryModel/category_item_model.dart';
 import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:finance_manager_app/services/parser/transaction_parser.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 
+/// Turns the user's typed or spoken note into transactions with the offline
+/// [TransactionParser] (no AI, no network).
 class AiProvider with ChangeNotifier {
+  // Words the user taught by correcting a category in the preview.
+  static const String _learnedPrefsKey = 'parser_learned_words';
+  static const int _maxLearnedWords = 500;
+
+  Map<String, String>? _learned;
+  TransactionParser? _parser;
+  // What the parser guessed for each item in [_parsedDataEx], same order.
+  List<ParsedTransaction> _guesses = [];
+
   // String? _speechErrorMessage;
 
   // UI / input
@@ -48,423 +57,139 @@ class AiProvider with ChangeNotifier {
   }
 
   Future<bool> processInput() async {
-    if (textController.text.trim().isEmpty) return false;
+    final userText = textController.text.trim();
+    if (userText.isEmpty) return false;
 
     HapticFeedback.selectionClick();
-    //final te = "I give wifi bill 500tk";
-    final userText = textController.text.trim();
-    //textController.text.trim();
-    final today = DateTime.now().toIso8601String().split('T').first;
 
-    final tt =
-        '''
-You are a finance parser for a Bangladeshi money app. Convert user text (Bangla/English/Banglish) into a JSON array of transactions.
-
-REFERENCE_DATE: $today
-USER INPUT:
-"$userText"
-
-FORMAT:
-[{
- "title": string,
- "type": "income"|"expense",
- "amount": number,
- "categoryName": string,
- "date": string,        // ISO8601 format: YYYY-MM-DD
- "notes": string,
- "paymentMethod": string
-}]
-
-Rules:
-- If multiple payments mentioned (e.g. “Lunch 200 and bus 50”) return multiple JSON objects.
-- Detect income/expense from words: spent, paid, bought, খরচ, দিলাম, বিল, send = expense; got, received, earned, salary, পেলাম, আয় = income.
-- If type = income and no clear income keyword appears, use categoryName = "salary".
-- Extract numeric amount, remove tk/৳, convert Bangla digits.
-- Payment: bkash, nagad, rocket, upay, credit, debit, bank; else cash.
-- Category keywords decide categoryName; fallback = miscellaneous_income (for income) or miscellaneous_expense (for expense).
-- Title = short name (e.g., Bus Fare).
-- Return JSON only.
-- If amounts are separated by commas, spaces, or plus signs ("200,200", "170 200", "170+200", "170 + 200"),
-  create SEPARATE transactions for each amount.
-- "+" NEVER means income. It only separates multiple amounts.
-
-Date Calculation Rules:
-1. "আজ", "today" → Use REFERENCE_DATE.
-2. "গতকাল", "yesterday" → Calculate (REFERENCE_DATE - 1 day).
-3. "আগামীকাল", "tomorrow" → Calculate (REFERENCE_DATE + 1 day).
-4. "X দিন আগে", "X days ago" → Calculate (REFERENCE_DATE - X days).
-5. For specific dates (e.g., "15 Oct", "১৫ই অক্টোবর"), use the year from REFERENCE_DATE unless a specific year is mentioned.
-6. If NO date is found in the text, use REFERENCE_DATE.
-
-Categories:
-health_fitness, food_dining, bills_utilities, beauty, housing, transportation, entertainment,
-shopping, groceries, education, personal, investment, marketing_advertising, travel_accommodation,
-office_supplies_equipment, insurance, subscription_services, fuel_mileage, charity_donations,
-kids, repairs, pets, sports, salary, business, sales_revenue, service_income,
-freelance_contracts, investment_returns, rental_income, asset_sales, royalties_licensing,
-interest_dividends, side_income, commissions_affiliates, refunds_reimbursements,
-gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
-''';
-
-    // Show loader for the whole processing duration and ensure it is
-    // always cleared, even on errors.
-    _isLoading = true;
-    notifyListeners();
-
-    try {
-      final url = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${dotenv.env['API_KEY']}',
-      );
-
-      final response = await http
-          .post(
-            url,
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({
-              "contents": [
-                {
-                  "parts": [
-                    {"text": tt},
-                  ],
-                },
-              ],
-            }),
-          )
-          .timeout(const Duration(seconds: 30));
-      if (response.statusCode != 200) {
-        _isLoading = false;
-        Get.snackbar(
-          '',
-          'failed_to_fetch_data'.tr,
-          titleText: const SizedBox.shrink(),
-          messageText: Row(
-            children: [
-              const Icon(Icons.wifi_off, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'failed_to_fetch_data'.tr,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.red[700],
-          colorText: Colors.white,
-          borderRadius: 12,
-          margin: const EdgeInsets.all(16),
-          duration: const Duration(seconds: 4),
-        );
-        notifyListeners();
-        return false;
-      }
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final content =
-            data['candidates']?[0]?['content']?['parts']?[0]?['text'];
-
-        if (content == null || content.toString().trim().isEmpty) {
-          Get.snackbar(
-            '',
-            'no_content_in_response'.tr,
-            titleText: const SizedBox.shrink(),
-            messageText: Row(
-              children: [
-                const Icon(Icons.wifi_off, color: Colors.white),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'no_content_in_response'.tr,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.red[700],
-            colorText: Colors.white,
-            borderRadius: 12,
-            margin: const EdgeInsets.all(16),
-            duration: const Duration(seconds: 4),
-          );
-          _isLoading = false;
-          notifyListeners();
-          return false;
-        }
-
-        // Clean Markdown fences (```json ... ```)
-        final cleaned = content
-            .replaceAll(RegExp(r'```json', caseSensitive: false), '')
-            .replaceAll('```', '')
-            .trim();
-        if (cleaned.isEmpty) {
-          Get.snackbar(
-            '',
-            'no_content_in_response'.tr,
-            titleText: const SizedBox.shrink(),
-            messageText: Row(
-              children: [
-                const Icon(Icons.wifi_off, color: Colors.white),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'no_content_in_response'.tr,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.red[700],
-            colorText: Colors.white,
-            borderRadius: 12,
-            margin: const EdgeInsets.all(16),
-            duration: const Duration(seconds: 4),
-          );
-          _isLoading = false;
-          notifyListeners();
-          return false;
-        }
-
-        // Decode with error handling
-        final dynamic parsed;
-        try {
-          parsed = jsonDecode(cleaned);
-        } catch (e) {
-          Get.snackbar(
-            '',
-            'failed_to_parse_response'.tr,
-            titleText: const SizedBox.shrink(),
-            messageText: Row(
-              children: [
-                const Icon(Icons.wifi_off, color: Colors.white),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'failed_to_parse_response'.tr,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.red[700],
-            colorText: Colors.white,
-            borderRadius: 12,
-            margin: const EdgeInsets.all(16),
-            duration: const Duration(seconds: 4),
-          );
-          _isLoading = false;
-          notifyListeners();
-          return false;
-        }
-
-        // Ensure it's a list (AI might sometimes return a single object)
-        final List<dynamic> transactions = parsed is List ? parsed : [parsed];
-
-        // Convert each transaction into TransactionModel
-        _parsedDataEx = transactions.map<TransactionModel>((item) {
-          final isIncome = item['type']?.toString().toLowerCase() == 'income';
-          final categoryName =
-              item['categoryName']?.toString().trim() ??
-              (isIncome ? 'miscellaneous_income' : 'miscellaneous_expense');
-
-          final categories = isIncome ? incomeCategoryItems : categoryItems;
-
-          // Enhanced category matching helper
-          CategoryItemModel findBestCategory(
-            String rawName,
-            List<CategoryItemModel> cats,
-          ) {
-            final q = rawName.trim().toLowerCase();
-            if (q.isEmpty) return cats.first;
-
-            // 1) Exact key match (categoryData.key)
-            for (final c in cats) {
-              //Find the Category
-              if (c.key.toLowerCase() == q) {
-                return c;
-              }
-            }
-
-            // 2) Fallback to specific miscellaneous category
-            final fallbackKey = isIncome
-                ? 'miscellaneous_income'
-                : 'miscellaneous_expense';
-            for (final c in cats) {
-              if (c.key.toLowerCase() == fallbackKey) {
-                return c;
-              }
-            }
-
-            return CategoryItemModel(
-              fallbackKey,
-              isIncome ? 'other_income' : 'other',
-              Color(0xFF636E72),
-            );
-          }
-
-          final matchedCategory = findBestCategory(categoryName, categories);
-
-          // Normalize amount to int (TransactionModel.amount is int)
-          int parseAmount(dynamic a) {
-            if (a == null) return 0;
-            if (a is int) return a;
-            if (a is double) return a.toInt();
-            final s = a.toString();
-            // Remove non-digit characters (like currency symbols) then parse
-            final cleaned = s.replaceAll(RegExp(r'[^0-9\.-]'), '');
-            return int.tryParse(cleaned.split('.').first) ??
-                (double.tryParse(cleaned)?.toInt() ?? 0);
-          }
-
-          return TransactionModel(
-            title: item['title'] ?? '',
-            type: isIncome ? TransactionType.income : TransactionType.expense,
-            amount: parseAmount(item['amount']),
-            categoryKey: matchedCategory.key,
-            // Parse date string; if time part is missing (parsed at midnight),
-            // combine with current time so UI doesn't show 12:00 AM.
-            date: (() {
-              final raw = (item['date'] ?? '').toString().trim();
-              if (raw.isEmpty) return DateTime.now();
-              final parsedDate = DateTime.tryParse(raw);
-              if (parsedDate == null) return DateTime.now();
-              // If parsed time is exactly midnight and original string looks like a date-only (YYYY-MM-DD)
-              final hasTimePart =
-                  raw.contains(':') ||
-                  raw.toLowerCase().contains('t') && raw.contains(' ');
-              if (parsedDate.hour == 0 &&
-                  parsedDate.minute == 0 &&
-                  !hasTimePart) {
-                final now = DateTime.now();
-                return DateTime(
-                  parsedDate.year,
-                  parsedDate.month,
-                  parsedDate.day,
-                  now.hour,
-                  now.minute,
-                  now.second,
-                );
-              }
-              return parsedDate;
-            })(),
-            notes: item['notes'] ?? '',
-            paymentMethod: item['paymentMethod'] ?? 'cash',
-            icon: matchedCategory.icon,
-            iconBgColor: matchedCategory.color.toARGB32(),
-          );
-        }).toList();
-
-        // _isLoading = false; // Keep loading true for smooth navigation
-        notifyListeners();
-        return true;
-      } else {
-        Get.snackbar(
-          '',
-          '${'ai_request_failed'.tr} (${response.statusCode})',
-          titleText: const SizedBox.shrink(),
-          messageText: Row(
-            children: [
-              const Icon(Icons.wifi_off, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  '${'ai_request_failed'.tr} (${response.statusCode})',
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.red[700],
-          colorText: Colors.white,
-          borderRadius: 12,
-          margin: const EdgeInsets.all(16),
-          duration: const Duration(seconds: 4),
-        );
-        _isLoading = false;
-
-        notifyListeners();
-        return false;
-      }
-    } on TimeoutException {
-      // Timeout exception snackbar
-      Get.snackbar(
-        '',
-        'connection_timeout'.tr,
-        titleText: const SizedBox.shrink(),
-        messageText: Row(
-          children: [
-            const Icon(Icons.access_time, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'connection_timeout'.tr,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.orange[700],
-        colorText: Colors.white,
-        borderRadius: 12,
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 4),
-      );
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    } on SocketException {
-      Get.snackbar(
-        '',
-        'no_internet_connection'.tr,
-        titleText: const SizedBox.shrink(),
-        messageText: Row(
-          children: [
-            const Icon(Icons.wifi_off, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'no_internet_connection'.tr,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.red[700],
-        colorText: Colors.white,
-        borderRadius: 12,
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 4),
-      );
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    } catch (e) {
-      _isLoading = false;
-      Get.snackbar(
-        '',
-        'something_went_wrong'.tr,
-        titleText: const SizedBox.shrink(),
-        messageText: Row(
-          children: [
-            const Icon(Icons.wifi_off, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'something_went_wrong'.tr,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.red[700],
-        colorText: Colors.white,
-        borderRadius: 12,
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 4),
-      );
-
-      notifyListeners();
+    _parser ??= TransactionParser(learned: await _loadLearned());
+    final guesses = _parser!.parse(userText);
+    if (guesses.isEmpty) {
+      _showNoAmountFound();
       return false;
     }
+
+    _guesses = guesses;
+    _parsedDataEx = guesses.map(_toTransaction).toList();
+    notifyListeners();
+    return true;
+  }
+
+  TransactionModel _toTransaction(ParsedTransaction p) {
+    final category = _findCategory(p.categoryKey, p.isIncome);
+    // The parser gives a date only; add the current time so the UI doesn't
+    // show 12:00 AM.
+    final now = DateTime.now();
+
+    return TransactionModel(
+      title: p.title,
+      type: p.isIncome ? TransactionType.income : TransactionType.expense,
+      amount: p.amount,
+      categoryKey: category.key,
+      date: DateTime(
+        p.date.year,
+        p.date.month,
+        p.date.day,
+        now.hour,
+        now.minute,
+        now.second,
+      ),
+      notes: '',
+      paymentMethod: p.paymentMethod,
+      icon: category.icon,
+      iconBgColor: category.color.toARGB32(),
+    );
+  }
+
+  CategoryItemModel _findCategory(String key, bool isIncome) {
+    final cats = isIncome ? incomeCategoryItems : categoryItems;
+    final fallbackKey = isIncome
+        ? 'miscellaneous_income'
+        : 'miscellaneous_expense';
+
+    for (final k in [key, fallbackKey]) {
+      for (final c in cats) {
+        if (c.key == k) return c;
+      }
+    }
+
+    return CategoryItemModel(
+      fallbackKey,
+      isIncome ? 'other_income' : 'other',
+      const Color(0xFF636E72),
+    );
+  }
+
+  Future<Map<String, String>> _loadLearned() async {
+    if (_learned != null) return _learned!;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_learnedPrefsKey);
+      _learned = raw == null
+          ? {}
+          : Map<String, String>.from(jsonDecode(raw) as Map);
+    } catch (e) {
+      debugPrint('AiProvider: could not load learned words: $e');
+      _learned = {};
+    }
+    return _learned!;
+  }
+
+  /// Remembers the words of every item whose category the user changed, so
+  /// the same words get that category next time.
+  Future<void> _learnFromCorrections() async {
+    // Collect before the first await: the preview may be reset meanwhile.
+    final corrections = <String, String>{};
+    for (var i = 0; i < _parsedDataEx.length && i < _guesses.length; i++) {
+      final finalKey = _parsedDataEx[i].categoryKey;
+      if (finalKey == _guesses[i].categoryKey) continue;
+      for (final word in _guesses[i].words) {
+        corrections[word] = finalKey;
+      }
+    }
+    if (corrections.isEmpty) return;
+
+    final learned = await _loadLearned();
+    corrections.forEach((word, key) {
+      learned.remove(word); // re-insert so it counts as the newest
+      learned[word] = key;
+    });
+
+    while (learned.length > _maxLearnedWords) {
+      learned.remove(learned.keys.first);
+    }
+    _parser = TransactionParser(learned: learned);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_learnedPrefsKey, jsonEncode(learned));
+    } catch (e) {
+      debugPrint('AiProvider: could not save learned words: $e');
+    }
+  }
+
+  void _showNoAmountFound() {
+    Get.snackbar(
+      '',
+      'no_amount_found'.tr,
+      titleText: const SizedBox.shrink(),
+      messageText: Row(
+        children: [
+          const Icon(Icons.info_outline, color: Colors.white),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'no_amount_found'.tr,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: Colors.orange[800],
+      colorText: Colors.white,
+      borderRadius: 12,
+      margin: const EdgeInsets.all(16),
+      duration: const Duration(seconds: 4),
+    );
   }
 
   // void setSpeechError() {
@@ -496,6 +221,7 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
 
   void resetPreview() {
     _parsedDataEx = [];
+    _guesses = [];
     notifyListeners();
   }
 
@@ -544,6 +270,13 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
     }
   }
 
+  void removeTransactionAt(int index) {
+    if (index < 0 || index >= _parsedDataEx.length) return;
+    _parsedDataEx.removeAt(index);
+    if (index < _guesses.length) _guesses.removeAt(index);
+    notifyListeners();
+  }
+
   void saveTransaction(BuildContext context) {
     HapticFeedback.mediumImpact();
     _isLoading = true;
@@ -552,6 +285,7 @@ gifts, grants_subsidies, miscellaneous_income, miscellaneous_expense.
     for (var tx in _parsedDataEx) {
       context.read<AddExpenseProvider>().addExpense(tx);
     }
+    _learnFromCorrections();
 
     _isLoading = false;
     textController.clear();

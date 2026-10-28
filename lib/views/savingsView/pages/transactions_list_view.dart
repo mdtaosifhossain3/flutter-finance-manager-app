@@ -267,39 +267,43 @@ class _TransactionsListViewState extends State<TransactionsListView> {
     SavingsProvider provider,
     transaction,
   ) {
-    Get.dialog(
-      AlertDialog(
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
         title: const Text('Delete Transaction'),
         content: const Text(
           'Are you sure you want to delete this transaction?',
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () async {
-              Get.back();
+              Navigator.of(ctx).pop();
               try {
                 await provider.deleteTransaction(
                   transaction.id,
                   _currentGoal.id,
                 );
-                Get.snackbar(
-                  'Success',
-                  'Transaction deleted',
-                  backgroundColor: AppColors.success,
-                  colorText: Colors.white,
-                  snackPosition: SnackPosition.BOTTOM,
-                  margin: const EdgeInsets.all(16),
-                );
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Transaction deleted'),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                }
               } catch (e) {
-                Get.snackbar(
-                  'Error',
-                  e.toString(),
-                  backgroundColor: AppColors.error,
-                  colorText: Colors.white,
-                  snackPosition: SnackPosition.BOTTOM,
-                  margin: const EdgeInsets.all(16),
-                );
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(e.toString()),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
               }
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),

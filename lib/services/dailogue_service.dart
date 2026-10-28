@@ -1,135 +1,123 @@
 import 'package:finance_manager_app/config/db/local/notification_db/notification_db_helper.dart';
 import 'package:finance_manager_app/models/notificationModel/notification_model.dart';
-import 'package:finance_manager_app/services/monthly_pdf_summary_service.dart';
-import 'package:finance_manager_app/services/weekly_pdf_summary_service.dart';
+import 'package:finance_manager_app/providers/category/transaction_provider.dart';
+import 'package:finance_manager_app/services/report_pdf_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Offers last week's report on the first app open of each new week
+/// (Monday to Sunday), and last month's report on the first open of each new
+/// month.
 class DialogService {
   static const _weeklyKey = 'last_weekly_dialog_date';
   static const _monthlyKey = 'last_monthly_dialog_date';
   static const _firstLaunchKey = 'is_first_launch';
 
+  // HomeView calls this every time it is rebuilt (e.g. switching tabs).
+  static bool _running = false;
+
   /// Call this on app startup or Home screen init
   static Future<void> checkAndShowDialogs(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
+    if (_running) return;
+    _running = true;
+    try {
+      final prefs = await SharedPreferences.getInstance();
 
-    final isFirstLaunch = prefs.getBool(_firstLaunchKey) ?? true;
-    if (isFirstLaunch) {
-      // First app open: don't show dialogs, just mark first launch done
-      await prefs.setBool(_firstLaunchKey, false);
-      return;
-    }
-
-    // Show dialogs for subsequent app opens
-    if (context.mounted) await _checkWeeklyDialog(prefs, context);
-    if (context.mounted) await _checkMonthlyDialog(prefs, context);
-  }
-
-  static Future<void> _checkWeeklyDialog(
-    SharedPreferences prefs,
-    BuildContext context,
-  ) async {
-    final lastShownString = prefs.getString(_weeklyKey);
-    final now = DateTime.now();
-
-    if (lastShownString != null) {
-      final lastShown = DateTime.parse(lastShownString);
-      if (now.difference(lastShown).inDays < 7) return; // not yet 7 days
-    } else {
-      // No previous date, don't show on first real open
-      await prefs.setString(_weeklyKey, now.toIso8601String());
-      return;
-    }
-
-    if (context.mounted) await _showWeeklyDialog(context);
-    await prefs.setString(_weeklyKey, now.toIso8601String());
-    final NotificationModel notificationModel = NotificationModel(
-      title: "weeklyFinancialSummaryTitle".tr,
-      body: "weeklyFinancialSummaryDescription".tr,
-      date: DateTime.now(),
-    );
-    NotificationDbHelper().insertNotification(notificationModel);
-  }
-
-  static Future<void> _checkMonthlyDialog(
-    SharedPreferences prefs,
-    BuildContext context,
-  ) async {
-    final lastShownString = prefs.getString(_monthlyKey);
-    final now = DateTime.now();
-
-    if (lastShownString != null) {
-      final lastShown = DateTime.parse(lastShownString);
-      if (lastShown.year == now.year && lastShown.month == now.month) {
-        return; // already shown this month
+      final isFirstLaunch = prefs.getBool(_firstLaunchKey) ?? true;
+      if (isFirstLaunch) {
+        // First app open: nothing to report yet. Start counting from now.
+        final now = DateTime.now().toIso8601String();
+        await prefs.setBool(_firstLaunchKey, false);
+        await prefs.setString(_weeklyKey, now);
+        await prefs.setString(_monthlyKey, now);
+        return;
       }
-    } else {
-      // No previous date, don't show on first real open
-      await prefs.setString(_monthlyKey, now.toIso8601String());
+
+      if (context.mounted) await _check(prefs, context, ReportKind.weekly);
+      if (context.mounted) await _check(prefs, context, ReportKind.monthly);
+    } finally {
+      _running = false;
+    }
+  }
+
+  static Future<void> _check(
+    SharedPreferences prefs,
+    BuildContext context,
+    ReportKind kind,
+  ) async {
+    final key = kind == ReportKind.weekly ? _weeklyKey : _monthlyKey;
+    final now = DateTime.now();
+    final lastShown = DateTime.tryParse(prefs.getString(key) ?? '');
+
+    if (lastShown == null) {
+      await prefs.setString(key, now.toIso8601String());
       return;
     }
+    // Already offered during the current week / month?
+    final period = ReportPeriod.previous(kind, now);
+    if (!lastShown.isBefore(period.end)) return;
 
-    if (context.mounted) await _showMonthlyDialog(context);
-    await prefs.setString(_monthlyKey, now.toIso8601String());
-    final NotificationModel notificationModel = NotificationModel(
-      title: "monthlyFinancialReportTitle".tr,
-      body: "monthlyFinancialReportDescription".tr,
-      date: DateTime.now(),
+    // Remember before showing, so it is never offered twice.
+    await prefs.setString(key, now.toIso8601String());
+
+    if (!context.mounted) return;
+    final db = context.read<AddExpenseProvider>().addTransactionDbHelper;
+    if ((await period.loadTransactions(db)).isEmpty) return;
+
+    await NotificationDbHelper().insertNotification(
+      NotificationModel(
+        title: kind == ReportKind.weekly
+            ? "weeklyFinancialSummaryTitle".tr
+            : "monthlyFinancialReportTitle".tr,
+        body: kind == ReportKind.weekly
+            ? "weeklyFinancialSummaryDescription".tr
+            : "monthlyFinancialReportDescription".tr,
+        date: now,
+        reportKind: kind,
+      ),
     );
-    NotificationDbHelper().insertNotification(notificationModel);
+
+    if (context.mounted) await _showDialog(context, period);
   }
 
-  // Weekly Dialog
-  static Future<void> _showWeeklyDialog(BuildContext context) async {
-    await Get.dialog(
-      AlertDialog(
-        title: Text("weeklyFinancialSummaryTitle".tr),
-        content: Text("weeklyFinancialSummaryDescription".tr),
-        actions: [
-          TextButton(
-            child: const Text("View Insights"),
-            onPressed: () {
-              // ✅ Call your PDF generator
-              WeeklyPdfGenerator.generateWeeklyReportPdf(
-                DateTime.now(),
-                context,
-              );
-
-              Get.back(); // Close the dialog
-            },
+  static Future<void> _showDialog(
+    BuildContext context,
+    ReportPeriod period,
+  ) async {
+    final weekly = period.kind == ReportKind.weekly;
+    final viewReport = await Get.dialog<bool>(
+      Builder(
+        builder: (dialogContext) => AlertDialog(
+          title: Text(
+            weekly
+                ? "weeklyFinancialSummaryTitle".tr
+                : "monthlyFinancialReportTitle".tr,
           ),
-          TextButton(onPressed: () => Get.back(), child: const Text("Close")),
-        ],
+          content: Text(
+            weekly
+                ? "weeklyFinancialSummaryDescription".tr
+                : "monthlyFinancialReportDescription".tr,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text("close".tr),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text("viewInsights".tr),
+            ),
+          ],
+        ),
       ),
       barrierDismissible: false,
     );
-  }
 
-  // Monthly Dialog
-  static Future<void> _showMonthlyDialog(BuildContext context) async {
-    await Get.dialog(
-      AlertDialog(
-        title: Text("monthlyFinancialReportTitle".tr),
-        content: Text("monthlyFinancialReportDescription".tr),
-        actions: [
-          TextButton(
-            child: Text("viewInsights".tr),
-            onPressed: () {
-              MonthlyPdfGenerator.generateMonthlyReportPdf(
-                DateTime(DateTime.now().year, DateTime.now().month - 1, 1),
-                context,
-              );
-
-              Get.back();
-            },
-          ),
-          TextButton(onPressed: () => Get.back(), child: Text("close".tr)),
-        ],
-      ),
-      barrierDismissible: false,
-    );
+    if (viewReport == true && context.mounted) {
+      await ReportPdfService.open(context, period);
+    }
   }
 }

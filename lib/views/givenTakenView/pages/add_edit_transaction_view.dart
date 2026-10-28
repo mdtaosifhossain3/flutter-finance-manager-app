@@ -55,7 +55,7 @@ class _AddEditTransactionViewState extends State<AddEditTransactionView> {
       appBar: customAppBar(
         title: _isEdit ? 'edit_record'.tr : 'add_record'.tr,
         leading: IconButton(
-          onPressed: () => Get.back(),
+          onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.arrow_back),
         ),
         actions: _isEdit
@@ -279,21 +279,32 @@ class _AddEditTransactionViewState extends State<AddEditTransactionView> {
   }
 
   void _confirmDelete() {
-    Get.dialog(
-      AlertDialog(
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
         title: Text('delete_transaction'.tr),
         content: Text('confirm_delete_transaction'.tr),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: Text('cancel'.tr)),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text('cancel'.tr),
+          ),
           TextButton(
             onPressed: () async {
               await context.read<GivenTakenProvider>().deleteTransaction(
                 widget.transaction!.id!,
                 widget.contactId,
               );
-              Get.back(); // Close dialog
-              Get.back(); // Go back to details
-              Get.snackbar('success'.tr, 'transaction_deleted'.tr);
+              Navigator.of(ctx).pop(); // Close dialog
+              if (mounted) {
+                Navigator.of(context).pop(); // Go back to details
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('transaction_deleted'.tr),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
             },
             child: Text(
               'delete'.tr,
@@ -332,13 +343,26 @@ class _AddEditTransactionViewState extends State<AddEditTransactionView> {
           note: note,
         );
       }
-      Get.back();
-      Get.snackbar(
-        'success'.tr,
-        _isEdit ? 'transaction_updated'.tr : 'transaction_added'.tr,
-      );
+      if (mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              _isEdit ? 'transaction_updated'.tr : 'transaction_added'.tr,
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (e) {
-      Get.snackbar('error'.tr, '${'failed_to_save_transaction'.tr}: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${'failed_to_save_transaction'.tr}: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }

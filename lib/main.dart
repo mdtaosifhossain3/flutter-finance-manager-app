@@ -2,7 +2,6 @@ import 'package:finance_manager_app/config/db/local/category_db/add_transaction_
 import 'package:finance_manager_app/config/routes/routes.dart';
 import 'package:finance_manager_app/config/theme/app_theme.dart';
 import 'package:finance_manager_app/config/translator/app_translator.dart';
-import 'package:finance_manager_app/firebase_options.dart';
 import 'package:finance_manager_app/providers/aiProvider/ai_provider.dart';
 import 'package:finance_manager_app/providers/notification_provider.dart';
 
@@ -17,13 +16,12 @@ import 'package:finance_manager_app/providers/reportProvider/report_provider.dar
 import 'package:finance_manager_app/providers/reminderProvider/reminder_provider.dart';
 import 'package:finance_manager_app/providers/savingsProvider/savings_provider.dart';
 import 'package:finance_manager_app/providers/speechProvider/speech_provider.dart';
-import 'package:finance_manager_app/providers/proProvider/pro_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
-import 'package:finance_manager_app/providers/authProvider/auth_provider.dart';
 import 'package:finance_manager_app/providers/givenTakenProvider/given_taken_provider.dart';
+import 'package:finance_manager_app/services/analytics/analytics_service.dart';
+import 'package:finance_manager_app/services/bkash/bkash_deep_link_handler.dart';
 import 'package:finance_manager_app/views/splashView/splash_view.dart';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get_navigation/get_navigation.dart';
@@ -31,8 +29,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await AnalyticsService.instance.initialize();
 
   runApp(
     MultiProvider(
@@ -94,8 +91,6 @@ void main() async {
         ),
         ChangeNotifierProvider(create: (_) => AiProvider()),
         ChangeNotifierProvider(create: (_) => SpeechProvider()),
-        ChangeNotifierProvider(create: (_) => ProProvider()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => GivenTakenProvider()),
         ChangeNotifierProvider(create: (_) => NotesProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
@@ -129,9 +124,33 @@ class MyApp extends StatelessWidget {
           translations: AppTranslations(),
           locale: provider.locale,
           fallbackLocale: const Locale('en', 'US'),
-          home: SplashView(),
+          home: _AppHome(),
         );
       },
     );
+  }
+}
+
+/// Wrapper home widget that initialises deep link handling once
+/// a valid [BuildContext] is available after the first frame.
+class _AppHome extends StatefulWidget {
+  const _AppHome();
+
+  @override
+  State<_AppHome> createState() => _AppHomeState();
+}
+
+class _AppHomeState extends State<_AppHome> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      BkashDeepLinkHandler.instance.initialize(context);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const SplashView();
   }
 }
