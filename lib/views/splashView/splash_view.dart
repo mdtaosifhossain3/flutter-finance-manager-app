@@ -42,27 +42,12 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
             colors: [AppColors.primaryBlue, AppColors.primaryPurple],
           ),
         ),
-        child: Stack(
-          alignment: AlignmentGeometry.center,
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset("assets/images/new_logo.PNG", width: 220),
-                  const SizedBox(height: 20),
-                  Text(
-                    appName,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+        child: Center(
+          child: Image.asset(
+            "assets/images/new_logo.PNG",
+            width: 220,
+            color: Colors.white,
+          ),
         ),
       ),
     );

@@ -95,13 +95,12 @@ class _NotificationCenterPageState extends State<NotificationCenterPage> {
                 return Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    // The report the notification was about: the week / month
-                    // before the day it was created.
+                    // The report the notification was about
                     onTap: n.reportKind == null
                         ? null
                         : () => ReportPdfService.open(
                             context,
-                            ReportPeriod.previous(n.reportKind!, n.date),
+                            ReportPeriod.forNotification(n.reportKind!, n.date),
                           ),
                     borderRadius: BorderRadius.circular(16),
                     child: Container(

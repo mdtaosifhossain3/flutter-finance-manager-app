@@ -127,7 +127,11 @@ class _ExpensesScreenState extends State<ExpensesView> {
   }
 
   Widget _buildPeriodTabs() {
-    final periods = ['periodDay'.tr, 'periodWeek'.tr, 'periodMonth'.tr];
+    final periods = [
+      ReportProvider.periodDay,
+      ReportProvider.periodWeek,
+      ReportProvider.periodMonth,
+    ];
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -155,7 +159,7 @@ class _ExpensesScreenState extends State<ExpensesView> {
                   ),
                 ),
                 child: Text(
-                  period,
+                  period.tr,
                   textAlign: TextAlign.center,
                   style: isSelected
                       ? Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -177,7 +181,8 @@ class _ExpensesScreenState extends State<ExpensesView> {
   Widget _buildDonutChart() {
     return Consumer<ReportProvider>(
       builder: (context, provider, child) {
-        double total = provider.filterCategories.fold(
+        final categories = provider.periodCategories;
+        double total = categories.fold(
           0,
           (sum, category) => sum + category["amount"],
         );
@@ -193,9 +198,7 @@ class _ExpensesScreenState extends State<ExpensesView> {
                 height: 200,
                 child: PieChart(
                   PieChartData(
-                    sections: context
-                        .watch<ReportProvider>()
-                        .filterCategories
+                    sections: categories
                         .asMap()
                         .entries
                         .map((entry) {

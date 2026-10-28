@@ -61,7 +61,17 @@ class AddExpenseProvider extends ChangeNotifier {
 
     try {
       final startOfMonth = DateTime(date.year, date.month, 1);
-      final endOfMonth = DateTime(date.year, date.month + 1, 0, 23, 59, 59);
+      // Include the final second (dates are stored with microseconds)
+      final endOfMonth = DateTime(
+        date.year,
+        date.month + 1,
+        0,
+        23,
+        59,
+        59,
+        999,
+        999,
+      );
 
       final dt = await addTransactionDbHelper.getTransactionsByDateRange(
         startOfMonth.toIso8601String(),

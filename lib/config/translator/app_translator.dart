@@ -108,6 +108,7 @@ class AppTranslations extends Translations {
       'ai_total_spent': 'Total spent',
       'ai_total_earned': 'Total earned',
       'ai_count_in_total': 'Count in total',
+      'ai_category_label': 'Category',
       'ai_choose_category': 'Choose a category',
       'ai_nothing_left': 'Nothing to save. Go back and edit the text.',
       'ai_edit_text': 'Edit',
@@ -858,6 +859,13 @@ class AppTranslations extends Translations {
       "monthlyFinancialReportTitle": "Monthly Financial Report",
       "monthlyFinancialReportDescription":
           "Here's your monthly financial report! Review your income and expenses this month.",
+      "new_month_title": "A new month has started!",
+      "new_month_message":
+          "Home now shows this month only, so it starts fresh. Your @month data is safe and nothing was deleted.",
+      "new_month_step_report": "Open the Report tab to see last month's summary.",
+      "new_month_step_calendar":
+          "Tap the month or the calendar icon at the top of Report to see any older month.",
+      "new_month_view_button": "View @month",
 
       "notification_settings": "Notification Settings",
       "all_notifications": "All Notifications",
@@ -1374,6 +1382,7 @@ class AppTranslations extends Translations {
       'ai_total_spent': 'মোট খরচ',
       'ai_total_earned': 'মোট আয়',
       'ai_count_in_total': 'মোটে ধরুন',
+      'ai_category_label': 'ক্যাটাগরি',
       'ai_choose_category': 'ক্যাটাগরি বেছে নিন',
       'ai_nothing_left': 'সেভ করার কিছু নেই। ফিরে গিয়ে লেখা ঠিক করুন।',
       'ai_edit_text': 'এডিট',
@@ -1871,7 +1880,14 @@ class AppTranslations extends Translations {
       "weeklyFinancialSummaryTitle": "সাপ্তাহিক আর্থিক সারাংশ",
       "weeklyFinancialSummaryDescription": "এই সপ্তাহের খরচের সারাংশ দেখে নিন!",
       "monthlyFinancialReportTitle": "মাসিক আর্থিক রিপোর্ট",
-      "monthlyFinancialReportDescription": "গত মাসের আয়-খরচ এক নজরে দেখে নিন!",
+      "monthlyFinancialReportDescription": "এই মাসের আয়-খরচ এক নজরে দেখে নিন!",
+      "new_month_title": "নতুন মাস শুরু হয়েছে!",
+      "new_month_message":
+          "হোমে এখন শুধু এই মাসের হিসাব দেখাবে, তাই নতুন করে শুরু হয়েছে। আপনার @month মাসের সব তথ্য নিরাপদে আছে, কিছুই মুছে যায়নি।",
+      "new_month_step_report": "গত মাসের সারাংশ দেখতে রিপোর্ট ট্যাবে যান।",
+      "new_month_step_calendar":
+          "পুরনো যেকোনো মাস দেখতে রিপোর্টের উপরে মাসের নাম বা ক্যালেন্ডার আইকনে চাপুন।",
+      "new_month_view_button": "@month দেখুন",
 
       "notification_settings": "নোটিফিকেশন সেটিংস",
       "all_notifications": "সকল নোটিফিকেশন",

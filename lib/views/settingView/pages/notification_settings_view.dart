@@ -1,5 +1,6 @@
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
+import 'package:finance_manager_app/providers/budget/budget_provider.dart';
 import 'package:finance_manager_app/providers/notification_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -28,7 +29,12 @@ class NotificationSettingsView extends StatelessWidget {
                 title: "all_notifications".tr,
                 subtitle: "all_notifications_desc".tr,
                 value: provider.allNotifications,
-                onChanged: (value) => provider.toggleAllNotifications(value),
+                onChanged: (value) => provider.toggleAllNotifications(
+                  value,
+                  rescheduleBudgets: context
+                      .read<BudgetProvider>()
+                      .scheduleDailyLimitNotification,
+                ),
                 icon: Icons.notifications_active,
                 color: AppColors.primaryBlue,
               ),
@@ -63,6 +69,23 @@ class NotificationSettingsView extends StatelessWidget {
                     : null,
                 icon: Icons.receipt_long,
                 color: Colors.purple,
+              ),
+              const SizedBox(height: 12),
+              _buildSwitchTile(
+                context,
+                title: "budget_alerts".tr,
+                subtitle: "budget_alerts_desc".tr,
+                value: provider.budgetNotification,
+                onChanged: provider.allNotifications
+                    ? (value) => provider.toggleBudgetNotification(
+                        value,
+                        rescheduleBudgets: context
+                            .read<BudgetProvider>()
+                            .scheduleDailyLimitNotification,
+                      )
+                    : null,
+                icon: Icons.account_balance_wallet,
+                color: Colors.green,
               ),
             ],
           );

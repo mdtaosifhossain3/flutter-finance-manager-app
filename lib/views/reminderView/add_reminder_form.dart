@@ -1,6 +1,7 @@
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/providers/reminderProvider/reminder_provider.dart';
 import 'package:finance_manager_app/services/permission_handler_service.dart';
+import 'package:finance_manager_app/services/reminder_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -400,6 +401,7 @@ class _AddReminderFormState extends State<AddReminderForm> {
   void _saveReminder() async {
     final provider = context.read<ReminderProvider>();
     await requestNotiPermission();
+    await ReminderHelper.requestExactAlarmPermission();
     if (!mounted) return;
     if (_formKey.currentState!.validate()) {
       try {

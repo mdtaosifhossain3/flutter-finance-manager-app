@@ -29,7 +29,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AnalyticsService.instance.initialize();
+  // await AnalyticsService.instance.initialize();
 
   runApp(
     MultiProvider(

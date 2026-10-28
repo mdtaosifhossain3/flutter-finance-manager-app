@@ -163,13 +163,21 @@ class _TransactionCard extends StatelessWidget {
     final isIncome = transaction.type == TransactionType.income;
     final color = Color(transaction.iconBgColor);
     final amountColor = isIncome ? AppColors.success : AppColors.error;
+    final isDark = theme.brightness == Brightness.dark;
+    final dividerColor = isDark
+        ? AppColors.border
+        : AppColors.lightBorder.withValues(alpha: 0.7);
+    final labelStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: isDark ? AppColors.textSecondary : AppColors.lightTextMuted,
+      fontWeight: FontWeight.w500,
+    );
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 8, 14),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.25)),
+        border: Border.all(color: dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,35 +243,42 @@ class _TransactionCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.only(top: 12, bottom: 12, right: 8),
+            child: Divider(height: 1, color: dividerColor),
+          ),
+          // Each setting is a simple "label ... control" row
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _CategoryChip(transaction: transaction, index: index),
-                if (isIncome) ...[
-                  const SizedBox(width: 8),
-                  Text(
-                    'ai_count_in_total'.tr,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.textMuted,
-                    ),
-                  ),
-                  Transform.scale(
-                    scale: 0.8,
-                    child: Switch(
-                      value: transaction.includeInTotal,
-                      activeThumbColor: AppColors.primaryBlue,
-                      onChanged: (v) => context
-                          .read<AiProvider>()
-                          .updateIncludeInTotal(index, v),
-                    ),
-                  ),
-                ],
+                Text('ai_category_label'.tr, style: labelStyle),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _CategoryChip(transaction: transaction, index: index),
+                ),
               ],
             ),
           ),
+          if (isIncome)
+            Padding(
+              padding: const EdgeInsets.only(top: 6, right: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text('ai_count_in_total'.tr, style: labelStyle),
+                  ),
+                  Switch(
+                    value: transaction.includeInTotal,
+                    activeThumbColor: AppColors.primaryBlue,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    onChanged: (v) => context
+                        .read<AiProvider>()
+                        .updateIncludeInTotal(index, v),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -295,35 +310,65 @@ class _CategoryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final color = Color(transaction.iconBgColor);
 
-    return Flexible(
-      child: Material(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () => _pickCategory(context),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 7, 8, 7),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Text(
-                    transaction.categoryKey.tr,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: color,
-                      fontWeight: FontWeight.w600,
-                    ),
+    // Neutral field colors so the selector reads the same for every
+    // category color, in both themes. The category color only tints the icon.
+    final fieldColor = theme.scaffoldBackgroundColor;
+    final borderColor = isDark ? AppColors.border : AppColors.lightBorder;
+    final textColor = isDark
+        ? AppColors.textPrimary
+        : AppColors.lightTextPrimary;
+    final arrowColor = isDark
+        ? AppColors.textSecondary
+        : AppColors.lightTextMuted;
+
+    return Material(
+      color: fieldColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: borderColor),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => _pickCategory(context),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
+          child: Row(
+            children: [
+              Container(
+                width: 26,
+                height: 26,
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: SvgPicture.asset(
+                  "assets/functional_icons/${transaction.icon}.svg",
+                  colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  transaction.categoryKey.tr,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: textColor,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(width: 2),
-                Icon(Icons.expand_more_rounded, size: 18, color: color),
-              ],
-            ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 22,
+                color: arrowColor,
+              ),
+            ],
           ),
         ),
       ),

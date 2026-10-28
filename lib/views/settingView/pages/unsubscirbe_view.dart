@@ -18,19 +18,15 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
-enum _Plan { daily, ai }
-
 class UnsubscirbeView extends StatelessWidget {
   const UnsubscirbeView({super.key});
 
   // plan options for dialog
   static const _dailyPassword = "a2e48f4c4513432d2ba1219fc68b9074";
   // static const _monthlyPassword = "8e720471e31d322a083d29497b9237a7";
-  static const _aiPassword = "696a49b245149723d1904ce593dea5eb";
   // plan options for dialog
   static const _dailyAppID = "APP_140124";
   // static const _monthlyAppID = "APP_134793";
-  static const _aiAppID = "APP_134919";
 
   Future<void> unsubscribe(
     BuildContext context,
@@ -227,23 +223,7 @@ class UnsubscirbeView extends StatelessWidget {
                 title: 'daily_plan'.tr,
                 icon: Icons.calendar_today,
                 color: Colors.blue,
-                onTap: () => _showUnsubscribeDialog(context, _Plan.daily),
-              ),
-              const SizedBox(height: 20),
-              // _buildOptionCard(
-              //   context,
-              //   title: 'monthly_plan'.tr,
-              //   icon: Icons.calendar_month,
-              //   color: Colors.purple,
-              //   onTap: () => _showUnsubscribeDialog(context, _Plan.monthly),
-              // ),
-              const SizedBox(height: 20),
-              _buildOptionCard(
-                context,
-                title: 'buy_more_ai_credits_plan'.tr,
-                icon: Icons.smart_toy,
-                color: Colors.orange,
-                onTap: () => _showAICreditDialog(context, _Plan.ai),
+                onTap: () => _showUnsubscribeDialog(context),
               ),
             ],
           ),
@@ -252,7 +232,7 @@ class UnsubscirbeView extends StatelessWidget {
     );
   }
 
-  void _showUnsubscribeDialog(BuildContext context, _Plan initialPlan) {
+  void _showUnsubscribeDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -362,201 +342,6 @@ class UnsubscirbeView extends StatelessWidget {
                     ],
                   ),
                 ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _showAICreditDialog(BuildContext context, _Plan initialPlan) {
-    final TextEditingController phoneController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Form(
-                key: formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Header Icon
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.unsubscribe,
-                        size: 40,
-                        color: Colors.red,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Title
-                    Text(
-                      'unsubscribe'.tr,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-
-                    // // Description
-                    Text(
-                      'enter_mobile_desc'.tr,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Phone Input Field
-                    TextFormField(
-                      controller: phoneController,
-                      keyboardType: TextInputType.phone,
-                      style: const TextStyle(fontSize: 16),
-                      decoration: InputDecoration(
-                        hintText: '01XXXXXXXXX',
-                        hintStyle: TextStyle(color: Colors.grey[400]),
-                        filled: true,
-                        fillColor: Theme.of(dialogContext).colorScheme.surface,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Colors.red,
-                            width: 2,
-                          ),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.red),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Colors.red,
-                            width: 2,
-                          ),
-                        ),
-                        prefixIcon: Icon(Icons.phone, color: Colors.grey[600]),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 16,
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'please_enter_number'.tr;
-                        }
-                        if (value.length != 11) {
-                          return 'number_must_be_11_digits'.tr;
-                        }
-                        if (!value.startsWith("01")) {
-                          return 'enter_valid_bd_number'.tr;
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Action Buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextButton(
-                            onPressed: () => Navigator.pop(dialogContext),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: Text(
-                              'cancel'.tr,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey[700],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          flex: 2,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (formKey.currentState!.validate()) {
-                                final phone = phoneController.text.trim();
-
-                                // Determine app ID and password based on selected plan
-                                String id;
-                                String password;
-
-                                if (initialPlan == _Plan.ai) {
-                                  id = _aiAppID;
-                                  password = _aiPassword;
-
-                                  Navigator.of(dialogContext).pop();
-
-                                  unsubscribe(context, id, password, phone);
-
-                                  return;
-                                } else {
-                                  // Default to daily plan
-                                  id = _dailyAppID;
-                                  password = _dailyPassword;
-                                  Navigator.of(dialogContext).pop();
-
-                                  unsubscribe(context, id, password, phone);
-                                  return;
-                                }
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: Text(
-                              'yes'.tr,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
               ),
             ),
           ),

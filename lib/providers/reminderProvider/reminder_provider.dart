@@ -75,7 +75,7 @@ class ReminderProvider with ChangeNotifier {
         if (isActive) {
           final scheduledTime = _parseReminderTime(reminder['remindersTime']);
           final isRepeating = reminder['isRepeating'] == 1;
-          ReminderHelper.scheduleNoti(
+          await ReminderHelper.scheduleNoti(
             id,
             "Reminder",
             reminder["title"],
@@ -83,7 +83,7 @@ class ReminderProvider with ChangeNotifier {
             isRepeating: isRepeating,
           );
         } else {
-          ReminderHelper.chanceledRemidnerNoti(id);
+          await ReminderHelper.chanceledRemidnerNoti(id);
         }
 
         // Update local state
@@ -115,7 +115,7 @@ class ReminderProvider with ChangeNotifier {
       _errorMessage = null;
 
       await ReminderDbHelper.deleteReminder(id);
-      ReminderHelper.chanceledRemidnerNoti(id);
+      await ReminderHelper.chanceledRemidnerNoti(id);
 
       // Remove from local list by creating a new list
       _reminders = _reminders
@@ -149,7 +149,7 @@ class ReminderProvider with ChangeNotifier {
 
       final reminderId = await ReminderDbHelper.addReminder(newReminder);
 
-      ReminderHelper.scheduleNoti(
+      await ReminderHelper.scheduleNoti(
         reminderId,
         "Reminder",
         title,
@@ -191,9 +191,9 @@ class ReminderProvider with ChangeNotifier {
       await ReminderDbHelper.updateReminder(id, updatedReminder);
 
       // Cancel old notification and schedule new one if active
-      ReminderHelper.chanceledRemidnerNoti(id);
+      await ReminderHelper.chanceledRemidnerNoti(id);
       if (isActive) {
-        ReminderHelper.scheduleNoti(
+        await ReminderHelper.scheduleNoti(
           id,
           "Reminder",
           title,

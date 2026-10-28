@@ -13,7 +13,9 @@ class SplashViewModel {
   static Future<void> initApp(BuildContext context) async {
     // Run everything in parallel
     await Future.wait([_initEnv(), _initUid(), _initReminder()]);
-    _checkAuthAndNavigate();
+    await _checkAuthAndNavigate();
+    // Open the screen for a notification tapped while the app was closed
+    ReminderHelper.handleLaunchNotification();
   }
 
   static Future<void> _initEnv() async {

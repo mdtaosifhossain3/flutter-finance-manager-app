@@ -496,6 +496,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ? Icon(Icons.check, color: AppColors.primaryBlue)
                       : null,
                   onTap: () {
+                    provider.setTheme('Light');
                     Navigator.pop(ctx);
                   },
                 ),

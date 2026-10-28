@@ -31,14 +31,6 @@ class AboutPage extends StatelessWidget {
                     'assets/images/new_logo.PNG', // App Logo
                     width: 200,
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    appName,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryBlue,
-                    ),
-                  ),
                 ],
               ),
             ),

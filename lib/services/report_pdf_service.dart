@@ -47,6 +47,26 @@ class ReportPeriod {
     DateTime(ref.year, ref.month, 1),
   );
 
+  /// The calendar month containing [ref] (used for the last-day report).
+  factory ReportPeriod.thisMonth(DateTime ref) => ReportPeriod._(
+    ReportKind.monthly,
+    DateTime(ref.year, ref.month, 1),
+    DateTime(ref.year, ref.month + 1, 1),
+  );
+
+  /// The report a notification created on [date] refers to. Monthly
+  /// reports are created on the last day of their own month; older ones
+  /// were created in the following month.
+  factory ReportPeriod.forNotification(ReportKind kind, DateTime date) {
+    if (kind == ReportKind.monthly && isLastDayOfMonth(date)) {
+      return ReportPeriod.thisMonth(date);
+    }
+    return ReportPeriod.previous(kind, date);
+  }
+
+  static bool isLastDayOfMonth(DateTime date) =>
+      DateTime(date.year, date.month, date.day + 1).day == 1;
+
   factory ReportPeriod.previous(ReportKind kind, DateTime ref) =>
       kind == ReportKind.weekly
       ? ReportPeriod.lastWeek(ref)

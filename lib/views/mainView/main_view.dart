@@ -13,6 +13,15 @@ import 'package:get/get.dart';
 class MainView extends StatefulWidget {
   const MainView({super.key});
 
+  static const int reportTab = 1;
+
+  // Lets code outside the widget (e.g. a popup) switch the bottom tab
+  static final ValueNotifier<int?> _tabRequest = ValueNotifier(null);
+
+  static void openTab(int index) {
+    _tabRequest.value = index;
+  }
+
   @override
   State<MainView> createState() => _MainViewState();
 }
@@ -45,10 +54,19 @@ class _MainViewState extends State<MainView>
       vsync: this,
       duration: const Duration(milliseconds: 200),
     );
+    MainView._tabRequest.addListener(_onTabRequest);
+  }
+
+  void _onTabRequest() {
+    final index = MainView._tabRequest.value;
+    if (index == null) return;
+    MainView._tabRequest.value = null;
+    if (mounted && index >= 0 && index < _pages.length) _changePage(index);
   }
 
   @override
   void dispose() {
+    MainView._tabRequest.removeListener(_onTabRequest);
     _fabAnimationController.dispose();
     super.dispose();
   }

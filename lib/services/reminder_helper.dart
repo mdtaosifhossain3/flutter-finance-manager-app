@@ -1,34 +1,68 @@
 import 'dart:math';
 
 import 'package:finance_manager_app/config/db/local/notification_db/notification_db_helper.dart';
-import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/data/tipsData/tips_data.dart';
 import 'package:finance_manager_app/models/notificationModel/notification_model.dart';
 import 'package:finance_manager_app/views/reminderView/reminder_view.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ReminderHelper {
-  static late final tz.Location _bdLocation;
+  // ----------------------------
+  //  NOTIFICATION IDS
+  // ----------------------------
+  // User reminders use their SQLite row id (small numbers), so every
+  // app-generated notification lives in its own range far above them.
+  static const int dailyTipId = 1000001;
+  static const int transactionReviewId = 1000002;
+  static const int transactionWarningId = 1000003;
+  static const int _budgetDailyBase = 2000000; // + budgetId * 8 + dayOffset
+  static const int _budgetAlertBase = 3000000; // + budgetId
+
+  // Days of daily budget notifications scheduled ahead (refreshed on app open)
+  static const int _budgetDaysAhead = 7;
+
+  // Payloads
+  static const String _reminderPayload = 'reminder_page';
+  static const String _dailyTipPayload = 'daily_tip';
+  static const String _transactionReviewPayload = 'transaction_review';
+  static const String _budgetPayload = 'budget_view';
+
+  // Ids used by earlier versions are cancelled once on upgrade
+  static const String _legacyMigratedKey = 'noti_ids_migrated_v2';
 
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  static Future<void> initializeReminderNoti() async {
+  static Future<void>? _initFuture;
+
+  static AndroidFlutterLocalNotificationsPlugin? get _android =>
+      _notificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+
+  /// Safe to call multiple times; the work only runs once.
+  static Future<void> initializeReminderNoti() {
+    return _initFuture ??= _initialize().catchError((Object e) {
+      _initFuture = null; // allow a retry on next call
+      throw e;
+    });
+  }
+
+  static Future<void> _initialize() async {
     tz.initializeTimeZones();
     try {
-      _bdLocation = tz.getLocation('Asia/Dhaka');
-      tz.setLocalLocation(_bdLocation); // set local location to Dhaka
-    } catch (e) {
-      // fallback to system local if getLocation fails
-      tz.setLocalLocation(tz.local);
+      tz.setLocalLocation(tz.getLocation('Asia/Dhaka'));
+    } catch (_) {
+      // keep the timezone package default (UTC); schedule times are always
+      // built from the device's local DateTime, so the instant stays correct
     }
+
     const adSettings = AndroidInitializationSettings("notification_icon");
     const initSettings = InitializationSettings(android: adSettings);
     await _notificationsPlugin.initialize(
@@ -36,160 +70,184 @@ class ReminderHelper {
       onDidReceiveNotificationResponse: notificationTapBackground,
     );
 
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      "reminder_channel",
-      "Reminders",
-      description: "Channel for Reminder Notification",
-      importance: Importance.high,
-      playSound: true,
-    );
+    const channels = [
+      AndroidNotificationChannel(
+        "reminder_channel",
+        "Reminders",
+        description: "Channel for Reminder Notification",
+        importance: Importance.high,
+        playSound: true,
+      ),
+      AndroidNotificationChannel(
+        "daily_tip_channel",
+        "Daily Finance Tips",
+        description: "Channel for Daily Finance Tip",
+        importance: Importance.high,
+        playSound: true,
+      ),
+      AndroidNotificationChannel(
+        "transaction_review_channel",
+        "Daily Transaction Review",
+        description: "Channel for Daily Transaction Review Reminders",
+        importance: Importance.high,
+        playSound: true,
+      ),
+      AndroidNotificationChannel(
+        "budget_channel",
+        "Budget Alerts",
+        description: "Channel for Budget Limit Notifications",
+        importance: Importance.high,
+        playSound: true,
+      ),
+    ];
+    for (final channel in channels) {
+      await _android?.createNotificationChannel(channel);
+    }
 
-    await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(channel);
-
-    const AndroidNotificationChannel dailyTipChannel =
-        AndroidNotificationChannel(
-          "daily_tip_channel",
-          "Daily Finance Tips",
-          description: "Channel for Daily Finance Tip",
-          importance: Importance.high,
-          playSound: true,
-        );
-
-    await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(dailyTipChannel);
-
-    const AndroidNotificationChannel transactionReviewChannel =
-        AndroidNotificationChannel(
-          "transaction_review_channel",
-          "Daily Transaction Review",
-          description: "Channel for Daily Transaction Review Reminders",
-          importance: Importance.high,
-          playSound: true,
-        );
-
-    await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(transactionReviewChannel);
-
-    const AndroidNotificationChannel budgetChannel = AndroidNotificationChannel(
-      "budget_channel",
-      "Budget Alerts",
-      description: "Channel for Budget Limit Notifications",
-      importance: Importance.high,
-      playSound: true,
-    );
-
-    await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(budgetChannel);
-
-    // Request exact alarms permission if you want to ensure alarmClock mode works
-    await requestExactAlarmPermission();
+    await _cancelLegacyNotifications();
   }
 
+  /// Older versions scheduled the daily tip as 999, the transaction review
+  /// as 777 and budgets as 888000 + id. Remove those once so users who
+  /// upgrade don't get duplicates. User reminders (payload reminder_page)
+  /// are left untouched even if their id is 777 or 999.
+  static Future<void> _cancelLegacyNotifications() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getBool(_legacyMigratedKey) ?? false) return;
+
+      final pending = await _notificationsPlugin.pendingNotificationRequests();
+      for (final p in pending) {
+        if (p.payload == _reminderPayload) continue;
+        final isLegacyId =
+            p.id == 999 ||
+            p.id == 777 ||
+            (p.id >= 888000 && p.id < _budgetDailyBase);
+        if (isLegacyId) await _notificationsPlugin.cancel(p.id);
+      }
+      await prefs.setBool(_legacyMigratedKey, true);
+    } catch (e) {
+      if (kDebugMode) print("Legacy notification cleanup error: $e");
+    }
+  }
+
+  // ----------------------------
+  //  PERMISSIONS
+  // ----------------------------
+
+  /// Opens the system "Alarms & reminders" screen. Only call this from a
+  /// user action (e.g. saving a reminder), never from background scheduling.
   static Future<void> requestExactAlarmPermission() async {
-    await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.requestExactAlarmsPermission();
+    if (await _canScheduleExact()) return;
+    await _android?.requestExactAlarmsPermission();
   }
 
   static Future<void> requestNotificationPermission() async {
-    await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.requestNotificationsPermission();
+    await _android?.requestNotificationsPermission();
   }
+
+  /// Asks for POST_NOTIFICATIONS once (Android 13+) so daily tips,
+  /// transaction reviews and budget alerts can actually be shown.
+  static Future<void> requestNotificationPermissionOnce() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getBool('noti_permission_asked') ?? false) return;
+      await prefs.setBool('noti_permission_asked', true);
+      await requestNotificationPermission();
+    } catch (e) {
+      if (kDebugMode) print("Notification permission error: $e");
+    }
+  }
+
+  static Future<bool> _canScheduleExact() async {
+    try {
+      return await _android?.canScheduleExactNotifications() ?? true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Exact when allowed, otherwise inexact so the notification still
+  /// arrives (possibly a few minutes late) instead of not at all.
+  static Future<AndroidScheduleMode> _scheduleMode({
+    AndroidScheduleMode exactMode = AndroidScheduleMode.exactAllowWhileIdle,
+  }) async {
+    return await _canScheduleExact()
+        ? exactMode
+        : AndroidScheduleMode.inexactAllowWhileIdle;
+  }
+
+  static Future<bool> _isEnabled(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    final allNotifications = prefs.getBool('allNotifications') ?? true;
+    return allNotifications && (prefs.getBool(key) ?? true);
+  }
+
+  /// Next occurrence of [hour]:[minute] in the device's local time.
+  static tz.TZDateTime _nextInstanceOf(int hour, int minute) {
+    final now = DateTime.now();
+    var scheduled = DateTime(now.year, now.month, now.day, hour, minute);
+    if (!scheduled.isAfter(now)) {
+      scheduled = DateTime(now.year, now.month, now.day + 1, hour, minute);
+    }
+    return tz.TZDateTime.from(scheduled, tz.local);
+  }
+
+  // ----------------------------
+  //  TAP HANDLING
+  // ----------------------------
 
   @pragma('vm:entry-point')
   static void notificationTapBackground(NotificationResponse response) {
-    if (response.payload == 'reminder_page') {
-      Get.to(ReminderView());
-    } else if (response.payload == 'daily_tip') {
-      // Insert daily tip into database when user taps it
-      final notiHelper = NotificationDbHelper();
-      final noti = NotificationModel(
-        title: "daily_finance_tip".tr,
-        body:
-            "Daily finance tip received", // Generic message since we can't retrieve the exact tip
-        date: DateTime.now(),
+    final payload = response.payload;
+    if (payload == null) return;
+
+    if (payload == _reminderPayload) {
+      Get.to(() => ReminderView());
+    } else if (payload.startsWith(_dailyTipPayload)) {
+      // payload is "daily_tip:<tipKey>"
+      final tipKey = payload.contains(':')
+          ? payload.substring(payload.indexOf(':') + 1)
+          : '';
+      NotificationDbHelper().insertNotification(
+        NotificationModel(
+          title: "daily_finance_tip".tr,
+          body: tipKey.isNotEmpty ? tipKey.tr : "Daily finance tip received",
+          date: DateTime.now(),
+        ),
       );
-      notiHelper.insertNotification(noti);
-    } else if (response.payload == 'transaction_review') {
-      // Insert transaction review notification into database when user taps it
-      final notiHelper = NotificationDbHelper();
-      final noti = NotificationModel(
-        title: "review_transactions_title".tr,
-        body: "review_transactions_message".tr,
-        date: DateTime.now(),
+    } else if (payload == _transactionReviewPayload) {
+      NotificationDbHelper().insertNotification(
+        NotificationModel(
+          title: "review_transactions_title".tr,
+          body: "review_transactions_message".tr,
+          date: DateTime.now(),
+        ),
       );
-      notiHelper.insertNotification(noti);
     }
   }
 
-  static Future<bool> _checkAndRequestExactAlarmPermission() async {
-    // Permission.scheduleExactAlarm is the direct equivalent of SCHEDULE_EXACT_ALARM
-    final status = await Permission.scheduleExactAlarm.status;
-
-    if (status.isGranted) {
-      return true;
-    } else if (status.isDenied) {
-      // Show Snackbar to request permission, similar to your original intent
-      Get.snackbar(
-        "permission_required".tr,
-        "grant_permission_message".tr,
-        titleText: const SizedBox.shrink(),
-        messageText: Row(
-          children: [
-            const Icon(Icons.access_time, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'connection_timeout'.tr,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: AppColors.primaryBlue,
-        colorText: Colors.white,
-        borderRadius: 12,
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 4),
-        mainButton: TextButton(
-          onPressed: () async {
-            // Open the app settings page. The user needs to manually grant it here.
-            await openAppSettings();
-            Get.back();
-          },
-          child: const Text(
-            'Go to Settings',
-            style: TextStyle(color: AppColors.textPrimary),
-          ),
-        ),
-      );
-      return false;
+  /// Handles the notification that launched the app from a terminated
+  /// state ([onDidReceiveNotificationResponse] doesn't fire in that case).
+  /// Call after the first screen has been pushed.
+  static Future<void> handleLaunchNotification() async {
+    try {
+      await initializeReminderNoti();
+      final details = await _notificationsPlugin
+          .getNotificationAppLaunchDetails();
+      final response = details?.notificationResponse;
+      if (details?.didNotificationLaunchApp == true && response != null) {
+        notificationTapBackground(response);
+      }
+    } catch (e) {
+      if (kDebugMode) print("Launch notification error: $e");
     }
-    // Handle status.isRestricted, status.isPermanentlyDenied, etc.
-    // For simplicity, we open settings for all non-granted statuses
-    await openAppSettings();
-    return false;
   }
 
-  // The scheduleNoti method is simplified to call the helper
+  // ----------------------------
+  //  USER REMINDERS
+  // ----------------------------
+
   static Future<void> scheduleNoti(
     int id,
     String title,
@@ -201,96 +259,58 @@ class ReminderHelper {
       return;
     }
 
-    // If repeating and time is in past, schedule for tomorrow same time
-    DateTime scheduledTime = time;
-    if (isRepeating && time.isBefore(DateTime.now())) {
-      scheduledTime = time.add(const Duration(days: 1));
-    }
+    // Repeating reminders fire at the next occurrence of their time of day.
+    // A past date here would make Android fire the alarm immediately.
+    final scheduledTime = isRepeating
+        ? _nextInstanceOf(time.hour, time.minute)
+        : tz.TZDateTime.from(time, tz.local);
 
-    // --- 🚨 Alternative Exact Alarm Permission Check ---
-    final bool canSchedule = await _checkAndRequestExactAlarmPermission();
-
-    if (!canSchedule) {
-      // Stop scheduling if permission is denied and the user didn't grant it
-      return;
-    }
-    // --- ✅ End Permission Check ---
-
-    // ... rest of your NotificationDetails setup ...
-    final adDetails = AndroidNotificationDetails(
-      "reminder_channel",
-      "Reminders",
-      importance: Importance.high,
-      priority: Priority.high,
-      icon: 'notification_icon',
+    const notiDetails = NotificationDetails(
+      android: AndroidNotificationDetails(
+        "reminder_channel",
+        "Reminders",
+        importance: Importance.high,
+        priority: Priority.high,
+        icon: 'notification_icon',
+      ),
     );
 
-    final notiDetails = NotificationDetails(android: adDetails);
-
-    // Proceed with scheduling only if permission is granted
     await _notificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      tz.TZDateTime.from(scheduledTime, tz.local),
+      scheduledTime,
       notiDetails,
-      androidScheduleMode: AndroidScheduleMode.alarmClock,
-      payload: "reminder_page",
+      androidScheduleMode: await _scheduleMode(
+        exactMode: AndroidScheduleMode.alarmClock,
+      ),
+      payload: _reminderPayload,
       matchDateTimeComponents: isRepeating ? DateTimeComponents.time : null,
     );
   }
 
+  static Future<void> chanceledRemidnerNoti(int id) async {
+    await _notificationsPlugin.cancel(id);
+  }
+
   /// ----------------------------
-  ///  SCHEDULE DAILY TIP (9:30 AM BDT)
+  ///  SCHEDULE DAILY TIP (9:30 AM)
   /// ----------------------------
 
   static Future<void> scheduleDailyTip() async {
     try {
-      // 1. Pick random tip (ensure tipsKeys is non-empty)
-      if (tipsKeys.isEmpty) {
-        return;
-      }
+      if (tipsKeys.isEmpty) return;
+      if (!await _isEnabled('dailyTip')) return;
 
-      final prefs = await SharedPreferences.getInstance();
-      final allNotifications = prefs.getBool('allNotifications') ?? true;
-      final dailyTip = prefs.getBool('dailyTip') ?? true;
+      final tipKey = tipsKeys[Random().nextInt(tipsKeys.length)];
 
-      if (!allNotifications || !dailyTip) {
-        return;
-      }
-
-      final random = Random();
-      final tipKey = tipsKeys[random.nextInt(tipsKeys.length)];
-
-      // 2. Permission check for exact alarms / scheduling
-      final bool allowed = await _checkAndRequestExactAlarmPermission();
-      if (!allowed) {
-        return;
-      }
-
-      // 3. Build next 9:30am in Asia/Dhaka
-      final now = tz.TZDateTime.now(_bdLocation);
-      tz.TZDateTime scheduled = tz.TZDateTime(
-        _bdLocation,
-        now.year,
-        now.month,
-        now.day,
-        9, // 9 AM
-        30, // 30 minutes
-      );
-
-      // if we've already passed today's 9:30, schedule for tomorrow
-      if (scheduled.isBefore(now)) {
-        scheduled = scheduled.add(const Duration(days: 1));
-      }
-
-      // 4. Schedule repeating daily notification (match time)
+      // Same id each time, so this replaces the previous tip
       await _notificationsPlugin.zonedSchedule(
-        999, // fixed id for daily tip
+        dailyTipId,
         "daily_finance_tip".tr,
         tipKey.tr,
-        scheduled,
-        NotificationDetails(
+        _nextInstanceOf(9, 30),
+        const NotificationDetails(
           android: AndroidNotificationDetails(
             "daily_tip_channel",
             "Daily Finance Tips",
@@ -299,9 +319,9 @@ class ReminderHelper {
             priority: Priority.high,
           ),
         ),
-        androidScheduleMode: AndroidScheduleMode.alarmClock,
+        androidScheduleMode: await _scheduleMode(),
         matchDateTimeComponents: DateTimeComponents.time,
-        payload: "daily_tip",
+        payload: "$_dailyTipPayload:$tipKey",
       );
     } catch (e, st) {
       if (kDebugMode) {
@@ -311,48 +331,19 @@ class ReminderHelper {
   }
 
   /// ----------------------------
-  ///  SCHEDULE DAILY TRANSACTION REVIEW (9:00 PM BDT)
+  ///  SCHEDULE DAILY TRANSACTION REVIEW (10:30 PM)
   /// ----------------------------
 
   static Future<void> scheduleDailyTransactionReview() async {
     try {
-      // 1. Permission check for exact alarms / scheduling
-      //  final bool allowed = await _checkAndRequestExactAlarmPermission();
-      //   return;
-      // }
+      if (!await _isEnabled('dailyTransactionReview')) return;
 
-      final prefs = await SharedPreferences.getInstance();
-      final allNotifications = prefs.getBool('allNotifications') ?? true;
-      final dailyTransactionReview =
-          prefs.getBool('dailyTransactionReview') ?? true;
-
-      if (!allNotifications || !dailyTransactionReview) {
-        return;
-      }
-
-      // 2. Build next 9:00 PM in Asia/Dhaka
-      final now = tz.TZDateTime.now(_bdLocation);
-      tz.TZDateTime scheduled = tz.TZDateTime(
-        _bdLocation,
-        now.year,
-        now.month,
-        now.day,
-        22, // 10 PM
-        30, // 30 minutes
-      );
-
-      // if we've already passed today's 9:00 PM, schedule for tomorrow
-      if (scheduled.isBefore(now)) {
-        scheduled = scheduled.add(const Duration(days: 1));
-      }
-
-      // 3. Schedule repeating daily notification (match time)
       await _notificationsPlugin.zonedSchedule(
-        777, // fixed id for daily transaction review
+        transactionReviewId,
         "review_transactions_title".tr,
         "review_transactions_message".tr,
-        scheduled,
-        NotificationDetails(
+        _nextInstanceOf(22, 30),
+        const NotificationDetails(
           android: AndroidNotificationDetails(
             "transaction_review_channel",
             "Daily Transaction Review",
@@ -361,9 +352,9 @@ class ReminderHelper {
             priority: Priority.high,
           ),
         ),
-        androidScheduleMode: AndroidScheduleMode.alarmClock,
+        androidScheduleMode: await _scheduleMode(),
         matchDateTimeComponents: DateTimeComponents.time,
-        payload: "transaction_review",
+        payload: _transactionReviewPayload,
       );
     } catch (e, st) {
       if (kDebugMode) {
@@ -374,19 +365,23 @@ class ReminderHelper {
 
   static Future<void> tt(title, msg) async {
     try {
-      await _notificationsPlugin.show(
-        999,
-        "$title".tr,
-        "$msg".tr,
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            "reminder_channel",
-            "Reminders",
-            importance: Importance.high,
-            priority: Priority.high,
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getBool('allNotifications') ?? true) {
+        await _notificationsPlugin.show(
+          transactionWarningId,
+          "$title".tr,
+          "$msg".tr,
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              "reminder_channel",
+              "Reminders",
+              importance: Importance.high,
+              priority: Priority.high,
+              icon: "notification_icon",
+            ),
           ),
-        ),
-      );
+        );
+      }
 
       NotificationDbHelper notificationDbHelper = NotificationDbHelper();
       NotificationModel notificationModel = NotificationModel(
@@ -396,75 +391,66 @@ class ReminderHelper {
       );
       notificationDbHelper.insertNotification(notificationModel);
     } catch (e) {
-      Get.snackbar("", e.toString());
+      if (kDebugMode) print("tt notification error: $e");
     }
   }
 
-  static Future<void> chanceledRemidnerNoti(int id) async {
-    await _notificationsPlugin.cancel(id);
+  /// Cancels the app's own scheduled notifications (tip, review, budgets).
+  /// User-created reminders are kept.
+  static Future<void> cancelAppNotifications() async {
+    await _notificationsPlugin.cancel(dailyTipId);
+    await _notificationsPlugin.cancel(transactionReviewId);
+    await cancelAllBudgetNotifications();
   }
 
   // ----------------------------
   //  BUDGET NOTIFICATIONS
   // ----------------------------
 
+  static int _budgetDailyId(int budgetId, int dayOffset) =>
+      _budgetDailyBase + budgetId * 8 + dayOffset;
+
+  /// Schedules one notification per day at 12:30 PM for the next
+  /// [_budgetDaysAhead] days, never past [endDate]. One-shot notifications
+  /// (instead of a repeating one) stop on their own when the budget ends;
+  /// they're rescheduled with a fresh limit every time budgets load.
   static Future<void> scheduleDailyBudgetNotification({
     required int budgetId,
     required String budgetName,
     required double dailyLimit,
+    required DateTime endDate,
   }) async {
     try {
-      // 1. Permission check
-      final bool allowed = await _checkAndRequestExactAlarmPermission();
-      if (!allowed) {
-        return;
-      }
+      await cancelBudgetNotification(budgetId);
+      if (!await _isEnabled('budgetNotification')) return;
+      if (dailyLimit <= 0) return;
 
-      final prefs = await SharedPreferences.getInstance();
-      final allNotifications = prefs.getBool('allNotifications') ?? true;
-      final budgetNotification = prefs.getBool('budgetNotification') ?? true;
+      final mode = await _scheduleMode();
+      final now = DateTime.now();
 
-      if (!allNotifications || !budgetNotification) {
-        return;
-      }
+      for (int day = 0; day < _budgetDaysAhead; day++) {
+        final scheduled = DateTime(now.year, now.month, now.day + day, 12, 30);
+        if (!scheduled.isAfter(now)) continue;
+        if (scheduled.isAfter(endDate)) break;
 
-      // 2. Build next 9:00 AM
-      final now = tz.TZDateTime.now(_bdLocation);
-      tz.TZDateTime scheduled = tz.TZDateTime(
-        _bdLocation,
-        now.year,
-        now.month,
-        now.day,
-        12, // 12 PM
-        30,
-      );
-
-      if (scheduled.isBefore(now)) {
-        scheduled = scheduled.add(const Duration(days: 1));
-      }
-
-      // 3. Schedule with unique ID based on budgetId
-      // We use a base ID (e.g., 888000) + budgetId to ensure uniqueness
-      final int notificationId = 888000 + budgetId;
-
-      await _notificationsPlugin.zonedSchedule(
-        notificationId,
-        "daily_budget_limit_title".tr,
-        "$budgetName: ${"daily_spend_advice_one".tr}৳${dailyLimit.toStringAsFixed(0)} ${"daily_spend_advice_two".tr}",
-        scheduled,
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            "budget_channel",
-            "Budget Alerts",
-            importance: Importance.high,
-            priority: Priority.high,
-            icon: "notification_icon",
+        await _notificationsPlugin.zonedSchedule(
+          _budgetDailyId(budgetId, day),
+          "daily_budget_limit_title".tr,
+          "$budgetName: ${"daily_spend_advice_one".tr}৳${dailyLimit.toStringAsFixed(0)} ${"daily_spend_advice_two".tr}",
+          tz.TZDateTime.from(scheduled, tz.local),
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              "budget_channel",
+              "Budget Alerts",
+              importance: Importance.high,
+              priority: Priority.high,
+              icon: "notification_icon",
+            ),
           ),
-        ),
-        androidScheduleMode: AndroidScheduleMode.alarmClock,
-        matchDateTimeComponents: DateTimeComponents.time,
-        payload: "budget_view",
-      );
+          androidScheduleMode: mode,
+          payload: _budgetPayload,
+        );
+      }
     } catch (e) {
       if (kDebugMode) print("Error scheduling budget noti: $e");
     }
@@ -472,72 +458,80 @@ class ReminderHelper {
 
   static Future<void> cancelBudgetNotification(int budgetId) async {
     try {
-      final int notificationId = 888000 + budgetId;
-      await _notificationsPlugin.cancel(notificationId);
+      for (int day = 0; day < _budgetDaysAhead; day++) {
+        await _notificationsPlugin.cancel(_budgetDailyId(budgetId, day));
+      }
     } catch (e) {
       if (kDebugMode) print("Error canceling budget noti: $e");
     }
   }
 
-  static Future<void> showBudgetOverspendingNotification(
-    String budgetName,
-  ) async {
+  static Future<void> cancelAllBudgetNotifications() async {
     try {
-      await _notificationsPlugin.show(
-        Random().nextInt(100000),
-        "budget_exceeded_title".tr,
-        "${"budget_exceeded_message_start".tr} $budgetName ${"budget_exceeded_message_end".tr}",
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            "budget_channel",
-            "Budget Alerts",
-            importance: Importance.high,
-            priority: Priority.high,
-            icon: "notification_icon",
-          ),
-        ),
-      );
-
-      NotificationDbHelper notificationDbHelper = NotificationDbHelper();
-      NotificationModel notificationModel = NotificationModel(
-        title: "budget_exceeded_title".tr,
-        body:
-            "${"budget_exceeded_message_start".tr} $budgetName ${"budget_exceeded_message_end".tr}",
-        date: DateTime.now(),
-      );
-      notificationDbHelper.insertNotification(notificationModel);
+      final pending = await _notificationsPlugin.pendingNotificationRequests();
+      for (final p in pending) {
+        if (p.id >= _budgetDailyBase && p.id < _budgetAlertBase) {
+          await _notificationsPlugin.cancel(p.id);
+        }
+      }
     } catch (e) {
-      if (kDebugMode) print("Error showing overspending noti: $e");
+      if (kDebugMode) print("Error canceling all budget noti: $e");
     }
   }
 
-  static Future<void> showBudgetExpiryNotification(String budgetName) async {
+  static Future<void> _showBudgetAlert({
+    required int budgetId,
+    required String title,
+    required String body,
+  }) async {
     try {
-      await _notificationsPlugin.show(
-        Random().nextInt(100000),
-        "budget_expired_title".tr,
-        "${"budget_expired_message_start".tr} $budgetName ${"budget_expired_message_end".tr}",
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            "budget_channel",
-            "Budget Alerts",
-            importance: Importance.high,
-            priority: Priority.high,
-            icon: "notification_icon",
+      if (await _isEnabled('budgetNotification')) {
+        await _notificationsPlugin.show(
+          _budgetAlertBase + budgetId,
+          title,
+          body,
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              "budget_channel",
+              "Budget Alerts",
+              importance: Importance.high,
+              priority: Priority.high,
+              icon: "notification_icon",
+            ),
           ),
-        ),
-      );
+          payload: _budgetPayload,
+        );
+      }
 
-      NotificationDbHelper notificationDbHelper = NotificationDbHelper();
-      NotificationModel notificationModel = NotificationModel(
-        title: "budget_expired_title".tr,
-        body:
-            "${"budget_expired_message_start".tr} $budgetName ${"budget_expired_message_end".tr}",
-        date: DateTime.now(),
+      NotificationDbHelper().insertNotification(
+        NotificationModel(title: title, body: body, date: DateTime.now()),
       );
-      notificationDbHelper.insertNotification(notificationModel);
     } catch (e) {
-      if (kDebugMode) print("Error showing expiry noti: $e");
+      if (kDebugMode) print("Error showing budget alert: $e");
     }
+  }
+
+  static Future<void> showBudgetOverspendingNotification(
+    int budgetId,
+    String budgetName,
+  ) {
+    return _showBudgetAlert(
+      budgetId: budgetId,
+      title: "budget_exceeded_title".tr,
+      body:
+          "${"budget_exceeded_message_start".tr} $budgetName ${"budget_exceeded_message_end".tr}",
+    );
+  }
+
+  static Future<void> showBudgetExpiryNotification(
+    int budgetId,
+    String budgetName,
+  ) {
+    return _showBudgetAlert(
+      budgetId: budgetId,
+      title: "budget_expired_title".tr,
+      body:
+          "${"budget_expired_message_start".tr} $budgetName ${"budget_expired_message_end".tr}",
+    );
   }
 }

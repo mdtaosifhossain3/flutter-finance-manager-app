@@ -76,6 +76,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         context.read<BudgetProvider>().loadBudgets();
       }
 
+      await ReminderHelper.requestNotificationPermissionOnce();
       await ReminderHelper.scheduleDailyTip();
       await ReminderHelper.scheduleDailyTransactionReview();
     });

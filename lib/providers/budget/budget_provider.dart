@@ -3,6 +3,7 @@ import 'package:finance_manager_app/providers/category/transaction_provider.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/budgetModel/budget_category_model.dart';
 import '../../models/budgetModel/budget_model.dart';
@@ -155,12 +156,15 @@ class BudgetProvider with ChangeNotifier {
   Future<void> deleteBudget(int budgetId) async {
     await _dbHelper.deleteBudget(budgetId);
     await ReminderHelper.cancelBudgetNotification(budgetId);
+    await _clearAlertFlags(budgetId: budgetId);
     await loadBudgets();
   }
 
   Future<void> deleteFullBudget() async {
     try {
       await _dbHelper.deleteFullBudget();
+      await ReminderHelper.cancelAllBudgetNotifications();
+      await _clearAlertFlags();
       _budgets.clear();
       _categoriesByBudget.clear();
       notifyListeners();
@@ -188,7 +192,33 @@ class BudgetProvider with ChangeNotifier {
     return remainingAmount / (remainingDays > 0 ? remainingDays : 1);
   }
 
-  /// Check for overspending and trigger notification
+  // Budgets stay active through the whole of their end date
+  DateTime _endOfBudget(BudgetModel budget) => DateTime(
+    budget.endDate.year,
+    budget.endDate.month,
+    budget.endDate.day + 1,
+  ).subtract(const Duration(seconds: 1));
+
+  static const String _overspentFlag = 'budget_overspent_notified_';
+  static const String _expiredFlag = 'budget_expiry_notified_';
+
+  /// Removes the "already notified" flags for one budget, or all budgets.
+  Future<void> _clearAlertFlags({int? budgetId}) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (budgetId != null) {
+      await prefs.remove('$_overspentFlag$budgetId');
+      await prefs.remove('$_expiredFlag$budgetId');
+      return;
+    }
+    for (final key in prefs.getKeys().toList()) {
+      if (key.startsWith(_overspentFlag) || key.startsWith(_expiredFlag)) {
+        await prefs.remove(key);
+      }
+    }
+  }
+
+  /// Notifies once when a budget goes over its limit. The flag resets when
+  /// spending drops back under, so crossing the limit again notifies again.
   Future<void> checkOverspending(int budgetId) async {
     final budget = _budgets.firstWhereOrNull((b) => b.id == budgetId);
     if (budget == null) return;
@@ -196,43 +226,61 @@ class BudgetProvider with ChangeNotifier {
     final categories = _categoriesByBudget[budgetId] ?? [];
     final totalSpent = categories.fold(0, (sum, item) => sum + item.spent);
 
+    final prefs = await SharedPreferences.getInstance();
+    final key = '$_overspentFlag$budgetId';
+    final alreadyNotified = prefs.getBool(key) ?? false;
+
     if (totalSpent > budget.totalAmount) {
-      await ReminderHelper.showBudgetOverspendingNotification(budget.title);
+      if (alreadyNotified) return;
+      await prefs.setBool(key, true);
+      await ReminderHelper.showBudgetOverspendingNotification(
+        budgetId,
+        budget.title,
+      );
+    } else if (alreadyNotified) {
+      await prefs.remove(key);
     }
   }
 
-  /// Check for budget expiry
+  /// Notifies once per budget when it expires. The flag resets if the
+  /// budget's end date is moved into the future again.
   Future<void> checkBudgetExpiry() async {
     final now = DateTime.now();
+    final prefs = await SharedPreferences.getInstance();
+
     for (var budget in _budgets) {
-      if (now.isAfter(budget.endDate)) {
-        // Optionally mark as expired in DB or just notify
-        await ReminderHelper.showBudgetExpiryNotification(budget.title);
+      if (budget.id == null) continue;
+      final key = '$_expiredFlag${budget.id}';
+
+      if (now.isAfter(_endOfBudget(budget))) {
+        if (prefs.getBool(key) ?? false) continue;
+        await prefs.setBool(key, true);
+        await ReminderHelper.showBudgetExpiryNotification(
+          budget.id!,
+          budget.title,
+        );
+      } else {
+        await prefs.remove(key);
       }
     }
   }
 
   /// Schedule daily notification for all active budgets
   Future<void> scheduleDailyLimitNotification() async {
-    if (_budgets.isEmpty) {
-      return;
-    }
-
     for (var budget in _budgets) {
-      // Check if budget is active
-      if (DateTime.now().isBefore(budget.endDate) && budget.totalAmount > 0) {
-        final limit = calculateDailyLimit(budget);
+      if (budget.id == null) continue;
+      final endOfBudget = _endOfBudget(budget);
 
+      if (DateTime.now().isBefore(endOfBudget) && budget.totalAmount > 0) {
         await ReminderHelper.scheduleDailyBudgetNotification(
           budgetId: budget.id!,
           budgetName: budget.title,
-          dailyLimit: limit,
+          dailyLimit: calculateDailyLimit(budget),
+          endDate: endOfBudget,
         );
       } else {
-        // If budget is expired or invalid, ensure no notification is scheduled
-        if (budget.id != null) {
-          await ReminderHelper.cancelBudgetNotification(budget.id!);
-        }
+        // Expired or invalid budget: make sure nothing stays scheduled
+        await ReminderHelper.cancelBudgetNotification(budget.id!);
       }
     }
   }
@@ -266,7 +314,6 @@ class BudgetProvider with ChangeNotifier {
       if (categories == null) continue;
 
       bool budgetChanged = false;
-      int newTotalSpent = 0;
 
       for (var category in categories) {
         // Calculate total spent for this category in this budget period
@@ -288,7 +335,6 @@ class BudgetProvider with ChangeNotifier {
           0,
           (sum, tx) => sum + tx.amount,
         );
-        newTotalSpent += totalSpent;
 
         if (totalSpent != category.spent) {
           // Update local state
@@ -302,12 +348,8 @@ class BudgetProvider with ChangeNotifier {
       }
 
       if (budgetChanged) {
-        // Only check overspending if we are currently over budget
-        // We could refine this to only notify if we *just* crossed the line,
-        // but for now, let's ensure it triggers if overspent.
-        if (newTotalSpent > budget.totalAmount) {
-          await checkOverspending(budget.id!);
-        }
+        // checkOverspending only notifies when the limit is first crossed
+        await checkOverspending(budget.id!);
       }
     }
     notifyListeners();

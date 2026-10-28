@@ -7,6 +7,7 @@ import 'package:finance_manager_app/views/reportView/widgets/monthly_budget_char
 import 'package:finance_manager_app/views/reportView/widgets/month_picker_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/reportProvider/report_provider.dart';
@@ -29,27 +30,11 @@ class _ReportViewState extends State<ReportView> {
 
   @override
   Widget build(BuildContext context) {
-    final reportProvider = context.watch<ReportProvider>();
     return Scaffold(
       appBar: customAppBar(
         title: "reportTitle".tr,
         actions: [
-          IconButton(
-            icon: Icon(Icons.calendar_month),
-            onPressed: () async {
-              final DateTime? picked = await showDialog<DateTime>(
-                context: context,
-                builder: (context) => MonthPickerDialog(
-                  initialDate: reportProvider.selectedMonth,
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime.now(),
-                ),
-              );
-              if (picked != null && picked != reportProvider.selectedMonth) {
-                reportProvider.updateSelectedMonth(picked);
-              }
-            },
-          ),
+          IconButton(icon: Icon(Icons.calendar_month), onPressed: _pickMonth),
         ],
       ),
       body: SafeArea(
@@ -62,6 +47,8 @@ class _ReportViewState extends State<ReportView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // _buildSpentIndicator(),
+              _buildMonthHeader(),
+              SizedBox(height: 12),
               _buildSummaryCard(),
               SizedBox(height: 24),
               ExpenseChartWidget(),
@@ -77,13 +64,72 @@ class _ReportViewState extends State<ReportView> {
     );
   }
 
+  Future<void> _pickMonth() async {
+    final reportProvider = context.read<ReportProvider>();
+    final DateTime? picked = await showDialog<DateTime>(
+      context: context,
+      builder: (context) => MonthPickerDialog(
+        initialDate: reportProvider.selectedMonth,
+        firstDate: DateTime(2020),
+        lastDate: DateTime.now(),
+      ),
+    );
+    if (picked != null && picked != reportProvider.selectedMonth) {
+      reportProvider.updateSelectedMonth(picked);
+    }
+  }
+
+  /// Shows which month the report is for; tap to pick another month.
+  Widget _buildMonthHeader() {
+    final month = context.watch<ReportProvider>().selectedMonth;
+    final label =
+        '${HelperFunctions.getLocalizedMonth(DateFormat('MMM').format(month))} '
+        '${HelperFunctions.convertToBanglaDigits(month.year.toString())}';
+
+    return Material(
+      color: AppColors.primaryBlue.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: _pickMonth,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.calendar_month,
+                size: 18,
+                color: AppColors.primaryBlue,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: AppColors.primaryBlue,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 20,
+                color: AppColors.primaryBlue,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSummaryCard() {
     final reportProvider = context.watch<ReportProvider>();
     final totals = reportProvider.getCurrentMonthTotals();
     int expense = totals["expense"] ?? 0;
     int income = totals["income"] ?? 0;
 
-    int remaining = (income == 0 || expense == 0) ? 0 : income - expense;
+    int remaining = income - expense;
     final String rm = remaining < 0 ? 'over'.tr : 'remaining'.tr;
     final Color rmc = remaining < 0 ? AppColors.error : AppColors.success;
 
