@@ -1,11 +1,14 @@
+import 'package:finance_manager_app/config/db/local/receipt_db/receipt_db_helper.dart';
 import 'package:finance_manager_app/config/enums/enums.dart';
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
+import 'package:finance_manager_app/models/receiptModel/receipt_model.dart';
 import 'package:finance_manager_app/providers/category/category_provider.dart';
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
 import 'package:finance_manager_app/providers/reportProvider/report_provider.dart';
 import 'package:finance_manager_app/views/categoryView/widgets/calculator_bottom_sheet.dart';
+import 'package:finance_manager_app/views/receiptView/receipt_image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -35,6 +38,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   final _notesController = TextEditingController();
   final _amountFocusNode = FocusNode();
   bool _includeInTotal = true; // Local state for checkbox
+  ReceiptModel? _receipt; // Photo saved with a scanned transaction
 
   // Payment methods keys for translation
   final List<String> paymentMethods = [
@@ -61,6 +65,16 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     _includeInTotal = widget.transactionModel?.includeInTotal ?? true;
 
     super.initState();
+    _loadReceipt();
+  }
+
+  Future<void> _loadReceipt() async {
+    final id = widget.transactionModel?.id;
+    if (id == null) return;
+    try {
+      final receipt = await ReceiptDbHelper.getInstance.getByTransaction(id);
+      if (mounted && receipt != null) setState(() => _receipt = receipt);
+    } catch (_) {}
   }
 
   @override
@@ -129,10 +143,23 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                               },
                             ),
 
-                            Text('include_in_total_income'.tr),
+                            Expanded(child: Text('include_in_total_income'.tr)),
                           ],
                         ),
 
+                      if (_receipt case final receipt?) ...[
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () => Get.to(
+                              () => ReceiptImageView(path: receipt.imagePath),
+                            ),
+                            icon: Icon(Icons.receipt_long_outlined),
+                            label: Text('receipt_view'.tr),
+                          ),
+                        ),
+                        SizedBox(height: 12),
+                      ],
                       _buildSubmitButton(),
                       SizedBox(height: 20),
                     ],

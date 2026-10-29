@@ -1,3 +1,4 @@
+import 'package:finance_manager_app/data/category/income_item_data.dart';
 import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
 import 'package:finance_manager_app/services/reminder_helper.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
@@ -86,8 +87,19 @@ class ReportProvider extends ChangeNotifier {
     }
   }
 
+  static final Set<String> _incomeKeys = incomeCategoryItems
+      .map((c) => c.key)
+      .toSet();
+
+  /// True for spending only. Income categories (salary etc.) never count,
+  /// even if an older entry was saved with the expense type.
+  static bool isExpense(TransactionModel tx) =>
+      tx.type == TransactionType.expense &&
+      !_incomeKeys.contains(tx.categoryKey);
+
+  /// Expenses in the selected period, filtered by the search query.
   List<TransactionModel> get filteredTransactions {
-    final periodFiltered = periodTransactions;
+    final periodFiltered = periodTransactions.where(isExpense).toList();
     if (_searchQuery.isEmpty) return periodFiltered;
 
     return periodFiltered.where((tx) {
@@ -160,7 +172,7 @@ class ReportProvider extends ChangeNotifier {
     final Map<String, Map<String, dynamic>> categoryTotals = {};
 
     for (var elm in txns) {
-      if (elm.type != TransactionType.expense) continue;
+      if (!isExpense(elm)) continue;
       final name = elm.categoryKey;
 
       if (categoryTotals.containsKey(name)) {
@@ -273,6 +285,7 @@ class ReportProvider extends ChangeNotifier {
       if (income > maxValue) maxValue = income;
       if (expense > maxValue) maxValue = expense;
     }
+    if (maxValue <= 0) return 1000; // empty months: keep a usable axis
 
     // Add some padding (20%)
     return maxValue + (maxValue * 0.2);
@@ -292,6 +305,7 @@ class ReportProvider extends ChangeNotifier {
       if (overspending > maxValue) maxValue = overspending;
       if (risk > maxValue) maxValue = risk;
     }
+    if (maxValue <= 0) return 1000; // empty months: keep a usable axis
 
     // Add padding (20%)
     return maxValue + (maxValue * 0.2);

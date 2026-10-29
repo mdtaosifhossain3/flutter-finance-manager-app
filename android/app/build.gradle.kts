@@ -42,12 +42,19 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 58
-        versionName = "1.0.58"
+        versionCode = 59
+        versionName = "1.0.59"
     }
 
 
-
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -58,7 +65,7 @@ android {
             )
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     buildFeatures {
@@ -79,6 +86,9 @@ dependencies {
     // To listen for app lifecycle
     implementation("androidx.lifecycle:lifecycle-process:2.3.1")
     implementation("androidx.lifecycle:lifecycle-common-java8:2.3.1")
+
+    // Unit tests for the Auto Sync detector (plain JVM, no device)
+    testImplementation("junit:junit:4.13.2")
 
 }
 

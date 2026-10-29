@@ -280,27 +280,33 @@ class BudgetCardWidget extends StatelessWidget {
                           color: Theme.of(context).primaryColor,
                         ),
                         const SizedBox(width: 8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "label_daily_limit".tr,
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    fontSize: 10,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.color
-                                        ?.withValues(alpha: 0.7),
-                                  ),
-                            ),
-                            Text(
-                              "৳${HelperFunctions.convertToBanglaDigits(provider.calculateDailyLimit(budget).toStringAsFixed(0))}",
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                          ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "label_daily_limit".tr,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      fontSize: 10,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.color
+                                          ?.withValues(alpha: 0.7),
+                                    ),
+                              ),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "৳${HelperFunctions.convertToBanglaDigits(provider.calculateDailyLimit(budget).toStringAsFixed(0))}",
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

@@ -1,6 +1,13 @@
+import 'dart:async';
+
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/config/routes/routes_name.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:finance_manager_app/services/autoSync/auto_sync_service.dart';
+import 'package:finance_manager_app/services/home_widget_service.dart';
+import 'package:finance_manager_app/services/share_intent_service.dart';
+import 'package:finance_manager_app/views/autoSyncView/auto_sync_popup.dart';
+import 'package:finance_manager_app/views/smsImportView/sms_import_view.dart';
 import 'package:finance_manager_app/views/aiVIew/add_with_ai.dart';
 import 'package:finance_manager_app/views/categoryView/category_view.dart';
 import 'package:finance_manager_app/views/homeView/home_view.dart';
@@ -27,7 +34,7 @@ class MainView extends StatefulWidget {
 }
 
 class _MainViewState extends State<MainView>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   int _currentPage = 0;
   late AnimationController _fabAnimationController;
 
@@ -55,6 +62,47 @@ class _MainViewState extends State<MainView>
       duration: const Duration(milliseconds: 200),
     );
     MainView._tabRequest.addListener(_onTabRequest);
+    WidgetsBinding.instance.addObserver(this);
+    AutoSyncService.attach(
+      onDetected: showAutoSyncPopup,
+      onOpenRequested: handleAutoSyncOpenRequest,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _openIncoming());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // An SMS may have been shared into the app while it was in background.
+    if (state == AppLifecycleState.resumed) _openIncoming();
+  }
+
+  StreamSubscription<Uri?>? _widgetClicks;
+  bool _checkedWidgetLaunch = false;
+
+  /// Opens what the user sent to the app from outside: an SMS shared from
+  /// another app, a tapped Auto Sync notification, or the home screen widget.
+  Future<void> _openIncoming() async {
+    final shared = await ShareIntentService.takeSharedText();
+    if (shared != null && mounted) {
+      Get.to(() => SmsImportView(initialText: shared));
+      return;
+    }
+    await handleAutoSyncOpenRequest();
+    _widgetClicks ??= HomeWidgetService.clicks.listen(_onWidgetUri);
+    if (!_checkedWidgetLaunch) {
+      _checkedWidgetLaunch = true;
+      _onWidgetUri(await HomeWidgetService.launchedFrom());
+    }
+  }
+
+  void _onWidgetUri(Uri? uri) {
+    if (uri == null || !mounted) return;
+    final link = uri.toString();
+    if (link == HomeWidgetService.addUri) {
+      Get.to(() => const AddWithAiScreen());
+    } else if (link == HomeWidgetService.voiceUri) {
+      Get.to(() => const AddWithAiScreen(startVoice: true));
+    }
   }
 
   void _onTabRequest() {
@@ -67,6 +115,9 @@ class _MainViewState extends State<MainView>
   @override
   void dispose() {
     MainView._tabRequest.removeListener(_onTabRequest);
+    WidgetsBinding.instance.removeObserver(this);
+    AutoSyncService.detach();
+    _widgetClicks?.cancel();
     _fabAnimationController.dispose();
     super.dispose();
   }
@@ -108,6 +159,16 @@ class _MainViewState extends State<MainView>
                     Navigator.pop(context);
 
                     Get.to(AddWithAiScreen());
+                  },
+                ),
+                const SizedBox(height: 12),
+                _buildAddOption(
+                  icon: Icons.sms_outlined,
+                  title: 'sms_import'.tr,
+                  subtitle: 'sms_import_subtitle'.tr,
+                  onTap: () {
+                    Navigator.pop(context);
+                    Get.to(() => const SmsImportView());
                   },
                 ),
                 const SizedBox(height: 12),
@@ -268,69 +329,121 @@ class _MainViewState extends State<MainView>
                 ),
               ),
 
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.06,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'pro_features'
-                          .tr, // Make sure to add this key or use a suitable title
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.textTheme.bodyLarge?.color,
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.06,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'pro_features'
+                            .tr, // Make sure to add this key or use a suitable title
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.textTheme.bodyLarge?.color,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    GridView.count(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 20,
-                      crossAxisSpacing: 20,
-                      childAspectRatio: 0.85,
-                      children: [
-                        _proItem(
-                          icon: Icons.auto_awesome_rounded,
-                          label: 'add_with_ai'.tr,
-                          color: Colors.indigo,
-                          onTap: () => Get.to(AddWithAiScreen()),
-                        ),
-                        _proItem(
-                          icon: FontAwesomeIcons.handshake,
-                          label: 'given_taken'.tr,
-                          color: Colors.blue,
-                          onTap: () => Get.toNamed(RoutesName.givenTakenView),
-                        ),
-                        _proItem(
-                          icon: FontAwesomeIcons.wallet,
-                          label: 'budget'.tr,
-                          color: Colors.green,
-                          onTap: () => Get.toNamed(RoutesName.budgetView),
-                        ),
-                        _proItem(
-                          icon: FontAwesomeIcons.bell,
-                          label: 'reminder'.tr,
-                          color: Colors.orange,
-                          onTap: () => Get.toNamed(RoutesName.reminderView),
-                        ),
-                        _proItem(
-                          icon: FontAwesomeIcons.piggyBank,
-                          label: 'savings'.tr,
-                          color: Colors.purple,
-                          onTap: () => Get.toNamed(RoutesName.savingsView),
-                        ),
-                        _proItem(
-                          icon: FontAwesomeIcons.noteSticky,
-                          label: 'note'.tr,
-                          color: Colors.teal,
-                          onTap: () => Get.toNamed(RoutesName.noteView),
-                        ),
-                      ],
-                    ),
-                  ],
+                      const SizedBox(height: 24),
+                      GridView.count(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 20,
+                        crossAxisSpacing: 20,
+                        childAspectRatio: 0.85,
+                        children: [
+                          _proItem(
+                            icon: Icons.auto_awesome_rounded,
+                            label: 'add_with_ai'.tr,
+                            color: Colors.indigo,
+                            onTap: () => Get.to(AddWithAiScreen()),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.arrowsSpin,
+                            label: 'auto_sync_short'.tr,
+                            color: const Color(0xFF0EA5E9),
+                            onTap: () => Get.toNamed(RoutesName.autoSyncView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.receipt,
+                            label: 'receipt_short'.tr,
+                            color: Colors.blueGrey,
+                            onTap: () =>
+                                Get.toNamed(RoutesName.receiptScanView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.handshake,
+                            label: 'given_taken'.tr,
+                            color: Colors.blue,
+                            onTap: () => Get.toNamed(RoutesName.givenTakenView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.wallet,
+                            label: 'budget'.tr,
+                            color: Colors.green,
+                            onTap: () => Get.toNamed(RoutesName.budgetView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.bell,
+                            label: 'reminder'.tr,
+                            color: Colors.orange,
+                            onTap: () => Get.toNamed(RoutesName.reminderView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.piggyBank,
+                            label: 'savings'.tr,
+                            color: Colors.purple,
+                            onTap: () => Get.toNamed(RoutesName.savingsView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.noteSticky,
+                            label: 'note'.tr,
+                            color: Colors.teal,
+                            onTap: () => Get.toNamed(RoutesName.noteView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.moneyBillTransfer,
+                            label: 'wallets'.tr,
+                            color: const Color(0xFFE2136E),
+                            onTap: () => Get.toNamed(RoutesName.walletView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.arrowsRotate,
+                            label: 'recurring_short'.tr,
+                            color: Colors.brown,
+                            onTap: () => Get.toNamed(RoutesName.recurringView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.chartLine,
+                            label: 'insights'.tr,
+                            color: Colors.deepOrange,
+                            onTap: () => Get.toNamed(RoutesName.insightsView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.basketShopping,
+                            label: 'bazar_short'.tr,
+                            color: Colors.lightGreen,
+                            onTap: () => Get.toNamed(RoutesName.bazarListView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.gift,
+                            label: 'festival_short'.tr,
+                            color: Colors.pink,
+                            onTap: () =>
+                                Get.toNamed(RoutesName.festivalPlannerView),
+                          ),
+                          _proItem(
+                            icon: FontAwesomeIcons.mosque,
+                            label: 'zakat_short'.tr,
+                            color: Colors.cyan,
+                            onTap: () => Get.toNamed(RoutesName.zakatView),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 40),

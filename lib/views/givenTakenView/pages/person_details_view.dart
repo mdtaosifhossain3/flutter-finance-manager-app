@@ -7,6 +7,9 @@ import 'package:finance_manager_app/providers/givenTakenProvider/given_taken_pro
 import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:finance_manager_app/services/given_taken_report_service.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
@@ -253,16 +256,18 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
                                       alpha: 0.7,
                                     ),
                                   ),
-                                  Text(
-                                    contact.address!,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: AppColors.textSecondary,
-                                        ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                  Expanded(
+                                    child: Text(
+                                      contact.address!,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: AppColors.textSecondary,
+                                          ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -353,8 +358,25 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
                     ),
                   ],
                 ),
-                if (balance != 0) ...[
+                if (balance > 0) ...[
                   const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _sendReminder(contact),
+                      icon: const Icon(Icons.notifications_active_outlined),
+                      label: Text('send_reminder'.tr),
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                if (balance != 0) ...[
+                  const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -382,6 +404,78 @@ class _PersonDetailsViewState extends State<PersonDetailsView> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// Sends a polite "you owe me" message through WhatsApp, SMS or any app.
+  Future<void> _sendReminder(ContactLend contact) async {
+    final message = 'lend_reminder_message'.trParams({
+      'name': contact.name,
+      'amount':
+          '৳${HelperFunctions.convertToBanglaDigits(contact.balance.toString())}',
+    });
+    var phone = (contact.phone ?? '').replaceAll(RegExp(r'[^\d]'), '');
+    if (phone.startsWith('0')) phone = '88$phone';
+
+    Future<void> open(Uri uri) async {
+      Navigator.of(context).pop();
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!ok) Get.snackbar('error'.tr, 'could_not_open_app'.tr);
+    }
+
+    await showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                child: Text(
+                  message,
+                  style: Theme.of(ctx).textTheme.bodyMedium,
+                ),
+              ),
+              if (phone.isNotEmpty) ...[
+                ListTile(
+                  leading: const FaIcon(
+                    FontAwesomeIcons.whatsapp,
+                    color: Color(0xFF25D366),
+                  ),
+                  title: Text('send_via_whatsapp'.tr),
+                  onTap: () => open(
+                    Uri.parse(
+                      'https://wa.me/$phone?text=${Uri.encodeComponent(message)}',
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.sms_outlined),
+                  title: Text('send_via_sms'.tr),
+                  onTap: () => open(
+                    Uri.parse(
+                      'sms:${contact.phone}?body=${Uri.encodeComponent(message)}',
+                    ),
+                  ),
+                ),
+              ],
+              ListTile(
+                leading: const Icon(Icons.share_outlined),
+                title: Text('send_via_other'.tr),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  SharePlus.instance.share(ShareParams(text: message));
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

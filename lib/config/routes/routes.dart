@@ -19,6 +19,15 @@ import 'package:finance_manager_app/views/givenTakenView/pages/person_details_vi
 import 'package:finance_manager_app/views/givenTakenView/pages/add_edit_transaction_view.dart';
 import 'package:finance_manager_app/views/authView/phnVerificationView/phone_verification_view.dart';
 import 'package:finance_manager_app/views/authView/registerView/register_view.dart';
+import 'package:finance_manager_app/views/insightsView/insights_view.dart';
+import 'package:finance_manager_app/views/zakatView/zakat_view.dart';
+import 'package:finance_manager_app/views/festivalView/festival_planner_view.dart';
+import 'package:finance_manager_app/views/bazarView/bazar_list_view.dart';
+import 'package:finance_manager_app/views/walletView/wallet_view.dart';
+import 'package:finance_manager_app/views/recurringView/recurring_view.dart';
+import 'package:finance_manager_app/views/autoSyncView/auto_sync_view.dart';
+import 'package:finance_manager_app/views/receiptView/receipt_scan_view.dart';
+import 'package:finance_manager_app/views/smsImportView/sms_import_view.dart';
 import 'package:get/get.dart';
 
 import '../../views/budgetView/budget_view.dart';
@@ -131,6 +140,51 @@ class Routes {
     GetPage(
       name: RoutesName.noteView,
       page: () => NotesView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.insightsView,
+      page: () => const InsightsView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.zakatView,
+      page: () => const ZakatView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.festivalPlannerView,
+      page: () => const FestivalPlannerView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.bazarListView,
+      page: () => const BazarListView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.walletView,
+      page: () => const WalletView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.recurringView,
+      page: () => const RecurringView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.smsImportView,
+      page: () => const SmsImportView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.receiptScanView,
+      page: () => const ReceiptScanView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: RoutesName.autoSyncView,
+      page: () => const AutoSyncView(),
       transition: Transition.rightToLeft,
     ),
   ];

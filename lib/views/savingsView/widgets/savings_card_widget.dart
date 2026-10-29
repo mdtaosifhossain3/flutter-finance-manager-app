@@ -538,7 +538,7 @@ class SavingsCardWidget extends StatelessWidget {
                     children: [
                       const Icon(Icons.check_circle, color: Colors.white),
                       const SizedBox(width: 8),
-                      Text('goalDeleted'.tr),
+                      Expanded(child: Text('goalDeleted'.tr)),
                     ],
                   ),
                   backgroundColor: AppColors.success,

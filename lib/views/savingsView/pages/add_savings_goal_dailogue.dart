@@ -107,7 +107,7 @@ class _AddSavingsGoalDialogContentState
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text('goalUpdated'.tr),
+                  Expanded(child: Text('goalUpdated'.tr)),
                 ],
               ),
               backgroundColor: AppColors.success,
@@ -128,7 +128,7 @@ class _AddSavingsGoalDialogContentState
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text('goalCreated'.tr),
+                  Expanded(child: Text('goalCreated'.tr)),
                 ],
               ),
               backgroundColor: AppColors.success,

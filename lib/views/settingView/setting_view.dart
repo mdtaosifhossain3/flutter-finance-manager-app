@@ -3,6 +3,7 @@ import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
 
 import 'package:finance_manager_app/providers/languageProvider/language_translator_provider.dart';
 import 'package:finance_manager_app/providers/theme_provider.dart';
+import 'package:finance_manager_app/services/csv_export_service.dart';
 import 'package:finance_manager_app/views/settingView/pages/about_page.dart';
 import 'package:finance_manager_app/views/settingView/pages/faq_page.dart';
 import 'package:finance_manager_app/views/settingView/pages/notification_settings_view.dart';
@@ -72,6 +73,20 @@ class _SettingsPageState extends State<SettingsPage> {
           //     Get.to(PremiumFeatureView());
           //   },
           // },
+        ],
+      },
+
+      {
+        'title': 'security_data'.tr,
+        'items': [
+          {
+            'key': 'export_csv'.tr,
+            'icon': Icons.table_view_outlined,
+            'color': Colors.green,
+            'action': (BuildContext ctx) {
+              CsvExportService.exportAllTransactions();
+            },
+          },
         ],
       },
 

@@ -10,7 +10,10 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class AddWithAiScreen extends StatefulWidget {
-  const AddWithAiScreen({super.key});
+  /// Start listening right away (opened from the home screen widget's mic).
+  final bool startVoice;
+
+  const AddWithAiScreen({super.key, this.startVoice = false});
 
   @override
   State<AddWithAiScreen> createState() => _AddWithAiScreenState();
@@ -29,6 +32,7 @@ class _AddWithAiScreenState extends State<AddWithAiScreen> {
         listen: false,
       );
       speechProvider.setController(aiProvider.textController);
+      if (widget.startVoice) speechProvider.startListening();
     });
   }
 

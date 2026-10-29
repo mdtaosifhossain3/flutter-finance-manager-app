@@ -198,39 +198,34 @@ class _ExpensesScreenState extends State<ExpensesView> {
                 height: 200,
                 child: PieChart(
                   PieChartData(
-                    sections: categories
-                        .asMap()
-                        .entries
-                        .map((entry) {
-                          var category = entry.value;
-                          double percentage =
-                              (category["amount"] / total) * 100;
+                    sections: categories.asMap().entries.map((entry) {
+                      var category = entry.value;
+                      double percentage = (category["amount"] / total) * 100;
 
-                          // Only show percentage if it's above 5%
-                          bool showTitle = percentage >= 5;
+                      // Only show percentage if it's above 5%
+                      bool showTitle = percentage >= 5;
 
-                          return PieChartSectionData(
-                            color: Color(category["color"]),
-                            value: percentage,
-                            title: showTitle
-                                ? '${percentage.toStringAsFixed(1)}%'
-                                : '',
-                            radius: 65,
-                            titleStyle: TextStyle(
-                              fontSize: 11,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black.withValues(alpha: 0.3),
-                                  blurRadius: 2,
-                                ),
-                              ],
+                      return PieChartSectionData(
+                        color: Color(category["color"]),
+                        value: percentage,
+                        title: showTitle
+                            ? '${percentage.toStringAsFixed(1)}%'
+                            : '',
+                        radius: 65,
+                        titleStyle: TextStyle(
+                          fontSize: 11,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              blurRadius: 2,
                             ),
-                            titlePositionPercentageOffset: 0.55,
-                          );
-                        })
-                        .toList(),
+                          ],
+                        ),
+                        titlePositionPercentageOffset: 0.55,
+                      );
+                    }).toList(),
                     sectionsSpace: 1,
                     centerSpaceRadius: 35,
                     pieTouchData: PieTouchData(

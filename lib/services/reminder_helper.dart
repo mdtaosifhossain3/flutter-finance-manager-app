@@ -3,6 +3,9 @@ import 'dart:math';
 import 'package:finance_manager_app/config/db/local/notification_db/notification_db_helper.dart';
 import 'package:finance_manager_app/data/tipsData/tips_data.dart';
 import 'package:finance_manager_app/models/notificationModel/notification_model.dart';
+import 'package:finance_manager_app/models/recurringModel/recurring_item_model.dart';
+import 'package:finance_manager_app/views/insightsView/insights_view.dart';
+import 'package:finance_manager_app/views/recurringView/recurring_view.dart';
 import 'package:finance_manager_app/views/reminderView/reminder_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -20,8 +23,10 @@ class ReminderHelper {
   static const int dailyTipId = 1000001;
   static const int transactionReviewId = 1000002;
   static const int transactionWarningId = 1000003;
+  static const int weeklySummaryId = 1000004;
   static const int _budgetDailyBase = 2000000; // + budgetId * 8 + dayOffset
   static const int _budgetAlertBase = 3000000; // + budgetId
+  static const int _recurringBase = 4000000; // + recurring item id
 
   // Days of daily budget notifications scheduled ahead (refreshed on app open)
   static const int _budgetDaysAhead = 7;
@@ -31,6 +36,8 @@ class ReminderHelper {
   static const String _dailyTipPayload = 'daily_tip';
   static const String _transactionReviewPayload = 'transaction_review';
   static const String _budgetPayload = 'budget_view';
+  static const String _weeklySummaryPayload = 'weekly_summary';
+  static const String _recurringPayload = 'recurring_view';
 
   // Ids used by earlier versions are cancelled once on upgrade
   static const String _legacyMigratedKey = 'noti_ids_migrated_v2';
@@ -204,6 +211,10 @@ class ReminderHelper {
 
     if (payload == _reminderPayload) {
       Get.to(() => ReminderView());
+    } else if (payload == _weeklySummaryPayload) {
+      Get.to(() => const InsightsView());
+    } else if (payload == _recurringPayload) {
+      Get.to(() => const RecurringView());
     } else if (payload.startsWith(_dailyTipPayload)) {
       // payload is "daily_tip:<tipKey>"
       final tipKey = payload.contains(':')
@@ -363,6 +374,93 @@ class ReminderHelper {
     }
   }
 
+  /// ----------------------------
+  ///  SCHEDULE WEEKLY SUMMARY (Friday 10:00 AM)
+  /// ----------------------------
+
+  static Future<void> scheduleWeeklySummary() async {
+    try {
+      if (!await _isEnabled('weeklySummary')) return;
+
+      var next = _nextInstanceOf(10, 0);
+      while (next.weekday != DateTime.friday) {
+        next = tz.TZDateTime.from(
+          DateTime(next.year, next.month, next.day + 1, 10, 0),
+          tz.local,
+        );
+      }
+
+      await _notificationsPlugin.zonedSchedule(
+        weeklySummaryId,
+        "weekly_summary_title".tr,
+        "weekly_summary_message".tr,
+        next,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            "weekly_summary_channel",
+            "Weekly Summary",
+            importance: Importance.high,
+            icon: "notification_icon",
+            priority: Priority.high,
+          ),
+        ),
+        androidScheduleMode: await _scheduleMode(),
+        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+        payload: _weeklySummaryPayload,
+      );
+    } catch (e, st) {
+      if (kDebugMode) {
+        print("scheduleWeeklySummary error: $e\n$st");
+      }
+    }
+  }
+
+  /// ----------------------------
+  ///  RECURRING BILL DUE (9:00 AM on the due day)
+  /// ----------------------------
+
+  static Future<void> scheduleRecurringDue(RecurringItem item) async {
+    if (item.id == null) return;
+    try {
+      await cancelRecurringDue(item.id!);
+      if (!await _isEnabled('recurringBills')) return;
+
+      final d = item.nextDate;
+      final at = DateTime(d.year, d.month, d.day, 9);
+      if (!at.isAfter(DateTime.now())) return;
+
+      await _notificationsPlugin.zonedSchedule(
+        _recurringBase + item.id!,
+        (item.isIncome ? "recurring_income_due_title" : "recurring_due_title")
+            .tr,
+        "recurring_due_message".trParams({
+          'title': item.title,
+          'amount': '৳${item.amount}',
+        }),
+        tz.TZDateTime.from(at, tz.local),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            "recurring_channel",
+            "Bills & Recurring",
+            importance: Importance.high,
+            icon: "notification_icon",
+            priority: Priority.high,
+          ),
+        ),
+        androidScheduleMode: await _scheduleMode(),
+        payload: _recurringPayload,
+      );
+    } catch (e, st) {
+      if (kDebugMode) {
+        print("scheduleRecurringDue error: $e\n$st");
+      }
+    }
+  }
+
+  static Future<void> cancelRecurringDue(int id) async {
+    await _notificationsPlugin.cancel(_recurringBase + id);
+  }
+
   static Future<void> tt(title, msg) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -400,6 +498,7 @@ class ReminderHelper {
   static Future<void> cancelAppNotifications() async {
     await _notificationsPlugin.cancel(dailyTipId);
     await _notificationsPlugin.cancel(transactionReviewId);
+    await _notificationsPlugin.cancel(weeklySummaryId);
     await cancelAllBudgetNotifications();
   }
 

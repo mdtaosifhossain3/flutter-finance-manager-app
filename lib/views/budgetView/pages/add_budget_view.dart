@@ -842,7 +842,7 @@ class _AddBudgetViewState extends State<AddBudgetView> {
             children: [
               Icon(Icons.check_circle, color: Colors.white),
               SizedBox(width: 12),
-              Text('budgetCreatedSuccess'.tr),
+              Expanded(child: Text('budgetCreatedSuccess'.tr)),
             ],
           ),
           backgroundColor: Colors.green[600],

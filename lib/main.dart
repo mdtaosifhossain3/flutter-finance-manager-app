@@ -3,6 +3,9 @@ import 'package:finance_manager_app/config/routes/routes.dart';
 import 'package:finance_manager_app/config/theme/app_theme.dart';
 import 'package:finance_manager_app/config/translator/app_translator.dart';
 import 'package:finance_manager_app/providers/aiProvider/ai_provider.dart';
+import 'package:finance_manager_app/providers/bazarProvider/bazar_provider.dart';
+import 'package:finance_manager_app/providers/recurringProvider/recurring_provider.dart';
+import 'package:finance_manager_app/providers/walletProvider/wallet_provider.dart';
 import 'package:finance_manager_app/providers/notification_provider.dart';
 
 import 'package:finance_manager_app/providers/budget/budget_provider.dart';
@@ -93,7 +96,10 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SpeechProvider()),
         ChangeNotifierProvider(create: (_) => GivenTakenProvider()),
         ChangeNotifierProvider(create: (_) => NotesProvider()),
+        ChangeNotifierProvider(create: (_) => BazarProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => WalletProvider()),
+        ChangeNotifierProvider(create: (_) => RecurringProvider()),
       ],
       child: MyApp(),
     ),

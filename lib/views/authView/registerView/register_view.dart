@@ -345,6 +345,8 @@ class _RegisterViewState extends State<RegisterView>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final topPadding = MediaQuery.of(context).padding.top;
+    final canPop = Navigator.of(context).canPop();
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
@@ -353,173 +355,160 @@ class _RegisterViewState extends State<RegisterView>
         statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
       ),
       child: Scaffold(
-        body: Container(
-          height: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: isDark
-                  ? [
-                      const Color(0xFF0F111A),
-                      AppColors.darkMainBackground,
-                      AppColors.darkCardBackground,
-                    ]
-                  : [
-                      const Color(0xFFF0F4FF),
-                      AppColors.lightMainBackground,
-                      AppColors.lightCardBackground,
-                    ],
-            ),
-          ),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Top bar
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (Navigator.of(context).canPop())
-                        IconButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                          color: isDark
-                              ? AppColors.textPrimary
-                              : AppColors.lightTextPrimary,
-                          iconSize: 20,
-                          style: IconButton.styleFrom(
-                            backgroundColor: isDark
-                                ? AppColors.darkCardBackground
-                                : Colors.white,
-                            padding: const EdgeInsets.all(10),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(
-                                color: isDark
-                                    ? AppColors.border
-                                    : AppColors.lightBorder,
-                              ),
-                            ),
-                          ),
-                        )
-                      else
-                        const SizedBox(width: 40),
-                      Text(
-                        'register_title'.tr,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? AppColors.textPrimary
-                              : AppColors.lightTextPrimary,
-                        ),
-                      ),
-                      const SizedBox(width: 40),
-                    ],
-                  ),
+        backgroundColor: isDark
+            ? AppColors.darkMainBackground
+            : AppColors.lightCardBackground,
+        body: SingleChildScrollView(
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.topCenter,
+            children: [
+              // Soft background glows (same as login screen)
+              Positioned(
+                top: -80,
+                right: -60,
+                child: _glow(220, AppColors.primaryBlue, isDark ? 0.18 : 0.14),
+              ),
+              Positioned(
+                top: 60,
+                left: -90,
+                child: _glow(
+                  200,
+                  AppColors.primaryPurple,
+                  isDark ? 0.14 : 0.10,
+                ),
+              ),
 
-                  const SizedBox(height: 20),
-
-                  // Header
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Column(
-                      children: [
-                        TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0.94, end: 1.0),
-                          duration: const Duration(milliseconds: 1400),
-                          curve: Curves.easeInOut,
-                          builder: (context, scale, child) {
-                            return Transform.scale(
-                              scale: scale,
-                              child: Container(
-                                padding: const EdgeInsets.all(18),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: const LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Color(0xFF5B7FFF),
-                                      Color(0xFF8B5CF6),
-                                    ],
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(
-                                        0xFF5B7FFF,
-                                      ).withValues(alpha: 0.35),
-                                      blurRadius: 28,
-                                      offset: const Offset(0, 8),
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.workspace_premium_rounded,
-                                  size: 48,
-                                  color: Colors.white,
-                                ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(20, topPadding + 8, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Back button
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: canPop
+                          ? IconButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              icon: const Icon(
+                                Icons.arrow_back_ios_new_rounded,
                               ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 18),
-                        Text(
-                          'register_title'.tr,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: isDark
-                                ? AppColors.textPrimary
-                                : AppColors.lightTextPrimary,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'register_subtitle'.tr,
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyMedium?.copyWith(
                               color: isDark
-                                  ? AppColors.textSecondary
-                                  : AppColors.lightTextSecondary,
-                              height: 1.45,
-                            ),
-                          ),
-                        ),
-                      ],
+                                  ? AppColors.textPrimary
+                                  : AppColors.lightTextPrimary,
+                              iconSize: 18,
+                              style: IconButton.styleFrom(
+                                backgroundColor: isDark
+                                    ? AppColors.darkCardBackground
+                                    : Colors.white,
+                                padding: const EdgeInsets.all(10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  side: BorderSide(
+                                    color: isDark
+                                        ? AppColors.border
+                                        : AppColors.lightHover,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const SizedBox(height: 48),
                     ),
-                  ),
 
-                  const SizedBox(height: 28),
+                    const SizedBox(height: 8),
 
-                  SlideTransition(
-                    position: _slideAnimation,
-                    child: FadeTransition(
+                    // Header
+                    FadeTransition(
                       opacity: _fadeAnimation,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _buildProMembershipCard(theme, isDark),
-                          const SizedBox(height: 18),
-                          _buildBkashCard(theme, isDark),
-                          const SizedBox(height: 24),
-                          _buildRegisterButton(theme),
-                          const SizedBox(height: 22),
-                          _buildLoginLink(theme, isDark),
-                          const SizedBox(height: 16),
+                          TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0.85, end: 1.0),
+                            duration: const Duration(milliseconds: 800),
+                            curve: Curves.easeOutBack,
+                            builder: (context, scale, child) {
+                              return Transform.scale(
+                                scale: scale,
+                                child: child,
+                              );
+                            },
+                            child: Image.asset(
+                              'assets/images/new_logo.PNG',
+                              height: 64,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+                          Text(
+                            'register_title'.tr,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? AppColors.textPrimary
+                                  : AppColors.lightTextPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(
+                              'register_subtitle'.tr,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: isDark
+                                    ? AppColors.textSecondary
+                                    : AppColors.lightTextMuted,
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: 28),
+
+                    SlideTransition(
+                      position: _slideAnimation,
+                      child: FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildProMembershipCard(theme, isDark),
+                            const SizedBox(height: 16),
+                            _buildBkashCard(theme, isDark),
+                            const SizedBox(height: 24),
+                            _buildRegisterButton(theme),
+                            const SizedBox(height: 22),
+                            _buildLoginLink(theme, isDark),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
+        ),
+      ),
+    );
+  }
+
+  /// Blurred circular glow used as a background decoration.
+  Widget _glow(double size, Color color, double alpha) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            color.withValues(alpha: alpha),
+            color.withValues(alpha: 0),
+          ],
         ),
       ),
     );
@@ -527,10 +516,11 @@ class _RegisterViewState extends State<RegisterView>
 
   Widget _buildProMembershipCard(ThemeData theme, bool isDark) {
     return Container(
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: isDark
             ? AppColors.darkCardBackground
-            : AppColors.lightCardBackground,
+            : AppColors.lightMainBackground,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isDark
@@ -784,29 +774,69 @@ class _RegisterViewState extends State<RegisterView>
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             style: theme.textTheme.bodyLarge?.copyWith(
               fontSize: 17,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.2,
               color: isDark
                   ? AppColors.textPrimary
                   : AppColors.lightTextPrimary,
             ),
             decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.phone_outlined, color: bkashPink),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.only(left: 14, right: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.phone_iphone_rounded,
+                      size: 20,
+                      color: bkashPink,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '+88',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: isDark
+                            ? AppColors.textPrimary
+                            : AppColors.lightTextPrimary,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Container(
+                      width: 1,
+                      height: 22,
+                      color: isDark ? AppColors.border : AppColors.lightBorder,
+                    ),
+                  ],
+                ),
+              ),
               hintText: '01XXXXXXXXX',
+              hintStyle: TextStyle(
+                letterSpacing: 1.2,
+                color: isDark
+                    ? AppColors.textMuted
+                    : AppColors.lightTextMuted.withValues(alpha: 0.7),
+              ),
               counterText: '',
               filled: true,
               fillColor: isDark
-                  ? AppColors.darkMainBackground.withValues(alpha: 0.5)
+                  ? AppColors.darkMainBackground.withValues(alpha: 0.6)
                   : Colors.white,
+              contentPadding: const EdgeInsets.symmetric(vertical: 18),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.transparent),
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? AppColors.border
+                      : bkashPink.withValues(alpha: 0.2),
+                ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(14),
                 borderSide: const BorderSide(color: bkashPink, width: 2),
               ),
             ),
@@ -818,63 +848,69 @@ class _RegisterViewState extends State<RegisterView>
 
   Widget _buildRegisterButton(ThemeData theme) {
     return AnimatedScale(
-      scale: _isLoading ? 0.95 : 1.0,
+      scale: _isLoading ? 0.97 : 1.0,
       duration: const Duration(milliseconds: 100),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF5B7FFF), Color(0xFF8B5CF6)],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF5B7FFF).withValues(alpha: 0.35),
-              blurRadius: 18,
-              offset: const Offset(0, 6),
+      child: AnimatedOpacity(
+        opacity: _isLoading ? 0.7 : 1.0,
+        duration: const Duration(milliseconds: 150),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AppColors.primaryBlue, AppColors.primaryPurple],
             ),
-          ],
-        ),
-        child: ElevatedButton(
-          onPressed: _isLoading ? null : _handleRegister,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: _isLoading ? 0 : 2,
-            disabledBackgroundColor: Colors.transparent,
-          ),
-          child: _isLoading
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.arrow_forward_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'register_button'.tr,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: _isLoading
+                ? []
+                : [
+                    BoxShadow(
+                      color: AppColors.primaryBlue.withValues(alpha: 0.35),
+                      blurRadius: 16,
+                      offset: const Offset(0, 8),
                     ),
                   ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: _isLoading ? null : _handleRegister,
+              child: SizedBox(
+                height: 54,
+                child: Center(
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.4,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'register_button'.tr,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(
+                              Icons.arrow_forward_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ],
+                        ),
                 ),
+              ),
+            ),
+          ),
         ),
       ),
     );

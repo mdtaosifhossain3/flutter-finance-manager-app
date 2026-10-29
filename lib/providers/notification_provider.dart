@@ -7,11 +7,13 @@ class NotificationProvider extends ChangeNotifier {
   bool _dailyTip = true;
   bool _dailyTransactionReview = true;
   bool _budgetNotification = true;
+  bool _weeklySummary = true;
 
   bool get allNotifications => _allNotifications;
   bool get dailyTip => _dailyTip;
   bool get dailyTransactionReview => _dailyTransactionReview;
   bool get budgetNotification => _budgetNotification;
+  bool get weeklySummary => _weeklySummary;
 
   NotificationProvider() {
     _loadSettings();
@@ -23,6 +25,7 @@ class NotificationProvider extends ChangeNotifier {
     _dailyTip = prefs.getBool('dailyTip') ?? true;
     _dailyTransactionReview = prefs.getBool('dailyTransactionReview') ?? true;
     _budgetNotification = prefs.getBool('budgetNotification') ?? true;
+    _weeklySummary = prefs.getBool('weeklySummary') ?? true;
     notifyListeners();
   }
 
@@ -74,6 +77,21 @@ class NotificationProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> toggleWeeklySummary(bool value) async {
+    _weeklySummary = value;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('weeklySummary', value);
+
+    if (_allNotifications && value) {
+      await ReminderHelper.scheduleWeeklySummary();
+    } else {
+      await ReminderHelper.chanceledRemidnerNoti(
+        ReminderHelper.weeklySummaryId,
+      );
+    }
+  }
+
   Future<void> toggleBudgetNotification(
     bool value, {
     Future<void> Function()? rescheduleBudgets,
@@ -97,6 +115,7 @@ class NotificationProvider extends ChangeNotifier {
     if (_dailyTransactionReview) {
       await ReminderHelper.scheduleDailyTransactionReview();
     }
+    if (_weeklySummary) await ReminderHelper.scheduleWeeklySummary();
     if (_budgetNotification) await rescheduleBudgets?.call();
   }
 }

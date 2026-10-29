@@ -165,9 +165,23 @@ class _ReportViewState extends State<ReportView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildBudgetMetric('total'.tr, income, AppColors.primaryBlue),
-              _buildBudgetMetric('spent'.tr, expense, AppColors.warning),
-              _buildBudgetMetric(rm, remaining, rmc),
+              Expanded(
+                child: _buildBudgetMetric(
+                  'total'.tr,
+                  income,
+                  AppColors.primaryBlue,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildBudgetMetric(
+                  'spent'.tr,
+                  expense,
+                  AppColors.warning,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(child: _buildBudgetMetric(rm, remaining, rmc)),
             ],
           ),
         ],
@@ -179,14 +193,24 @@ class _ReportViewState extends State<ReportView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: Theme.of(context).textTheme.labelMedium),
-        SizedBox(height: 4),
         Text(
-          '${amount < 0 ? '-' : ''}৳${HelperFunctions.convertToBanglaDigits(amount.abs().toString())}',
-          style: TextStyle(
-            color: color,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.labelMedium,
+        ),
+        SizedBox(height: 4),
+        // Large amounts shrink to fit instead of overflowing
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            '${amount < 0 ? '-' : ''}৳${HelperFunctions.convertToBanglaDigits(amount.abs().toString())}',
+            style: TextStyle(
+              color: color,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],

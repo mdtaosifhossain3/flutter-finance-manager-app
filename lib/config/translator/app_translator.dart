@@ -1,3 +1,4 @@
+import 'package:finance_manager_app/config/translator/premium_translations.dart';
 import 'package:get/get.dart';
 
 class AppTranslations extends Translations {
@@ -88,9 +89,11 @@ class AppTranslations extends Translations {
       'today': 'Today',
       'yesterday': 'Yesterday',
       'ai_assistant_title': 'AI Money Assistant',
-      'report_no_transactions': 'No transactions in this period, so there\'s nothing to report.',
+      'report_no_transactions':
+          'No transactions in this period, so there\'s nothing to report.',
       'report_failed': 'Couldn\'t create the report. Please try again.',
-      'report_no_viewer': 'No PDF app found. Choose where to save or share the report.',
+      'report_no_viewer':
+          'No PDF app found. Choose where to save or share the report.',
       'ai_heading': 'What did you spend or earn?',
       'ai_subheading':
           'Type or speak in Bangla, English or Banglish. You can add many at once.',
@@ -342,6 +345,7 @@ class AppTranslations extends Translations {
       'login_subtitle': 'Enter your registered mobile number to continue',
       'login_button': 'Login',
       'enter_registered_phone': 'Mobile Number',
+      'login_secure_note': 'Your data is encrypted and kept safe',
       'enter_robi_airtel': 'Enter your number',
       'subscription_charge_notice': 'Monthly charge 89tk',
       'enter_otp_title': 'Enter OTP',
@@ -862,7 +866,8 @@ class AppTranslations extends Translations {
       "new_month_title": "A new month has started!",
       "new_month_message":
           "Home now shows this month only, so it starts fresh. Your @month data is safe and nothing was deleted.",
-      "new_month_step_report": "Open the Report tab to see last month's summary.",
+      "new_month_step_report":
+          "Open the Report tab to see last month's summary.",
       "new_month_step_calendar":
           "Tap the month or the calendar icon at the top of Report to see any older month.",
       "new_month_view_button": "View @month",
@@ -1176,6 +1181,7 @@ class AppTranslations extends Translations {
       'note_updated': 'Note updated successfully',
       'note_added': 'Note added successfully',
       'failed_to_save_note': 'Failed to save note',
+      ...premiumTranslationsEn,
     },
     'bn_BD': {
       'proceed': 'এগিয়ে যান',
@@ -1249,6 +1255,7 @@ class AppTranslations extends Translations {
       'login_subtitle': 'চালিয়ে যেতে আপনার নিবন্ধিত মোবাইল নম্বর দিন',
       'login_button': 'লগইন করুন',
       'enter_registered_phone': 'মোবাইল নম্বর',
+      'login_secure_note': 'আপনার তথ্য এনক্রিপ্টেড ও সম্পূর্ণ নিরাপদ',
       'enter_robi_airtel': 'আপনার নম্বর দিন',
       'subscription_charge_notice': 'মাসিক চার্জ ৮৯ টাকা',
       'enter_otp_title': 'OTP লিখুন',
@@ -1362,9 +1369,11 @@ class AppTranslations extends Translations {
       'pro_active': 'প্রো চালু আছে',
       'lifetime': 'আজীবন',
       'ai_assistant_title': 'AI মানি অ্যাসিস্ট্যান্ট',
-      'report_no_transactions': 'এই সময়ে কোনো লেনদেন নেই, তাই রিপোর্ট দেখানোর কিছু নেই।',
+      'report_no_transactions':
+          'এই সময়ে কোনো লেনদেন নেই, তাই রিপোর্ট দেখানোর কিছু নেই।',
       'report_failed': 'রিপোর্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।',
-      'report_no_viewer': 'কোনো PDF অ্যাপ পাওয়া যায়নি। রিপোর্টটি কোথায় সেভ বা শেয়ার করবেন বেছে নিন।',
+      'report_no_viewer':
+          'কোনো PDF অ্যাপ পাওয়া যায়নি। রিপোর্টটি কোথায় সেভ বা শেয়ার করবেন বেছে নিন।',
       'ai_heading': 'কী খরচ বা আয় করলেন?',
       'ai_subheading':
           'বাংলা, ইংরেজি বা বাংলিশে লিখুন বা বলুন। একসাথে অনেকগুলো যোগ করতে পারেন।',
@@ -2307,6 +2316,7 @@ class AppTranslations extends Translations {
       'note_updated': 'নোট সফলভাবে আপডেট করা হয়েছে',
       'note_added': 'নোট সফলভাবে যোগ করা হয়েছে',
       'failed_to_save_note': 'নোট সংরক্ষণ করতে ব্যর্থ হয়েছে',
+      ...premiumTranslationsBn,
     },
   };
 }

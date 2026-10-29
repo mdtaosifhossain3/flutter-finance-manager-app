@@ -73,6 +73,18 @@ class NotificationSettingsView extends StatelessWidget {
               const SizedBox(height: 12),
               _buildSwitchTile(
                 context,
+                title: "weekly_summary_title".tr,
+                subtitle: "weekly_summary_desc".tr,
+                value: provider.weeklySummary,
+                onChanged: provider.allNotifications
+                    ? (value) => provider.toggleWeeklySummary(value)
+                    : null,
+                icon: Icons.insights,
+                color: Colors.deepOrange,
+              ),
+              const SizedBox(height: 12),
+              _buildSwitchTile(
+                context,
                 title: "budget_alerts".tr,
                 subtitle: "budget_alerts_desc".tr,
                 value: provider.budgetNotification,

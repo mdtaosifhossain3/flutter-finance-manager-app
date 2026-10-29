@@ -1,5 +1,7 @@
 import 'package:finance_manager_app/config/db/local/category_db/add_transaction_db_helper.dart';
+import 'package:finance_manager_app/config/db/local/receipt_db/receipt_db_helper.dart';
 import 'package:finance_manager_app/models/categoryModel/transaction_model.dart';
+import 'package:finance_manager_app/services/home_widget_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -88,6 +90,7 @@ class AddExpenseProvider extends ChangeNotifier {
     } finally {
       isLoading = false;
       notifyListeners();
+      HomeWidgetService.refresh();
     }
   }
 
@@ -118,6 +121,11 @@ class AddExpenseProvider extends ChangeNotifier {
 
   Future<void> deleteTransaction(int transactionID) async {
     await addTransactionDbHelper.deleteItem(transactionID);
+    try {
+      await ReceiptDbHelper.getInstance.deleteByTransaction(transactionID);
+    } catch (e) {
+      debugPrint("Error deleting receipt: $e");
+    }
     await getTransactionsForMonth(currentMonth);
   }
 
@@ -125,6 +133,7 @@ class AddExpenseProvider extends ChangeNotifier {
     try {
       await addTransactionDbHelper.deleteFull();
       transactionData = [];
+      await ReceiptDbHelper.getInstance.deleteAll();
       notifyListeners();
     } catch (e) {
       debugPrint("Error in deleteFullTransaction: $e");

@@ -8,6 +8,8 @@ import 'package:finance_manager_app/services/dailogue_service.dart';
 import 'package:finance_manager_app/services/reminder_helper.dart';
 import 'package:finance_manager_app/utils/helper_functions.dart';
 import 'package:finance_manager_app/views/homeView/widgets/home_view_card_widget.dart';
+import 'package:finance_manager_app/providers/recurringProvider/recurring_provider.dart';
+import 'package:finance_manager_app/views/recurringView/recurring_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:in_app_update/in_app_update.dart';
@@ -79,6 +81,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       await ReminderHelper.requestNotificationPermissionOnce();
       await ReminderHelper.scheduleDailyTip();
       await ReminderHelper.scheduleDailyTransactionReview();
+      await ReminderHelper.scheduleWeeklySummary();
+
+      if (!mounted) return;
+      final pending = await context.read<RecurringProvider>().processDue(
+        context.read<AddExpenseProvider>(),
+      );
+      await showDueRecurringDialog(pending);
     });
   }
 

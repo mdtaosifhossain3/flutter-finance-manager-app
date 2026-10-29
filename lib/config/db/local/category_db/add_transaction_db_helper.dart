@@ -96,6 +96,12 @@ class AddTransactionDbHelper {
     return rowsEffected > 0;
   }
 
+  /// Insertion that returns the new row id.
+  Future<int> insertItem(TransactionModel ex) async {
+    var db = await getDB();
+    return db.insert(tableName, ex.toMap());
+  }
+
   //Fetch All Data
   Future<List<Map<String, dynamic>>> getAllNotes() async {
     var db = await getDB();

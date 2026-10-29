@@ -39,7 +39,7 @@ class SplashViewModel {
     if (isSubscribed) {
       Get.offAll(() => const MainView());
     } else {
-      Get.offAll(() => const PhoneVerificationView());
+      Get.offAll(() => const MainView());
     }
   }
 }

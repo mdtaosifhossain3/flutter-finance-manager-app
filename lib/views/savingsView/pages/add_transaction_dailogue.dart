@@ -144,7 +144,7 @@ class _AddTransactionDialogContentState
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text('transactionUpdated'.tr),
+                  Expanded(child: Text('transactionUpdated'.tr)),
                 ],
               ),
               backgroundColor: AppColors.success,
@@ -167,7 +167,7 @@ class _AddTransactionDialogContentState
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text('transactionAdded'.tr),
+                  Expanded(child: Text('transactionAdded'.tr)),
                 ],
               ),
               backgroundColor: AppColors.success,

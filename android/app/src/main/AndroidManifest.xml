@@ -15,12 +15,6 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
-
-
-    
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
-
-
     <uses-feature
         android:name="android.hardware.bluetooth"
         android:required="false" />
@@ -72,6 +66,25 @@
                 android:resource="@xml/transaction_widget_info" />
         </receiver>
 
+        <!--
+            Auto Sync: reads only bKash / Nagad / Rocket / bank SMS
+            notifications after the user grants Notification access.
+            No SMS permission is used.
+        -->
+        <service
+            android:name=".TransactionNotificationListener"
+            android:exported="true"
+            android:label="@string/auto_sync_service_label"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".AutoSyncActionReceiver"
+            android:exported="false" />
+
         <!-- ============= END RECEIVERS ============= -->
         <activity
             android:name=".MainActivity"
@@ -99,6 +112,13 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Share an SMS (bKash, Nagad, bank) into the app to import it -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
 
             <!--

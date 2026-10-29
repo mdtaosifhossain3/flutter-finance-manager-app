@@ -1,3 +1,4 @@
+import 'package:finance_manager_app/services/autoSync/auto_sync_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
@@ -17,6 +18,7 @@ class LanguageTranslatorProvider with ChangeNotifier {
 
     // update GetX locale too
     Get.updateLocale(locale);
+    AutoSyncService.setLanguage(locale.languageCode);
 
     // save in SharedPreferences
     final prefs = await SharedPreferences.getInstance();
@@ -32,6 +34,7 @@ class LanguageTranslatorProvider with ChangeNotifier {
 
     // set GetX locale
     Get.updateLocale(_locale);
+    AutoSyncService.setLanguage(langCode);
 
     notifyListeners();
   }

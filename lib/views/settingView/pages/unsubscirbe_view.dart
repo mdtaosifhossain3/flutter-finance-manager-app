@@ -1,6 +1,9 @@
 import 'package:finance_manager_app/config/db/local/notification_db/notification_db_helper.dart';
 import 'package:finance_manager_app/config/myColors/app_colors.dart';
 import 'package:finance_manager_app/globalWidgets/custom_appbar.dart';
+import 'package:finance_manager_app/providers/bazarProvider/bazar_provider.dart';
+import 'package:finance_manager_app/providers/recurringProvider/recurring_provider.dart';
+import 'package:finance_manager_app/providers/walletProvider/wallet_provider.dart';
 import 'package:finance_manager_app/providers/budget/budget_provider.dart';
 import 'package:finance_manager_app/providers/category/transaction_provider.dart';
 import 'package:finance_manager_app/providers/givenTakenProvider/given_taken_provider.dart';
@@ -9,6 +12,7 @@ import 'package:finance_manager_app/providers/reminderProvider/reminder_provider
 import 'package:finance_manager_app/providers/savingsProvider/savings_provider.dart';
 import 'package:finance_manager_app/services/uid_service.dart';
 import 'package:finance_manager_app/views/authView/phnVerificationView/phone_verification_view.dart';
+import 'package:finance_manager_app/views/settingView/widgets/retention_summary_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -41,6 +45,9 @@ class UnsubscirbeView extends StatelessWidget {
     final givenTakenProvider = context.read<GivenTakenProvider>();
     final notesProvider = context.read<NotesProvider>();
     final reminderProvider = context.read<ReminderProvider>();
+    final bazarProvider = context.read<BazarProvider>();
+    final walletProvider = context.read<WalletProvider>();
+    final recurringProvider = context.read<RecurringProvider>();
 
     String phone = (subscriberId ?? '').trim();
     if (phone.isEmpty) {
@@ -151,6 +158,17 @@ class UnsubscirbeView extends StatelessWidget {
       } catch (e) {
         debugPrint('Error deleting notifications: $e');
       }
+      try {
+        await bazarProvider.deleteFull();
+      } catch (e) {
+        debugPrint('Error deleting bazar list: $e');
+      }
+      try {
+        await walletProvider.deleteFull();
+        await recurringProvider.deleteFull();
+      } catch (e) {
+        debugPrint('Error deleting wallets / recurring: $e');
+      }
 
       await UidService.instance.clearUid();
       sharedPreferences.setBool("IS_SUBSCRIBED", false);
@@ -206,11 +224,12 @@ class UnsubscirbeView extends StatelessWidget {
       ),
 
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const RetentionSummaryCard(),
               Text(
                 'choose_plan'.tr, // Using existing key or generic title
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(

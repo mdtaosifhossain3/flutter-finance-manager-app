@@ -27,4 +27,13 @@ class RoutesName {
   static const savingsView = "/savings_view";
   static const noteView = "/note_view";
   static const checkOutView = "/check_out_view";
+  static const insightsView = "/insights_view";
+  static const zakatView = "/zakat_view";
+  static const festivalPlannerView = "/festival_planner_view";
+  static const bazarListView = "/bazar_list_view";
+  static const walletView = "/wallet_view";
+  static const recurringView = "/recurring_view";
+  static const smsImportView = "/sms_import_view";
+  static const receiptScanView = "/receipt_scan_view";
+  static const autoSyncView = "/auto_sync_view";
 }

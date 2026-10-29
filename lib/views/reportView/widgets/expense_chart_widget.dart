@@ -39,112 +39,138 @@ class _ExpenseChartWidgetState extends State<ExpenseChartWidget> {
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: SizedBox(
-                    height: 200,
-                    child: PieChart(
-                      PieChartData(
-                        sections: context
+            if (context.watch<ReportProvider>().filterCategories.isEmpty)
+              SizedBox(
+                height: 120,
+                child: Center(
+                  child: Text(
+                    "noTransactions".tr,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              )
+            else
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    // Size the pie to the space it gets so it never overflows
+                    // on narrow phones
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final size = constraints.maxWidth < 200
+                            ? constraints.maxWidth
+                            : 200.0;
+                        return SizedBox(
+                          height: size,
+                          child: PieChart(
+                            PieChartData(
+                              sections: context
+                                  .watch<ReportProvider>()
+                                  .filterCategories
+                                  .asMap()
+                                  .entries
+                                  .map((entry) {
+                                    var category = entry.value;
+                                    double percentage =
+                                        (category["amount"] / total) * 100;
+
+                                    // Only show percentage if it's above 5%
+                                    bool showTitle = percentage >= 5;
+
+                                    return PieChartSectionData(
+                                      color: Color(category["color"]),
+                                      value: percentage,
+                                      title: showTitle
+                                          ? '${percentage.toStringAsFixed(1)}%'
+                                          : '',
+                                      radius: size * 0.32,
+                                      titleStyle: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        shadows: [
+                                          Shadow(
+                                            color: Colors.black.withValues(
+                                              alpha: 0.3,
+                                            ),
+                                            blurRadius: 2,
+                                          ),
+                                        ],
+                                      ),
+                                      titlePositionPercentageOffset: 0.55,
+                                    );
+                                  })
+                                  .toList(),
+                              sectionsSpace: 1,
+                              centerSpaceRadius: size * 0.17,
+                              pieTouchData: PieTouchData(
+                                touchCallback:
+                                    (FlTouchEvent event, pieTouchResponse) {
+                                      // Optional: Add touch interaction here
+                                    },
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  SizedBox(width: 20),
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ...context
                             .watch<ReportProvider>()
                             .filterCategories
-                            .asMap()
-                            .entries
-                            .map((entry) {
-                              var category = entry.value;
-                              double percentage =
-                                  (category["amount"] / total) * 100;
-
-                              // Only show percentage if it's above 5%
-                              bool showTitle = percentage >= 5;
-
-                              return PieChartSectionData(
-                                color: Color(category["color"]),
-                                value: percentage,
-                                title: showTitle
-                                    ? '${percentage.toStringAsFixed(1)}%'
-                                    : '',
-                                radius: 65,
-                                titleStyle: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  shadows: [
-                                    Shadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.3,
+                            .take(5) // 👈 only first 5
+                            .map((category) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 12,
+                                      height: 12,
+                                      decoration: BoxDecoration(
+                                        color: Color(category["color"]),
+                                        shape: BoxShape.circle,
                                       ),
-                                      blurRadius: 2,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Flexible(
+                                      child: Text(
+                                        "${category['categoryName']}".tr,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.labelMedium,
+                                      ),
                                     ),
                                   ],
                                 ),
-                                titlePositionPercentageOffset: 0.55,
                               );
-                            })
-                            .toList(),
-                        sectionsSpace: 1,
-                        centerSpaceRadius: 35,
-                        pieTouchData: PieTouchData(
-                          touchCallback:
-                              (FlTouchEvent event, pieTouchResponse) {
-                                // Optional: Add touch interaction here
-                              },
-                        ),
-                      ),
+                            }),
+                        if (context
+                                .watch<ReportProvider>()
+                                .filterCategories
+                                .length >
+                            5)
+                          Text(
+                            "seeAllButton".tr,
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
+                      ],
                     ),
                   ),
-                ),
-
-                SizedBox(width: 20),
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ...context
-                          .watch<ReportProvider>()
-                          .filterCategories
-                          .take(5) // 👈 only first 5
-                          .map((category) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 12,
-                                    height: 12,
-                                    decoration: BoxDecoration(
-                                      color: Color(category["color"]),
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    "${category['categoryName']}".tr,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.labelMedium,
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
-                      if (context
-                              .watch<ReportProvider>()
-                              .filterCategories
-                              .length >
-                          5)
-                        Text(
-                          "seeAllButton".tr,
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         ),
       ),

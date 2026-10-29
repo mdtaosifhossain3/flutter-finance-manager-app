@@ -82,14 +82,17 @@ class BkashSubscriptionService {
     String? apiSecret,
     String? redirectUrl,
   }) {
-    final key =
-        (apiKey ?? dotenv.env['BDAPPS_BKASH_API_KEY'] ?? 'YOUR_BDAPPS_API_KEY')
-            .trim();
-    final secret =
-        (apiSecret ??
-                dotenv.env['BDAPPS_BKASH_API_SECRET'] ??
-                'YOUR_BDAPPS_API_SECRET')
-            .trim();
+    final key = (apiKey ?? dotenv.env['BDAPPS_BKASH_API_KEY'] ?? '').trim();
+    final secret = (apiSecret ?? dotenv.env['BDAPPS_BKASH_API_SECRET'] ?? '')
+        .trim();
+
+    // Missing credentials make BDApps reject the request with E1006
+    // (invalid API key), so fail here instead of opening a broken page.
+    if (key.isEmpty || secret.isEmpty) {
+      throw StateError(
+        'BDAPPS_BKASH_API_KEY / BDAPPS_BKASH_API_SECRET missing in .env',
+      );
+    }
     final redirect =
         (redirectUrl ??
                 dotenv.env['BDAPPS_BKASH_REDIRECT_URL'] ??

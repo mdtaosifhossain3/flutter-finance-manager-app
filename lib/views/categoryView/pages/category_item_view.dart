@@ -148,9 +148,13 @@ class _CategoryTransactionViewState extends State<CategoryItemView> {
                 ),
               ),
               SizedBox(width: 12),
-              Text(
-                widget.categoryKey.tr,
-                style: Theme.of(context).textTheme.headlineSmall,
+              Expanded(
+                child: Text(
+                  widget.categoryKey.tr,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
               ),
             ],
           ),
